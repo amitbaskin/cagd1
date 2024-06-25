@@ -1,8 +1,4 @@
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
-#include <ctype.h>
-#include "expr2tree.h"
+#include "parse_file.h"
 
 // Function to trim leading and trailing whitespaces
 char *trim_whitespace( char *str )
@@ -25,21 +21,23 @@ char *trim_whitespace( char *str )
   return str;
 }
 
-int parse_file( int dummy1, int dummy2, void *p_data )
-{
-  int status = 0;
 
+void parse_file( int dummy1, int dummy2, void *p_data )
+{
   FILE *file = fopen( ( char * )p_data, "r" );
 
   if( file == NULL )
   {
     perror( "Error opening file" );
-    return 1;
+    return;
   }
 
-  char line[ 256 ];
+  char x_form[ MAX_LEN ] = { '\0' };
+  char y_form[ MAX_LEN ] = { '\0' };
+  char z_form[ MAX_LEN ] = { '\0' };
+  char line[ MAX_LEN ] = { '\0' };
+
   int line_count = 0;
-  char x_form[ 256 ], y_form[ 256 ], z_form[ 256 ];
   double tmin, tmax;
 
   while( fgets( line, sizeof( line ), file ) )
@@ -48,9 +46,7 @@ int parse_file( int dummy1, int dummy2, void *p_data )
 
     // Skip comments and empty lines
     if( trimmed_line[ 0 ] == '#' || strlen( trimmed_line ) == 0 )
-    {
       continue;
-    }
 
     ++line_count;
 
@@ -73,7 +69,7 @@ int parse_file( int dummy1, int dummy2, void *p_data )
         {
           fprintf( stderr, "Error: Invalid tmin and tmax values.\n" );
           fclose( file );
-          return 1;
+          return;
         }
         break;
       default:
@@ -87,7 +83,7 @@ int parse_file( int dummy1, int dummy2, void *p_data )
   if( line_count < 4 || strlen( x_form ) == 0 || strlen( y_form ) == 0 || strlen( z_form ) == 0 )
   {
     fprintf( stderr, "Error: Missing required lines in the input file.\n" );
-    return 1;
+    return;
   }
 
   // Output the parsed data
@@ -96,31 +92,9 @@ int parse_file( int dummy1, int dummy2, void *p_data )
   printf( "Z(t): %s\n", z_form );
   printf( "tmin: %f, tmax: %f\n", tmin, tmax );
 
-  e2t_expr_node *tree;
-  e2t_expr_node *dtree;
-  double x;
-  char s[ 128 ];
-
-  tree = e2t_expr2tree( x_form );
-
-  if( !tree )
-  {
-    printf( "Error %d\n", e2t_parsing_error );
-  }
-
-  printf( "The tree is:" );
-  e2t_printtree( tree, ( char * ) NULL );
-
-  printf( "\n\nDtree/Dx is:" );
-  dtree = e2t_derivtree( tree, E2T_PARAM_T );
-  e2t_printtree( dtree, ( char * ) NULL );
-  printf( "   == %lf\n\n", e2t_evaltree( tree ) );
-
-  printf( "Enter x value:" );
-  gets( s );
-  sscanf( s, "%lf", &x );
-  e2t_setparamvalue( x, E2T_PARAM_T );
-  printf( "Tree value for x = %lf is %lf\n", x, e2t_evaltree( tree ) );
-
-  return status;
+  cur_crv.xtree = e2t_expr2tree( x_form );
+  cur_crv.ytree = e2t_expr2tree( y_form );
+  cur_crv.ztree = e2t_expr2tree( z_form );
+  cur_crv.tmin = tmin;
+  cur_crv.tmax = tmax;
 }
