@@ -4,6 +4,7 @@
 *************************************************************************/
 #include "cagd.h"
 #include "internal.h"
+#include "parse_file.h"
 
 #define LOINT(x) ((int)(short)LOWORD(x))
 #define HIINT(x) ((int)(short)HIWORD(x))
@@ -14,7 +15,7 @@ typedef struct {
 } CALLBACK_ENTRY;
 
 static PSTR helpText = NULL;
-static PSTR defaultHelpText = 
+static PSTR defaultHelpText =
   "<Ctrl> + Left mouse button -- rotate around X/Y axes;\n"
   "<Ctrl> + Right mouse button -- rotate around Z axe;\n"
   "<Shift> + Left mouse button -- translate along X/Y axes;\n"
@@ -41,7 +42,7 @@ static OPENFILENAME openFileName = {
   NULL,
   NULL,
   OFN_HIDEREADONLY,
-  0, 
+  0,
   0,
   NULL,
   0,
@@ -71,7 +72,7 @@ static void callback(UINT message, int x, int y)
 }
 
 /* BUGFIX: mplav@csd 17/12/96: CALLBACK modificator for proper linkage. */
-/* Error appeared on WinNT 4.0: menu was not properly redrawn. */ 
+/* Error appeared on WinNT 4.0: menu was not properly redrawn. */
 static LRESULT CALLBACK command(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
   static int x, y;
@@ -80,14 +81,19 @@ static LRESULT CALLBACK command(HWND hWnd, UINT message, WPARAM wParam, LPARAM l
   HMENU hMenu = GetMenu(hWnd);
 
   switch(message){
-    
+
   case WM_COMMAND:
     switch(id = LOWORD(wParam)){
     case CAGD_LOAD:
       openFileName.hwndOwner = auxGetHWND();
       openFileName.lpstrTitle = "Load File";
-      if(GetOpenFileName(&openFileName))
-	callback(CAGD_LOADFILE, (int)openFileName.lpstrFile, 0);
+
+      if( GetOpenFileName( &openFileName ) )
+      {
+        cagdRegisterCallback( CAGD_LOADFILE, parse_file, ( PVOID )openFileName.lpstrFile );
+        callback( CAGD_LOADFILE, 0, 0 );
+      }
+
       return 0;
     case CAGD_SAVE:
       openFileName.hwndOwner = auxGetHWND();
@@ -140,9 +146,9 @@ static LRESULT CALLBACK command(HWND hWnd, UINT message, WPARAM wParam, LPARAM l
       break;
     }
     break;
-    
+
   case WM_LBUTTONDOWN:
-    
+
     if(!(state & (MK_CONTROL | MK_SHIFT))){
       state |= MK_LBUTTON;
       SetCapture(hWnd);
@@ -156,9 +162,9 @@ static LRESULT CALLBACK command(HWND hWnd, UINT message, WPARAM wParam, LPARAM l
     y = (short)HIWORD(lParam);
     SetCapture(hWnd);
     return 0;
-    
+
   case WM_LBUTTONUP:
-    
+
     if(!(state & MK_LBUTTON))
       return 0;
     state &= ~MK_LBUTTON;
@@ -168,9 +174,9 @@ static LRESULT CALLBACK command(HWND hWnd, UINT message, WPARAM wParam, LPARAM l
       callback(CAGD_LBUTTONUP, LOINT(lParam), HIINT(lParam));
     ReleaseCapture();
     return 0;
-    
+
   case WM_RBUTTONDOWN:
-    
+
     if(!(state & (MK_CONTROL | MK_SHIFT))){
       state |= MK_RBUTTON;
       SetCapture(hWnd);
@@ -184,9 +190,9 @@ static LRESULT CALLBACK command(HWND hWnd, UINT message, WPARAM wParam, LPARAM l
     y = (short)HIWORD(lParam);
     SetCapture(hWnd);
     return 0;
-    
+
   case WM_RBUTTONUP:
-    
+
     if(!(state & MK_RBUTTON))
       return 0;
     state &= ~MK_RBUTTON;
@@ -196,9 +202,9 @@ static LRESULT CALLBACK command(HWND hWnd, UINT message, WPARAM wParam, LPARAM l
       callback(CAGD_RBUTTONUP, LOINT(lParam), HIINT(lParam));
     ReleaseCapture();
     return 0;
-    
+
   case WM_MBUTTONDOWN:
-    
+
     if(!(state & (MK_CONTROL | MK_SHIFT))){
       state |= MK_MBUTTON;
       SetCapture(hWnd);
@@ -209,9 +215,9 @@ static LRESULT CALLBACK command(HWND hWnd, UINT message, WPARAM wParam, LPARAM l
       return 0;
     state |= MK_MBUTTON;
     return 0;
-    
+
   case WM_MBUTTONUP:
-    
+
     //Bugfix Octavian + Avishai Dec 01 2002
     //if(!(state & MK_RBUTTON))
       if(!(state & MK_MBUTTON))
@@ -223,9 +229,9 @@ static LRESULT CALLBACK command(HWND hWnd, UINT message, WPARAM wParam, LPARAM l
     callback(CAGD_MBUTTONUP, LOINT(lParam), HIINT(lParam));
     ReleaseCapture();
     return 0;
-    
+
   case WM_MOUSEMOVE:
-    
+
     if(state & MK_CONTROL) {
       if(state & MK_LBUTTON)
 	rotateXY(LOINT(lParam) - x, HIINT(lParam) - y);
@@ -239,13 +245,13 @@ static LRESULT CALLBACK command(HWND hWnd, UINT message, WPARAM wParam, LPARAM l
     } else
       callback(CAGD_MOUSEMOVE, LOINT(lParam), HIINT(lParam));
     return 0;
-    
+
   case WM_TIMER:
     if(state)
       return 0;
     callback(CAGD_TIMER, 0, 0);
     return 0;
-    
+
   case WM_KEYDOWN:
     switch(wParam){
     case VK_CONTROL:
@@ -256,7 +262,7 @@ static LRESULT CALLBACK command(HWND hWnd, UINT message, WPARAM wParam, LPARAM l
       return 0;
     }
     break;
-    
+
   case WM_KEYUP:
     switch(wParam){
     case VK_CONTROL:
@@ -287,7 +293,7 @@ static LRESULT CALLBACK command(HWND hWnd, UINT message, WPARAM wParam, LPARAM l
     break;
 
   }
-	
+
   /* BUGFIX: 22/10/2001, Tatiana&Vitaly Surazhsky {tess|vitus}@cs.technion.ac.il  */
   /* BUG: crash on some system, FIX: use CallWindowProc instead of direct function call  */
   return CallWindowProc((WNDPROC)GetWindowLong(hWnd, GWL_USERDATA),

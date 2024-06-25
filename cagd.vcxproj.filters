@@ -24,9 +24,27 @@
     <ClCompile Include="src\segment.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="lab1\parse_file.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="lab1\expr2tree.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="lab1\test.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\cagd.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="lab1\parse_file.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\expr2tree.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\resource.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

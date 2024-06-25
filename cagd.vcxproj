@@ -99,6 +99,9 @@
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="lab1\expr2tree.c" />
+    <ClCompile Include="lab1\parse_file.c" />
+    <ClCompile Include="lab1\test.c" />
     <ClCompile Include="src\cagd.c">
       <Optimization Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Disabled</Optimization>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Use</PrecompiledHeader>
@@ -129,6 +132,9 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\cagd.h" />
+    <ClInclude Include="include\expr2tree.h" />
+    <ClInclude Include="include\resource.h" />
+    <ClInclude Include="lab1\parse_file.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
