@@ -1,100 +1,176 @@
 #include "parse_file.h"
 
-// Function to trim leading and trailing whitespaces
-char *trim_whitespace( char *str )
+
+#define MAX_LINE_LENGTH 1024
+
+
+// Function to trim trailing whitespace
+void trim_whitespaces( char *str )
 {
-  char *end;
+  int length = strlen( str );
+  int start = 0;
+  int end = length - 1;
 
-  // Trim leading space
-  while( isspace( ( unsigned char ) *str ) ) str++;
+  // Trim leading whitespace
+  while( start <= end && isspace( ( unsigned char ) str[ start ] ) )
+    start++;
 
-  if( *str == 0 ) // All spaces
-    return str;
+  // Trim trailing whitespace
+  while( end >= start && isspace( ( unsigned char ) str[ end ] ) )
+    end--;
 
-  // Trim trailing space
-  end = str + strlen( str ) - 1;
-  while( end > str && isspace( ( unsigned char ) *end ) ) end--;
+  // Shift trimmed string to the beginning
+  memmove( str, str + start, end - start + 1 );
+  str[ end - start + 1 ] = '\0';
+}
 
-  // Write new null terminator
-  *(end + 1) = 0;
 
-  return str;
+void clean_cur_crv()
+{
+  cur_crv.defined = 0;
+
+  for( int i = 0; i < SPACE_DIM; ++i )
+  {
+    for( int j = 0; j < DERIVATIVE_DEPTH; ++j )
+      e2t_freetree( cur_crv.trees[ i ][ j ] );
+  }
+}
+
+
+void validate_tree( int i, int j )
+{
+  e2t_expr_node *tree = cur_crv.trees[ i ][ j ];
+
+  if( tree != NULL )
+  {
+    printf( "\nThe %d, %d tree is:\n", i, j );
+    e2t_printtree( tree, ( char * ) NULL );
+
+    e2t_setparamvalue( cur_crv.domain[ 0 ], E2T_PARAM_T );
+    printf( "\n\nTree value for t = %lf is %lf\n", cur_crv.domain[ 0 ], e2t_evaltree( tree ) );
+    e2t_setparamvalue( cur_crv.domain[ 1 ], E2T_PARAM_T );
+    printf( "\nTree value for t = %lf is %lf\n", cur_crv.domain[ 1 ], e2t_evaltree( tree ) );
+  }
+}
+
+
+void init_cur_crv( char variables_string[ SPACE_DIM ][ MAX_LINE_LENGTH ], double tmin, double tmax )
+{
+  int is_error = 0;
+
+  e2t_expr_node *tree = NULL;
+
+  cur_crv.defined = 1;
+
+  cur_crv.domain[ 0 ] = tmin;
+  cur_crv.domain[ 1 ] = tmax;
+
+  for( int i = 0; !is_error && i < SPACE_DIM; ++i )
+  {
+    printf( "\n\nVariable #%d is: %s\n\n", i, variables_string[ i ] );
+
+    tree = e2t_expr2tree( variables_string[ i ] );
+
+    if( tree == NULL )
+    {
+      perror( "Error: failed to parse variable #%d.\n", i );
+      is_error = 1;
+    }
+    else
+    {
+      cur_crv.trees[ i ][ 0 ] = tree;
+      validate_tree( i, 0 );
+    }
+
+    for( int j = 1; !is_error && j < DERIVATIVE_DEPTH; ++j )
+    {
+      tree = e2t_derivtree( cur_crv.trees[ i ][ j - 1 ], E2T_PARAM_T );
+
+      if( tree == NULL )
+      {
+        perror( "Error: failed to calculate derivative #%d of variable #%d .\n", j, i );
+        is_error = 1;
+      }
+      else
+      {
+        cur_crv.trees[ i ][ j ] = tree;
+        validate_tree( i, j );
+      }
+    }
+  }
+
+  if( is_error )
+    clean_cur_crv();
 }
 
 
 void parse_file( int dummy1, int dummy2, void *p_data )
 {
-  FILE *file = fopen( ( char * )p_data, "r" );
+  FILE *file = NULL;
+
+  int is_error   = 0;
+  int line_count = 0;
+  int line_len = 0;
+
+  double tmin = 0, tmax = 0;
+
+  char line[ MAX_LINE_LENGTH ];
+  char variables_string[ SPACE_DIM ][ MAX_LINE_LENGTH ];
+
+  clean_cur_crv();
+
+  file = fopen( ( char * )p_data, "r" );
 
   if( file == NULL )
   {
     perror( "Error opening file" );
-    return;
+    is_error = 1;
   }
 
-  char x_form[ MAX_LEN ] = { '\0' };
-  char y_form[ MAX_LEN ] = { '\0' };
-  char z_form[ MAX_LEN ] = { '\0' };
-  char line[ MAX_LEN ] = { '\0' };
+  for( int i = 0; i < SPACE_DIM; ++i )
+    variables_string[ i ][ 0 ] = '\0';
 
-  int line_count = 0;
-  double tmin, tmax;
-
-  while( fgets( line, sizeof( line ), file ) )
+  while( !is_error                   &&
+          line_count < SPACE_DIM + 1 &&
+          fgets( line, sizeof( line ), file ) )
   {
-    char *trimmed_line = trim_whitespace( line );
+    printf( "\nProcessing line: %s\n", line );
 
-    // Skip comments and empty lines
-    if( trimmed_line[ 0 ] == '#' || strlen( trimmed_line ) == 0 )
-      continue;
+    trim_whitespaces( line );
 
-    ++line_count;
-
-    switch( line_count )
+    if( line[ 0 ] != '\0' && line[ 0 ] != '#' )
     {
-      case 1:
-        strncpy( x_form, trimmed_line, sizeof( x_form ) );
-        x_form[ sizeof( x_form ) - 1 ] = '\0';  // Ensure null-termination
-        break;
-      case 2:
-        strncpy( y_form, trimmed_line, sizeof( y_form ) );
-        y_form[ sizeof( y_form ) - 1 ] = '\0';  // Ensure null-termination
-        break;
-      case 3:
-        strncpy( z_form, trimmed_line, sizeof( z_form ) );
-        z_form[ sizeof( z_form ) - 1 ] = '\0';  // Ensure null-termination
-        break;
-      case 4:
-        if( sscanf( trimmed_line, "%lf %lf", &tmin, &tmax ) != 2 || tmin > tmax )
+      ++line_count;
+
+      printf( "Good line!\n" );
+
+      if( line_count <= SPACE_DIM )
+      {
+        line_len = strlen( line );
+        strncpy( variables_string[ line_count - 1 ], line, line_len );
+        variables_string[ line_count - 1 ][ line_len ] = '\0';
+      }
+      else if( line_count == SPACE_DIM + 1 )
+      {
+        if( sscanf( line, "%lf %lf", &tmin, &tmax ) != 2 || tmin > tmax )
         {
-          fprintf( stderr, "Error: Invalid tmin and tmax values.\n" );
+          perror( "Error: Invalid tmin and tmax values.\n" );
           fclose( file );
-          return;
+          is_error = 1;
         }
-        break;
-      default:
-        break;
+      }
     }
   }
 
-  fclose( file );
+  if( file != NULL )
+    fclose( file );
 
-  // Check if we have all required items
-  if( line_count < 4 || strlen( x_form ) == 0 || strlen( y_form ) == 0 || strlen( z_form ) == 0 )
+  if( !is_error && line_count < SPACE_DIM + 1 )
   {
     fprintf( stderr, "Error: Missing required lines in the input file.\n" );
-    return;
+    is_error = 1;
   }
 
-  // Output the parsed data
-  printf( "X(t): %s\n", x_form );
-  printf( "Y(t): %s\n", y_form );
-  printf( "Z(t): %s\n", z_form );
-  printf( "tmin: %f, tmax: %f\n", tmin, tmax );
-
-  cur_crv.xtree = e2t_expr2tree( x_form );
-  cur_crv.ytree = e2t_expr2tree( y_form );
-  cur_crv.ztree = e2t_expr2tree( z_form );
-  cur_crv.tmin = tmin;
-  cur_crv.tmax = tmax;
+  if( !is_error )
+    init_cur_crv( variables_string, tmin, tmax );
 }

@@ -2,20 +2,21 @@
 #define PARSE_FILE_H
 
 #include <stdio.h>
-#include <string.h>
 #include <stdlib.h>
+#include <string.h>
 #include <ctype.h>
 #include "expr2tree.h"
 
-#define MAX_LEN 256
+
+#define SPACE_DIM 3
+#define DERIVATIVE_DEPTH 4
+
 
 typedef struct
 {
-  e2t_expr_node *xtree;
-  e2t_expr_node *ytree;
-  e2t_expr_node *ztree;
-  double tmin;
-  double tmax;
+  int defined;
+  e2t_expr_node *trees[ SPACE_DIM ][ DERIVATIVE_DEPTH ];
+  double domain[ 2 ];
 } crv_t;
 
 
