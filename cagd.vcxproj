@@ -119,6 +119,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Use</PrecompiledHeader>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">cagd.h</PrecompiledHeaderFile>
     </ClCompile>
+    <ClCompile Include="src\crv.c" />
     <ClCompile Include="src\segment.c">
       <Optimization Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Disabled</Optimization>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
@@ -131,6 +132,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\cagd.h" />
+    <ClInclude Include="include\crv.h" />
     <ClInclude Include="include\expr2tree.h" />
     <ClInclude Include="include\parse_file.h" />
     <ClInclude Include="include\resource.h" />

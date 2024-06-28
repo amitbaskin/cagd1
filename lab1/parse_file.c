@@ -1,4 +1,5 @@
 #include "parse_file.h"
+#include "crv.h"
 
 
 #define MAX_LINE_LENGTH 1024
@@ -31,8 +32,11 @@ void clean_cur_crv()
 
   for( int i = 0; i < SPACE_DIM; ++i )
   {
-    for( int j = 0; j < DERIVATIVE_DEPTH; ++j )
-      e2t_freetree( cur_crv.trees[ i ][ j ] );
+    for ( int j = 0; j < DERIVATIVE_DEPTH; ++j )
+    {
+      e2t_freetree( cur_crv.trees[i][j] );
+      cur_crv.trees[i][j] = NULL;
+    } 
   }
 }
 
@@ -101,6 +105,8 @@ void init_cur_crv( char variables_string[ SPACE_DIM ][ MAX_LINE_LENGTH ], double
 
   if( is_error )
     clean_cur_crv();
+
+  draw_cur_crv( 50 );
 }
 
 
