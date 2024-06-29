@@ -4,7 +4,7 @@
 *************************************************************************/
 #include "cagd.h"
 #include "internal.h"
-#include "parse_file.h"
+#include "load_cur_crv.h"
 
 #define LOINT(x) ((int)(short)LOWORD(x))
 #define HIINT(x) ((int)(short)HIWORD(x))
@@ -90,7 +90,7 @@ static LRESULT CALLBACK command(HWND hWnd, UINT message, WPARAM wParam, LPARAM l
 
       if( GetOpenFileName( &openFileName ) )
       {
-        cagdRegisterCallback( CAGD_LOADFILE, parse_file, ( PVOID )openFileName.lpstrFile );
+        cagdRegisterCallback( CAGD_LOADFILE, load_cur_crv, ( PVOID )openFileName.lpstrFile );
         callback( CAGD_LOADFILE, 0, 0 );
       }
 

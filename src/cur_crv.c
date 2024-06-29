@@ -1,5 +1,7 @@
 #include "cur_crv.h"
 #include "cagd.h"
+#include "vectors.h"
+#include "frenet.h"
 
 
 void print_err( char *str )
@@ -11,12 +13,48 @@ void print_err( char *str )
 }
 
 
-void eval_cur_crv( double param, int d_level, CAGD_POINT *pnt )
+// assuming 3 dimentions because CAGD_POINT is 3D
+void eval_cur_crv( double param, int d_level, CAGD_POINT *out )
 {
   e2t_setparamvalue( param, E2T_PARAM_T );
-  pnt->x = e2t_evaltree( cur_crv.trees[ 0 ][ d_level ] );
-  pnt->y = e2t_evaltree( cur_crv.trees[ 1 ][ d_level ] );
-  pnt->z = e2t_evaltree( cur_crv.trees[ 2 ][ d_level ] );
+  out->x = e2t_evaltree( cur_crv.trees[ 0 ][ d_level ] );
+  out->y = e2t_evaltree( cur_crv.trees[ 1 ][ d_level ] );
+  out->z = e2t_evaltree( cur_crv.trees[ 2 ][ d_level ] );
+}
+
+
+void clean_cur_crv()
+{
+  system( "cls" );
+  cagdFreeAllSegments();
+  cagdRedraw();
+  cur_crv.defined = 0;
+
+  for( int i = 0; i < SPACE_DIM; ++i )
+  {
+    for( int j = 0; j < DERIVATIVE_DEPTH; ++j )
+    {
+      e2t_freetree( cur_crv.trees[ i ][ j ] );
+      cur_crv.trees[ i ][ j ] = NULL;
+    }
+  }
+}
+
+
+void clear_frenet_segs()
+{
+  for( int i = 0; i < 3; ++i )
+    cur_crv.frenet_segs[ i ] = K_NOT_USED;
+}
+
+
+void free_frenet()
+{
+  for( int i = 0; i < 3; ++i )
+  {
+    cagdFreeSegment( cur_crv.frenet_segs[ i ] );
+    cur_crv.frenet_segs[ i ] = K_NOT_USED;
+  }
 }
 
 
@@ -46,6 +84,8 @@ void draw_cur_crv( int num_pnts )
 
       for( int i = 0; i < num_pnts + 1; ++i )
       {
+        frenet_t frenet;
+
         CAGD_POINT pnt = { 0 };
         double param = cur_crv.domain[ 0 ] + jump * i;
         printf( "%f\n", param );
@@ -53,8 +93,11 @@ void draw_cur_crv( int num_pnts )
         eval_cur_crv( param, 0, &pnt );
         pnts[ i ] = pnt;
 
-        //cagdAddPoint( &pnt ); // temporary for debug
-        //cagdRedraw(); // temporary for debug
+        cagdAddPoint( &pnt ); // temporary for debug
+        cagdRedraw(); // temporary for debug
+
+        calc_frenet( param, &frenet );
+        draw_frenet( param, &frenet );
         int x = 5; // dummy line for break point
       }
 
@@ -64,21 +107,7 @@ void draw_cur_crv( int num_pnts )
 
     free( pnts );
   }
-}
 
-void clean_cur_crv()
-{
-  system( "cls" );
-  cagdFreeAllSegments();
+  free_frenet();
   cagdRedraw();
-  cur_crv.defined = 0;
-
-  for( int i = 0; i < SPACE_DIM; ++i )
-  {
-    for( int j = 0; j < DERIVATIVE_DEPTH; ++j )
-    {
-      e2t_freetree( cur_crv.trees[i][j] );
-      cur_crv.trees[i][j] = NULL;
-    }
-  }
 }

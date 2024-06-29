@@ -1,5 +1,5 @@
 #include <errno.h>
-#include "parse_file.h"
+#include "load_cur_crv.h"
 #include "cur_crv.h"
 
 
@@ -96,11 +96,11 @@ void init_cur_crv( char variables_string[ SPACE_DIM ][ MAX_LINE_LENGTH ], double
   if( is_error )
     clean_cur_crv();
   else
-    draw_cur_crv( cur_crv.num_segs );
+    draw_cur_crv( cur_crv.num_samples );
 }
 
 
-void parse_file( int dummy1, int dummy2, void *p_data )
+void load_cur_crv( int dummy1, int dummy2, void *p_data )
 {
   FILE *file = NULL;
 

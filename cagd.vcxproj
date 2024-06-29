@@ -100,7 +100,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="lab1\expr2tree.c" />
-    <ClCompile Include="lab1\parse_file.c" />
+    <ClCompile Include="lab1\load_cur_crv.c" />
     <ClCompile Include="src\cagd.c">
       <Optimization Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Disabled</Optimization>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Use</PrecompiledHeader>
@@ -119,7 +119,9 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Use</PrecompiledHeader>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">cagd.h</PrecompiledHeaderFile>
     </ClCompile>
+    <ClCompile Include="src\color.c" />
     <ClCompile Include="src\cur_crv.c" />
+    <ClCompile Include="src\frenet.c" />
     <ClCompile Include="src\segment.c">
       <Optimization Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Disabled</Optimization>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
@@ -129,13 +131,17 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">cagd.h</PrecompiledHeaderFile>
     </ClCompile>
+    <ClCompile Include="src\vectors.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\cagd.h" />
+    <ClInclude Include="include\color.h" />
     <ClInclude Include="include\cur_crv.h" />
+    <ClInclude Include="include\frenet.h" />
     <ClInclude Include="include\expr2tree.h" />
-    <ClInclude Include="include\parse_file.h" />
+    <ClInclude Include="include\load_cur_crv.h" />
     <ClInclude Include="include\resource.h" />
+    <ClInclude Include="include\vectors.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

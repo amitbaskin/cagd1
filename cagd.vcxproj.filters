@@ -24,13 +24,22 @@
     <ClCompile Include="src\segment.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="lab1\parse_file.c">
+    <ClCompile Include="lab1\load_cur_crv.c">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="lab1\expr2tree.c">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\cur_crv.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\vectors.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\frenet.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\color.c">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -44,10 +53,19 @@
     <ClInclude Include="include\resource.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\parse_file.h">
+    <ClInclude Include="include\load_cur_crv.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\cur_crv.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\vectors.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\frenet.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\color.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
