@@ -263,6 +263,12 @@ void myCommand(int id, int unUsed, PVOID userData)
 	cagdRedraw();
 }
 
+void options_menu( int id, int unUsed, PVOID userData )
+{
+	if( CAGD_BEEP )
+		MessageBeep( MB_ICONERROR );
+}
+
 int main(int argc, char *argv[])
 {
 	HMENU hMenu;
@@ -273,15 +279,19 @@ int main(int argc, char *argv[])
 	AppendMenu(hMenu, MF_STRING, MY_ANIM, "Animation");
 	AppendMenu(hMenu, MF_STRING, MY_DRAG, "Drag, Popup & Dialog");
 	cagdAppendMenu(hMenu, "Demos");
-	myPopup = CreatePopupMenu();
+	/*myPopup = CreatePopupMenu();
 	AppendMenu(myPopup, MF_STRING | MF_DISABLED, 0, "Point");
 	AppendMenu(myPopup, MF_SEPARATOR, 0, NULL);
 	AppendMenu(myPopup, MF_STRING, MY_ADD, "Add");
 	AppendMenu(myPopup, MF_SEPARATOR, 0, NULL);
 	AppendMenu(myPopup, MF_STRING, MY_COLOR, "Change color...");
-	AppendMenu(myPopup, MF_STRING, MY_REMOVE, "Remove");
-	cagdRegisterCallback(CAGD_MENU, myCommand, (PVOID)hMenu);
-	cagdShowHelp();
+	AppendMenu(myPopup, MF_STRING, MY_REMOVE, "Remove");*/
+	//cagdRegisterCallback(CAGD_MENU, myCommand, (PVOID)hMenu);
+	HMENU newmenu = CreatePopupMenu();
+	AppendMenu( newmenu, MF_STRING, CAGD_BEEP, "Beep" );
+	cagdAppendMenu( newmenu, "Options" );
+	cagdRegisterCallback( CAGD_MENU, options_menu, (PVOID)newmenu );
+	//cagdShowHelp();
 	cagdMainLoop();
 	return 0;
 }

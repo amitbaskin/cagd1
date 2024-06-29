@@ -27,6 +27,8 @@ void draw_cur_crv( int num_segments )
     return;
   }
 
+  cagdFreeAllSegments();
+
   CAGD_POINT *points_on_crv = (CAGD_POINT*) malloc( sizeof( CAGD_POINT ) * ( num_segments + 1 ) );
 
   if( points_on_crv != NULL )
@@ -40,5 +42,7 @@ void draw_cur_crv( int num_segments )
 
     cagdAddPolyline( points_on_crv, num_segments + 1 ); // returns the polyline ID
     cagdRedraw();
+
+    free( points_on_crv );
   }
 }
