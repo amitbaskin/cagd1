@@ -27,24 +27,6 @@ void trim_whitespaces( char *str )
 }
 
 
-void clean_cur_crv()
-{
-  system( "cls" );
-  cagdFreeAllSegments();
-  cagdRedraw();
-  cur_crv.defined = 0;
-
-  for( int i = 0; i < SPACE_DIM; ++i )
-  {
-    for ( int j = 0; j < DERIVATIVE_DEPTH; ++j )
-    {
-      e2t_freetree( cur_crv.trees[i][j] );
-      cur_crv.trees[i][j] = NULL;
-    }
-  }
-}
-
-
 void validate_tree( int i, int j )
 {
   e2t_expr_node *tree = cur_crv.trees[ i ][ j ];
@@ -114,7 +96,7 @@ void init_cur_crv( char variables_string[ SPACE_DIM ][ MAX_LINE_LENGTH ], double
   if( is_error )
     clean_cur_crv();
   else
-    draw_cur_crv( 50 );
+    draw_cur_crv( cur_crv.num_segs );
 }
 
 

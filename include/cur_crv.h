@@ -11,6 +11,7 @@ typedef struct
   int defined;
   e2t_expr_node *trees[ SPACE_DIM ][ DERIVATIVE_DEPTH ];
   double domain[ 2 ];
+  int num_segs; /* TODO: find better name*/
 } crv_t;
 
 /*
@@ -24,6 +25,7 @@ typedef struct
 */
 
 void draw_cur_crv( int num_pnts );
+void clean_cur_crv();
 
 // assuming 3 dimentions because CAGD_POINT is 3D
 void eval_cur_crv( double param, int d_level, CAGD_POINT *pnt );

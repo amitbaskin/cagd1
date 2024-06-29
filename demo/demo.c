@@ -1,6 +1,7 @@
 #include <cagd.h>
 #include <stdio.h>
 #include "resource.h"
+#include "cur_crv.h"
 
 #if defined(_WIN32)
     #if _MSC_VER >= 1900
@@ -92,7 +93,6 @@ void myDragRightUp(int x, int y, PVOID userData)
 {
 	UINT id;
 	CAGD_POINT p[2];
-	int red, green, blue;
 	HMENU hMenu = (HMENU)userData;
 	cagdHideSegment(myText);
 	for(cagdPick(x, y); id = cagdPickNext();)
@@ -108,14 +108,19 @@ void myDragRightUp(int x, int y, PVOID userData)
 			cagdAddPoint(p);
 			break;
 		case MY_COLOR:
-			if(DialogBox(cagdGetModule(), 
-						 MAKEINTRESOURCE(IDD_COLOR),
-						 cagdGetWindow(),
-						 (DLGPROC)myDialogProc))
-				if(sscanf(myBuffer, "%d %d %d", &red, &green, &blue) == 3)
-					cagdSetSegmentColor(id, (BYTE)red, (BYTE)green, (BYTE)blue);
-				else
-					myMessage("Change color", "Bad color!", MB_ICONERROR);
+		if( DialogBox( cagdGetModule(),
+				MAKEINTRESOURCE( IDD_COLOR ),
+				cagdGetWindow(),
+				(DLGPROC)myDialogProc ) )
+		{
+			if( sscanf( myBuffer, "%d", &cur_crv.num_segs ) == 1 && cur_crv.num_segs > 2 )
+			{
+				clean_cur_crv();
+				draw_cur_crv( cur_crv.num_segs );
+			}
+			else
+				myMessage( "Invalid segments number", "invalid segs", MB_ICONERROR );
+		}
 			break;
 		case MY_REMOVE:
 			cagdFreeSegment(id);
@@ -265,33 +270,41 @@ void myCommand(int id, int unUsed, PVOID userData)
 
 void options_menu( int id, int unUsed, PVOID userData )
 {
-	if( CAGD_BEEP )
-		MessageBeep( MB_ICONERROR );
+	if( CAGD_SEGS )
+	{
+		if( DialogBox( cagdGetModule(),
+				MAKEINTRESOURCE( IDD_COLOR ),
+				cagdGetWindow(),
+				(DLGPROC)myDialogProc ) )
+		{
+			int last_valid = cur_crv.num_segs;
+
+			if( sscanf( myBuffer, "%d", &cur_crv.num_segs ) == 1 && cur_crv.num_segs > 2 )
+			{
+				cagdFreeAllSegments();
+				draw_cur_crv( cur_crv.num_segs );
+			}
+			else
+			{
+				if( cur_crv.num_segs <= 2 )
+					cur_crv.num_segs = last_valid;
+
+				myMessage( "Invalid segments number", "invalid segs", MB_ICONERROR );
+			}
+		}
+	}
 }
 
 int main(int argc, char *argv[])
 {
 	HMENU hMenu;
 	cagdBegin("CAGD", 512, 512);
-	hMenu = CreatePopupMenu();
-	AppendMenu(hMenu, MF_STRING, MY_CLICK, "Click");
-	AppendMenu(hMenu, MF_STRING, MY_POLY, "Polyline");
-	AppendMenu(hMenu, MF_STRING, MY_ANIM, "Animation");
-	AppendMenu(hMenu, MF_STRING, MY_DRAG, "Drag, Popup & Dialog");
-	cagdAppendMenu(hMenu, "Demos");
-	/*myPopup = CreatePopupMenu();
-	AppendMenu(myPopup, MF_STRING | MF_DISABLED, 0, "Point");
-	AppendMenu(myPopup, MF_SEPARATOR, 0, NULL);
-	AppendMenu(myPopup, MF_STRING, MY_ADD, "Add");
-	AppendMenu(myPopup, MF_SEPARATOR, 0, NULL);
-	AppendMenu(myPopup, MF_STRING, MY_COLOR, "Change color...");
-	AppendMenu(myPopup, MF_STRING, MY_REMOVE, "Remove");*/
-	//cagdRegisterCallback(CAGD_MENU, myCommand, (PVOID)hMenu);
 	HMENU newmenu = CreatePopupMenu();
-	AppendMenu( newmenu, MF_STRING, CAGD_BEEP, "Beep" );
+	AppendMenu( newmenu, MF_STRING, CAGD_SEGS, "Change finnes" /* TODO: find better name*/);
 	cagdAppendMenu( newmenu, "Options" );
 	cagdRegisterCallback( CAGD_MENU, options_menu, (PVOID)newmenu );
-	//cagdShowHelp();
+	cur_crv.num_segs = 30; // Default value
+	cagdShowHelp();
 	cagdMainLoop();
 	return 0;
 }

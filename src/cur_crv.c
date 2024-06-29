@@ -53,8 +53,8 @@ void draw_cur_crv( int num_pnts )
         eval_cur_crv( param, 0, &pnt );
         pnts[ i ] = pnt;
 
-        cagdAddPoint( &pnt ); // temporary for debug
-        cagdRedraw(); // temporary for debug
+        //cagdAddPoint( &pnt ); // temporary for debug
+        //cagdRedraw(); // temporary for debug
         int x = 5; // dummy line for break point
       }
 
@@ -63,5 +63,22 @@ void draw_cur_crv( int num_pnts )
     }
 
     free( pnts );
+  }
+}
+
+void clean_cur_crv()
+{
+  system( "cls" );
+  cagdFreeAllSegments();
+  cagdRedraw();
+  cur_crv.defined = 0;
+
+  for( int i = 0; i < SPACE_DIM; ++i )
+  {
+    for( int j = 0; j < DERIVATIVE_DEPTH; ++j )
+    {
+      e2t_freetree( cur_crv.trees[i][j] );
+      cur_crv.trees[i][j] = NULL;
+    }
   }
 }
