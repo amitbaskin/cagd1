@@ -30,7 +30,7 @@
     <ClCompile Include="lab1\expr2tree.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\crv.c">
+    <ClCompile Include="src\cur_crv.c">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -47,7 +47,7 @@
     <ClInclude Include="include\parse_file.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\crv.h">
+    <ClInclude Include="include\cur_crv.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

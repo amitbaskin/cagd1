@@ -1,5 +1,6 @@
+#include <errno.h>
 #include "parse_file.h"
-#include "crv.h"
+#include "cur_crv.h"
 
 
 #define MAX_LINE_LENGTH 1024
@@ -28,6 +29,9 @@ void trim_whitespaces( char *str )
 
 void clean_cur_crv()
 {
+  system( "cls" );
+  cagdFreeAllSegments();
+  cagdRedraw();
   cur_crv.defined = 0;
 
   for( int i = 0; i < SPACE_DIM; ++i )
@@ -36,7 +40,7 @@ void clean_cur_crv()
     {
       e2t_freetree( cur_crv.trees[i][j] );
       cur_crv.trees[i][j] = NULL;
-    } 
+    }
   }
 }
 
@@ -77,7 +81,9 @@ void init_cur_crv( char variables_string[ SPACE_DIM ][ MAX_LINE_LENGTH ], double
 
     if( tree == NULL )
     {
-      perror( "Error: failed to parse variable #%d.\n", i );
+      char msg[ MAX_LINE_LENGTH ];
+      sprintf( msg, "Error: failed to parse variable #%d.\n", i );
+      print_err( msg );
       is_error = 1;
     }
     else
@@ -92,7 +98,9 @@ void init_cur_crv( char variables_string[ SPACE_DIM ][ MAX_LINE_LENGTH ], double
 
       if( tree == NULL )
       {
-        perror( "Error: failed to calculate derivative #%d of variable #%d .\n", j, i );
+        char msg[ MAX_LINE_LENGTH ];
+        sprintf( msg, "Error: failed to calculate derivative #%d of variable #%d .\n", j, i );
+        print_err( msg );
         is_error = 1;
       }
       else
@@ -105,8 +113,8 @@ void init_cur_crv( char variables_string[ SPACE_DIM ][ MAX_LINE_LENGTH ], double
 
   if( is_error )
     clean_cur_crv();
-
-  draw_cur_crv( 50 );
+  else
+    draw_cur_crv( 50 );
 }
 
 
@@ -116,7 +124,7 @@ void parse_file( int dummy1, int dummy2, void *p_data )
 
   int is_error   = 0;
   int line_count = 0;
-  int line_len = 0;
+  int line_len   = 0;
 
   double tmin = 0, tmax = 0;
 
@@ -129,7 +137,7 @@ void parse_file( int dummy1, int dummy2, void *p_data )
 
   if( file == NULL )
   {
-    perror( "Error opening file" );
+    print_err( "Error opening file" );
     is_error = 1;
   }
 
@@ -148,7 +156,7 @@ void parse_file( int dummy1, int dummy2, void *p_data )
     {
       ++line_count;
 
-      printf( "Good line!\n" );
+      printf( "Good line: %s\n", line );
 
       if( line_count <= SPACE_DIM )
       {
@@ -160,7 +168,7 @@ void parse_file( int dummy1, int dummy2, void *p_data )
       {
         if( sscanf( line, "%lf %lf", &tmin, &tmax ) != 2 || tmin > tmax )
         {
-          perror( "Error: Invalid tmin and tmax values.\n" );
+          print_err( "Error: Invalid tmin and / or tmax values.\n" );
           fclose( file );
           is_error = 1;
         }

@@ -7,7 +7,6 @@
 #include <ctype.h>
 #include "expr2tree.h"
 
-
 // Function to parse the file
 void parse_file( int x, int y, void *p_data );
 
