@@ -76,13 +76,13 @@ void draw_cur_crv( int num_pnts )
 
   if( is_error == 0 )
   {
-    CAGD_POINT *pnts = ( CAGD_POINT * ) malloc( sizeof( CAGD_POINT ) * ( num_pnts + 2 ) );
+    CAGD_POINT *pnts = ( CAGD_POINT * ) malloc( sizeof( CAGD_POINT ) * ( num_pnts + 1 ) );
 
     if( pnts != NULL )
     {
       double jump = ( cur_crv.domain[ 1 ] - cur_crv.domain[ 0 ] ) / num_pnts;
 
-      for( int i = 0; i < num_pnts + 1; ++i )
+      for( int i = 0; i < num_pnts; ++i )
       {
         frenet_t frenet;
 
@@ -101,7 +101,7 @@ void draw_cur_crv( int num_pnts )
         int x = 5; // dummy line for break point
       }
 
-      cagdAddPolyline( pnts, num_pnts + 1 ); // returns the polyline ID
+      cagdAddPolyline( pnts, num_pnts ); // returns the polyline ID
       cagdRedraw();
     }
 

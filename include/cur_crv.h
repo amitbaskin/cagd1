@@ -7,7 +7,7 @@
 #define SPACE_DIM 3
 #define DERIVATIVE_DEPTH 4
 #define K_NOT_USED -1
-#define NUM_SAMPS 5000
+#define NUM_SAMPS 70
 
 
 typedef struct
