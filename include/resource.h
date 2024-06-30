@@ -3,7 +3,9 @@
 // Used by demo.rc
 //
 #define IDD_COLOR                       101
+#define IDC_ANIM_SPEED                  102
 #define IDC_EDIT                        1005
+#define IDC_ANIM_SPEED_EDIT             1006
 
 // Next default values for new objects
 // 

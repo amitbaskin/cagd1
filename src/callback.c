@@ -5,6 +5,7 @@
 #include "cagd.h"
 #include "internal.h"
 #include "load_cur_crv.h"
+#include "options.h"
 
 #define LOINT(x) ((int)(short)LOWORD(x))
 #define HIINT(x) ((int)(short)HIWORD(x))
@@ -56,7 +57,7 @@ BOOL cagdRegisterCallback(UINT message, CAGD_CALLBACK function, PVOID data)
     list[message].data = data;
     if(message == CAGD_TIMER)
       if(function)
-	SetTimer(auxGetHWND(), 0, 1, NULL);
+	SetTimer(auxGetHWND(), 0, frenet_anim_speed, NULL);
       else
 	KillTimer(auxGetHWND(), 0);
     return TRUE;

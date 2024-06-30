@@ -2,6 +2,10 @@
 #include <stdio.h>
 #include "resource.h"
 #include "cur_crv.h"
+#include "frenet.h"
+
+extern int frenet_anim_speed;
+extern int frenet_anim_running;
 
 #if defined(_WIN32)
     #if _MSC_VER >= 1900
@@ -86,6 +90,24 @@ LRESULT CALLBACK myDialogProc(HWND hDialog, UINT message, WPARAM wParam, LPARAM 
       return TRUE;
     default:
       return FALSE;
+  }
+}
+
+LRESULT CALLBACK myDialogProc2( HWND hDialog, UINT message, WPARAM wParam, LPARAM lParam )
+{
+  if( message != WM_COMMAND )
+    return FALSE;
+  switch( LOWORD( wParam ) )
+  {
+  case IDOK:
+  GetDlgItemText( hDialog, IDC_ANIM_SPEED_EDIT, myBuffer, sizeof( myBuffer ) );
+  EndDialog( hDialog, TRUE );
+  return TRUE;
+  case IDCANCEL:
+  EndDialog( hDialog, FALSE );
+  return TRUE;
+  default:
+  return FALSE;
   }
 }
 
@@ -268,10 +290,13 @@ void myCommand(int id, int unUsed, PVOID userData)
   cagdRedraw();
 }
 
-void options_menu( int id, int unUsed, PVOID userData )
+void menu_callbacks( int id, int unUsed, PVOID userData )
 {
-  if( CAGD_SEGS )
+  int is_error = 0;
+
+  switch( id )
   {
+  case CAGD_SEGS:
     if( DialogBox( cagdGetModule(),
         MAKEINTRESOURCE( IDD_COLOR ),
         cagdGetWindow(),
@@ -292,6 +317,58 @@ void options_menu( int id, int unUsed, PVOID userData )
         myMessage( "Invalid segments number", "invalid segs", MB_ICONERROR );
       }
     }
+    break;
+
+  case CAGD_FRENET_ANIM_START:
+    if( cur_crv.defined == 0 )
+    {
+      print_err( "Please Load a Curve first" );
+      is_error = 1;
+    }
+    if( is_error == 0 )
+    {
+      frenet_anim_running = 1;
+      cagdRegisterCallback( CAGD_TIMER, frenet_anim_cb, NULL );
+    }
+    break;
+
+  case CAGD_FRENET_ANIM_STOP:
+    if( frenet_anim_running == 1 )
+    {
+      cagdRegisterCallback( CAGD_TIMER, NULL, NULL );
+      free_frenet();
+      cagdRedraw();
+      reset_frenet_anim_iteration();
+      frenet_anim_running = 0;
+    }
+    break;
+
+  case CAGD_FRENET_ANIM_SPEED:
+    if( DialogBox( cagdGetModule(),
+        MAKEINTRESOURCE( IDC_ANIM_SPEED ),
+        cagdGetWindow(),
+        (DLGPROC)myDialogProc2 ) )
+    {
+      int speed = 0;
+
+      if( sscanf( myBuffer, "%d", &speed ) == 1 )
+      {
+        double inv_speed = 1 / (double)speed;
+        frenet_anim_speed = ( inv_speed ) * 100; 
+
+        if( frenet_anim_running == 1 )
+        {
+          // apply new animation speed
+          cagdRegisterCallback( CAGD_TIMER, NULL, NULL );
+          cagdRegisterCallback( CAGD_TIMER, frenet_anim_cb, NULL );
+        }
+      }
+      else
+      {
+        myMessage( "Invalid Speed", "Please pick a valid speed", MB_ICONERROR );
+      }
+    }
+    break;
   }
 }
 
@@ -299,10 +376,15 @@ int main(int argc, char *argv[])
 {
   HMENU hMenu;
   cagdBegin( "CAGD", 512, 512 );
-  HMENU newmenu = CreatePopupMenu();
-  AppendMenu( newmenu, MF_STRING, CAGD_SEGS, "Refinement" );
-  cagdAppendMenu( newmenu, "Options" );
-  cagdRegisterCallback( CAGD_MENU, options_menu, ( PVOID )newmenu );
+  HMENU op_menu = CreatePopupMenu();
+  HMENU fre_menu = CreatePopupMenu();
+  AppendMenu( op_menu, MF_STRING, CAGD_SEGS, "Refinement" );
+  AppendMenu( op_menu, MF_STRING, CAGD_FRENET_ANIM_SPEED, "Animation Speed" );
+  AppendMenu( fre_menu, MF_STRING, CAGD_FRENET_ANIM_START, "Start Frenet Animation" );
+  AppendMenu( fre_menu, MF_STRING, CAGD_FRENET_ANIM_STOP, "Stop Frenet Animation" );
+  cagdAppendMenu( fre_menu, "Frenet" );
+  cagdAppendMenu( op_menu, "Options" );
+  cagdRegisterCallback( CAGD_MENU, menu_callbacks, NULL );
 
   cur_crv.num_samples = NUM_SAMPS; // Default value
   clear_frenet_segs();

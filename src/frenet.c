@@ -3,6 +3,8 @@
 #include "color.h"
 
 
+int frenet_anim_iteration = 0;
+
 void calc_frenet( double param, frenet_t *frenet )
 {
   CAGD_POINT d0;
@@ -97,4 +99,30 @@ void draw_frenet( double param, frenet_t *frenet )
   cagdRedraw();
 
   set_default_color();
+}
+
+void frenet_anim_cb( int x, int y, PVOID userData )
+{
+  int anim_smoothness = 200;
+  double jump = ( cur_crv.domain[1] - cur_crv.domain[0] ) / anim_smoothness;
+  double param = cur_crv.domain[0] + jump * frenet_anim_iteration;
+
+  if( param > cur_crv.domain[1] )
+  {
+    frenet_anim_iteration = 0;
+    param = cur_crv.domain[0] + jump * frenet_anim_iteration;
+  }
+
+  frenet_t frenet;
+  calc_frenet( param, &frenet );
+  draw_frenet( param, &frenet );
+
+  cagdRedraw();
+
+  frenet_anim_iteration++;
+}
+
+void reset_frenet_anim_iteration()
+{
+  frenet_anim_iteration = 0;
 }

@@ -1,6 +1,6 @@
 //{{NO_DEPENDENCIES}}
-// Microsoft Developer Studio generated include file.
-// Used by demo.rc
+// Microsoft Visual C++ generated include file.
+// Used by anim_speed.rc
 //
 #define IDD_COLOR                       101
 #define IDC_ANIM_SPEED                  102

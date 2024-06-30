@@ -140,6 +140,7 @@
     <ClInclude Include="include\frenet.h" />
     <ClInclude Include="include\expr2tree.h" />
     <ClInclude Include="include\load_cur_crv.h" />
+    <ClInclude Include="include\options.h" />
     <ClInclude Include="include\resource.h" />
     <ClInclude Include="include\vectors.h" />
   </ItemGroup>

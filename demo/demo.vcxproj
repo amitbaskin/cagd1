@@ -137,15 +137,16 @@
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="demo.rc" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="resource.h" />
+    <ResourceCompile Include="anim_speed.rc" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\cagd.vcxproj">
       <Project>{c868d557-2c7f-48bc-9748-22fa7ae15d2e}</Project>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="resource1.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

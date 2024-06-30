@@ -93,12 +93,12 @@ void draw_cur_crv( int num_pnts )
         eval_cur_crv( param, 0, &pnt );
         pnts[ i ] = pnt;
 
-        cagdAddPoint( &pnt ); // temporary for debug
-        cagdRedraw(); // temporary for debug
+        //cagdAddPoint( &pnt ); // temporary for debug
+        //cagdRedraw(); // temporary for debug
 
-        calc_frenet( param, &frenet );
-        draw_frenet( param, &frenet );
-        int x = 5; // dummy line for break point
+        //calc_frenet( param, &frenet );
+        //draw_frenet( param, &frenet );
+        //int x = 5; // dummy line for break point
       }
 
       cagdAddPolyline( pnts, num_pnts ); // returns the polyline ID

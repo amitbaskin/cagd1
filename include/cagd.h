@@ -54,7 +54,10 @@ enum { /* id's of standard controls */
   CAGD_RESET,
   CAGD_HELP,
   CAGD_USER, /* use this one to create your own control */
-  CAGD_SEGS // just testing..
+  CAGD_SEGS,
+  CAGD_FRENET_ANIM_START,
+  CAGD_FRENET_ANIM_STOP,
+  CAGD_FRENET_ANIM_SPEED
 };
 
 #ifdef __cplusplus
