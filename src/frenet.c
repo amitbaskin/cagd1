@@ -3,6 +3,8 @@
 #include "color.h"
 
 
+extern int frenet_anim_smoothness;
+
 int frenet_anim_iteration = 0;
 
 void calc_frenet( double param, frenet_t *frenet )
@@ -103,8 +105,7 @@ void draw_frenet( double param, frenet_t *frenet )
 
 void frenet_anim_cb( int x, int y, PVOID userData )
 {
-  int anim_smoothness = 200;
-  double jump = ( cur_crv.domain[1] - cur_crv.domain[0] ) / anim_smoothness;
+  double jump = ( cur_crv.domain[1] - cur_crv.domain[0] ) / frenet_anim_smoothness;
   double param = cur_crv.domain[0] + jump * frenet_anim_iteration;
 
   if( param > cur_crv.domain[1] )

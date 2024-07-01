@@ -2,6 +2,7 @@
 #include "load_cur_crv.h"
 #include "cur_crv.h"
 
+extern int num_samples;
 
 #define MAX_LINE_LENGTH 1024
 
@@ -96,7 +97,7 @@ void init_cur_crv( char variables_string[ SPACE_DIM ][ MAX_LINE_LENGTH ], double
   if( is_error )
     clean_cur_crv();
   else
-    draw_cur_crv( cur_crv.num_samples );
+    draw_cur_crv( num_samples );
 }
 
 

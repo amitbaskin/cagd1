@@ -6,6 +6,7 @@
 
 extern int frenet_anim_speed;
 extern int frenet_anim_running;
+extern int num_samples;
 
 #if defined(_WIN32)
     #if _MSC_VER >= 1900
@@ -135,10 +136,10 @@ void myDragRightUp(int x, int y, PVOID userData)
         cagdGetWindow(),
         (DLGPROC)myDialogProc ) )
     {
-      if( sscanf( myBuffer, "%d", &cur_crv.num_samples ) == 1 && cur_crv.num_samples > 2 )
+      if( sscanf( myBuffer, "%d", &num_samples ) == 1 && num_samples > 2 )
       {
         clean_cur_crv();
-        draw_cur_crv( cur_crv.num_samples );
+        draw_cur_crv( num_samples );
       }
       else
         myMessage( "Invalid segments number", "invalid segs", MB_ICONERROR );
@@ -302,18 +303,16 @@ void menu_callbacks( int id, int unUsed, PVOID userData )
         cagdGetWindow(),
         (DLGPROC)myDialogProc ) )
     {
-      int last_valid = cur_crv.num_samples;
+      int new_samples = 0;
 
-      if( sscanf( myBuffer, "%d", &cur_crv.num_samples ) == 1 && cur_crv.num_samples > 2 )
+      if( sscanf( myBuffer, "%d", &new_samples ) == 1 && new_samples > 2 )
       {
         cagdFreeAllSegments();
-        draw_cur_crv( cur_crv.num_samples );
+        num_samples = new_samples;
+        draw_cur_crv( num_samples );
       }
       else
       {
-        if( cur_crv.num_samples <= 2 )
-          cur_crv.num_samples = last_valid;
-
         myMessage( "Invalid segments number", "invalid segs", MB_ICONERROR );
       }
     }
@@ -386,7 +385,7 @@ int main(int argc, char *argv[])
   cagdAppendMenu( op_menu, "Options" );
   cagdRegisterCallback( CAGD_MENU, menu_callbacks, NULL );
 
-  cur_crv.num_samples = NUM_SAMPS; // Default value
+  num_samples = NUM_SAMPS; // Default value
   clear_frenet_segs();
 
   cagdShowHelp();
