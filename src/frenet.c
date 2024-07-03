@@ -48,8 +48,8 @@ void calc_frenet( double param, frenet_t *frenet )
   scale_vec( tmp, &frenet->csys[ 2 ] );
 
   // calc curvature
-  tmp = scale_not_zero( l_d1xd2 ) ? 1 / l_d1xd2 : 0.0;
-  tmp = scale_not_zero( l_d1 ) ? 1 / pow( l_d1, 3 ) : 0.0;
+  tmp = pow( l_d1, 3 );
+  tmp = scale_not_zero( l_d1 ) ? 1 / tmp : 0.0;
   frenet->crvtr = tmp * l_d1xd2;
 
   // calc d1d1_d2
@@ -110,7 +110,7 @@ void draw_frenet( double param, frenet_t *frenet )
     cagdReusePolyline( cur_crv.frenet_segs[ 2 ], B, 2 );
   }
 
-  cagdRedraw();
+  //cagdRedraw();
 
   set_default_color();
 }
@@ -132,7 +132,7 @@ void frenet_anim_cb( int x, int y, PVOID userData )
 
   draw_osc_circle( param, &frenet );
 
-  cagdRedraw();
+  //cagdRedraw();
 
   frenet_anim_iteration++;
 }

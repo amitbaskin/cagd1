@@ -29,9 +29,9 @@ int draw_osc_circle( double param, frenet_t *frenet )
   circ_pnts = ( CAGD_POINT * ) malloc( sizeof( CAGD_POINT ) * ( NUM_OSC_PNTS + 1 ) );
   double deg = ( 360 / NUM_OSC_PNTS ) * ( M_PI / 180 );
 
-  double radius = frenet->crvtr != 0 ? 1 / frenet->crvtr : 0.0;
+  double radius = scale_not_zero( frenet->crvtr ) ? 1 / frenet->crvtr : 0.0;
   double cur_x = 0.0;
-  double cur_y = radius;
+  double cur_y = -radius;
 
   if( scale_not_zero( radius )              &&
       vec_3d_not_zero( &frenet->csys[ 0 ] ) &&
@@ -39,10 +39,10 @@ int draw_osc_circle( double param, frenet_t *frenet )
       circ_pnts != NULL )
   {
     eval_cur_crv( param, 0, &crv_pnt );
-
+    cagdAddPoint( &crv_pnt );
     copy_vec( &frenet->csys[ 1 ], &circ_vec );
     scale_vec( radius, &circ_vec );
-    add_vecs( &crv_pnt, &frenet->csys[ 1 ], &center_pnt );
+    add_vecs( &crv_pnt, &circ_vec, &center_pnt );
 
     for( int i = 0; i < NUM_OSC_PNTS; ++i )
     {
@@ -64,16 +64,19 @@ int draw_osc_circle( double param, frenet_t *frenet )
       add_vecs( &cur_pnt, &cur_normal, &cur_pnt );
 
       circ_pnts[ i ] = cur_pnt;
+
+      cagdAddPoint( &cur_pnt ); // temporary for debug
+      cagdRedraw(); // temporary for debug
     }
 
-    if( cur_crv.osc_circ_seg == K_NOT_USED )
+    /*if( cur_crv.osc_circ_seg == K_NOT_USED )
       cur_crv.osc_circ_seg = cagdAddPolyline( circ_pnts, NUM_OSC_PNTS );
     else
-      cagdReusePolyline( cur_crv.osc_circ_seg, circ_pnts, NUM_OSC_PNTS );
+      cagdReusePolyline( cur_crv.osc_circ_seg, circ_pnts, NUM_OSC_PNTS );*/
 
     free( circ_pnts );
 
-    cagdRedraw();
+    //cagdRedraw();
   }
 
   return 0;

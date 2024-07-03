@@ -103,7 +103,7 @@ void draw_cur_crv( int num_pnts )
         //int x = 5; // dummy line for break point
       }
 
-      cagdAddPolyline( pnts, num_pnts ); // returns the polyline ID
+      //cagdAddPolyline( pnts, num_pnts ); // returns the polyline ID
       cagdRedraw();
     }
 
