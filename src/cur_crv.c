@@ -84,7 +84,7 @@ void draw_cur_crv( int num_pnts )
 
       for( int i = 0; i < num_pnts; ++i )
       {
-        frenet_t frenet;
+        // frenet_t frenet;
 
         CAGD_POINT pnt = { 0 };
         double param = cur_crv.domain[ 0 ] + jump * i;

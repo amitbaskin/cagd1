@@ -2,6 +2,8 @@
 
 #include "cagd.h"
 
+#define EPSILON 1e-9
+
 void copy_vec( const CAGD_POINT *in, CAGD_POINT *out );
 double vec_len( const CAGD_POINT *vec );
 void scale_vec( double scale, CAGD_POINT *vec );

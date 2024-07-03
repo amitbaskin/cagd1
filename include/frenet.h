@@ -4,11 +4,10 @@
 #include "cur_crv.h"
 
 
-typedef struct
+typedef struct frenet_t
 {
   CAGD_POINT pos;
   CAGD_POINT csys[ 3 ]; // T, N, B
-  CAGD_POINT frenet[ 3 ];
   double crvtr;
   double trsn;
 } frenet_t;

@@ -120,6 +120,7 @@
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">cagd.h</PrecompiledHeaderFile>
     </ClCompile>
     <ClCompile Include="src\color.c" />
+    <ClCompile Include="src\crvtr.c" />
     <ClCompile Include="src\cur_crv.c" />
     <ClCompile Include="src\frenet.c" />
     <ClCompile Include="src\segment.c">
@@ -136,6 +137,7 @@
   <ItemGroup>
     <ClInclude Include="include\cagd.h" />
     <ClInclude Include="include\color.h" />
+    <ClInclude Include="include\crvtr.h" />
     <ClInclude Include="include\cur_crv.h" />
     <ClInclude Include="include\frenet.h" />
     <ClInclude Include="include\expr2tree.h" />

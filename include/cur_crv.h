@@ -16,6 +16,7 @@ typedef struct
   e2t_expr_node *trees[ SPACE_DIM ][ DERIVATIVE_DEPTH ];
   double domain[ 2 ];
   int frenet_segs[ 3 ];
+  int osc_circ_seg;
 } crv_t;
 
 /*
@@ -25,13 +26,12 @@ typedef struct
   ----------------------
   y |  y' |  y'' |  y'''
   ----------------------
-  z |  z' |  z'' |  z'''
+  z |  z' |  z'a' |  z'''
 */
 
 crv_t cur_crv;
 
 void print_err( char *str );
-
 void eval_cur_crv( double param, int d_level, CAGD_POINT *out );
 void draw_cur_crv( int num_pnts );
 void clean_cur_crv();

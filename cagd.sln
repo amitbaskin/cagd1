@@ -6,8 +6,6 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "cagd", "cagd.vcxproj", "{C8
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "demo", "demo\demo.vcxproj", "{3D4B6F7F-9D8A-4BBB-9489-234CBFC451D4}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "exp2tree", "exp2tree\exp2tree.vcxproj", "{BD0A9875-C54E-4166-93C4-A9527B84C52A}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -28,12 +26,6 @@ Global
 		{3D4B6F7F-9D8A-4BBB-9489-234CBFC451D4}.Release|Win32.ActiveCfg = Release|Win32
 		{3D4B6F7F-9D8A-4BBB-9489-234CBFC451D4}.Release|Win32.Build.0 = Release|Win32
 		{3D4B6F7F-9D8A-4BBB-9489-234CBFC451D4}.Release|x64.ActiveCfg = Release|Win32
-		{BD0A9875-C54E-4166-93C4-A9527B84C52A}.Debug|Win32.ActiveCfg = Debug|Win32
-		{BD0A9875-C54E-4166-93C4-A9527B84C52A}.Debug|Win32.Build.0 = Debug|Win32
-		{BD0A9875-C54E-4166-93C4-A9527B84C52A}.Debug|x64.ActiveCfg = Debug|Win32
-		{BD0A9875-C54E-4166-93C4-A9527B84C52A}.Release|Win32.ActiveCfg = Release|Win32
-		{BD0A9875-C54E-4166-93C4-A9527B84C52A}.Release|Win32.Build.0 = Release|Win32
-		{BD0A9875-C54E-4166-93C4-A9527B84C52A}.Release|x64.ActiveCfg = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
