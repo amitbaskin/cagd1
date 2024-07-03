@@ -41,8 +41,10 @@ void clean_cur_crv()
 }
 
 
-void clear_frenet_segs()
+void clear_all_segs()
 {
+  cur_crv.osc_circ_seg = K_NOT_USED;
+
   for( int i = 0; i < 3; ++i )
     cur_crv.frenet_segs[ i ] = K_NOT_USED;
 }

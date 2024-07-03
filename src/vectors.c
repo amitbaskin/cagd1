@@ -1,6 +1,25 @@
 #include <stdio.h>
 #include <math.h>
+#include "vectors.h"
 #include "cur_crv.h"
+
+
+int scale_not_zero( double scale )
+{
+  return fabs( scale ) > EPSILON;
+}
+
+
+int vec_3d_not_zero( const CAGD_POINT *vec )
+{
+  int status = 1;
+
+  status = status && scale_not_zero( vec->x );
+  status = status && scale_not_zero( vec->y );
+  status = status && scale_not_zero( vec->z );
+
+  return status;
+}
 
 
 void copy_vec( const CAGD_POINT *in, CAGD_POINT *out )

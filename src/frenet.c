@@ -20,7 +20,7 @@ void calc_frenet( double param, frenet_t *frenet )
   CAGD_POINT d2_diff_d1;
 
   double tmp;
-  double scale;
+  double tmp2;
   double d1d1;
   double d1d2;
   double l_d1;
@@ -36,18 +36,21 @@ void calc_frenet( double param, frenet_t *frenet )
   eval_cur_crv( param, 1, &d1 );
   copy_vec( &d1, &frenet->csys[ 0 ] );
   l_d1 = vec_len( &d1 );
-  scale_vec( l_d1, &frenet->csys[ 0 ] );
+  tmp = scale_not_zero( l_d1 ) ? 1 / l_d1 : 0.0;
+  scale_vec( tmp, &frenet->csys[ 0 ] );
 
   // calc B
   eval_cur_crv( param, 2, &d2 );
   cross_vecs( &d1, &d2, &d1xd2 );
   copy_vec( &d1xd2, &frenet->csys[ 2 ] );
   l_d1xd2 = vec_len( &d1xd2 );
-  scale = l_d1xd2 != 0.0 ? 1 / l_d1xd2 : 0.0;
-  scale_vec( scale, &frenet->csys[ 2 ] );
+  tmp = scale_not_zero( l_d1xd2  ) ? 1 / l_d1xd2 : 0.0;
+  scale_vec( tmp, &frenet->csys[ 2 ] );
 
   // calc curvature
-  frenet->crvtr = l_d1xd2 / pow( l_d1, 3 );
+  tmp = scale_not_zero( l_d1xd2 ) ? 1 / l_d1xd2 : 0.0;
+  tmp = scale_not_zero( l_d1 ) ? 1 / pow( l_d1, 3 ) : 0.0;
+  frenet->crvtr = tmp * l_d1xd2;
 
   // calc d1d1_d2
   d1d1 = multiply_vecs( &d1, &d1 );
@@ -62,19 +65,19 @@ void calc_frenet( double param, frenet_t *frenet )
   // calc N
   diff_vecs( &d1d1_d2, &d1d2_d1, &d2_diff_d1 );
   tmp = l_d1 * l_d1xd2;
-  scale = tmp != 0.0 ? 1 / tmp : 0.0;
-  scale_vec( scale, &d2_diff_d1 );
+  tmp = scale_not_zero( tmp ) ? 1 / tmp : 0.0;
+  scale_vec( tmp, &d2_diff_d1 );
   l_d2_diff_d1 = vec_len( &d2_diff_d1 );
-  scale = l_d2_diff_d1 != 0.0 ? 1 / l_d2_diff_d1 : 0.0;
-  scale_vec( 1 / l_d2_diff_d1, &d2_diff_d1 );
+  tmp = scale_not_zero( l_d2_diff_d1 ) ? 1 / l_d2_diff_d1 : 0.0;
+  scale_vec( tmp, &d2_diff_d1 );
   copy_vec( &d2_diff_d1, &frenet->csys[ 1 ] );
 
   // calc torsion
   eval_cur_crv( param, 3, &d3 );
   d3_mul_d1xd2 = multiply_vecs( &d3, &d1xd2 );
   tmp = pow( l_d1xd2, 2 );
-  scale = tmp != 0 ? 1 / tmp : 0.0;
-  frenet->trsn = d3_mul_d1xd2 * scale;
+  tmp = scale_not_zero( tmp ) ? 1 / tmp : 0.0;
+  frenet->trsn = d3_mul_d1xd2 * tmp;
 }
 
 

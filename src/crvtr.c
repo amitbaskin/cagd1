@@ -33,15 +33,18 @@ int draw_osc_circle( double param, frenet_t *frenet )
   double cur_x = 0.0;
   double cur_y = radius;
 
-  if( fabs( radius ) > EPSILON && circ_pnts != NULL )
+  if( scale_not_zero( radius )              &&
+      vec_3d_not_zero( &frenet->csys[ 0 ] ) &&
+      vec_3d_not_zero( &frenet->csys[ 1 ] ) &&
+      circ_pnts != NULL )
   {
-    eval_cur_crv( param, 0.0, &crv_pnt );
+    eval_cur_crv( param, 0, &crv_pnt );
 
     copy_vec( &frenet->csys[ 1 ], &circ_vec );
     scale_vec( radius, &circ_vec );
     add_vecs( &crv_pnt, &frenet->csys[ 1 ], &center_pnt );
 
-    for( int i = 1; i < NUM_OSC_PNTS; ++i )
+    for( int i = 0; i < NUM_OSC_PNTS; ++i )
     {
       CAGD_POINT cur_tan;
       CAGD_POINT cur_normal;
@@ -49,7 +52,7 @@ int draw_osc_circle( double param, frenet_t *frenet )
 
       double cur_deg = i * deg;
 
-      rotate_xy( i * deg, &cur_x, &cur_x );
+      rotate_xy( i * deg, &cur_x, &cur_y );
 
       copy_vec( &frenet->csys[ 0 ], &cur_tan );
       scale_vec( cur_x, &cur_tan );

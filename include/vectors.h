@@ -4,6 +4,9 @@
 
 #define EPSILON 1e-9
 
+
+int scale_not_zero( double scale );
+int vec_3d_not_zero( const CAGD_POINT *vec );
 void copy_vec( const CAGD_POINT *in, CAGD_POINT *out );
 double vec_len( const CAGD_POINT *vec );
 void scale_vec( double scale, CAGD_POINT *vec );

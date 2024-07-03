@@ -386,7 +386,7 @@ int main(int argc, char *argv[])
   cagdRegisterCallback( CAGD_MENU, menu_callbacks, NULL );
 
   num_samples = NUM_SAMPS; // Default value
-  clear_frenet_segs();
+  clear_all_segs();
 
   cagdShowHelp();
   cagdMainLoop();
