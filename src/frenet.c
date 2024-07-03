@@ -110,8 +110,6 @@ void draw_frenet( double param, frenet_t *frenet )
     cagdReusePolyline( cur_crv.frenet_segs[ 2 ], B, 2 );
   }
 
-  //cagdRedraw();
-
   set_default_color();
 }
 
@@ -132,7 +130,7 @@ void frenet_anim_cb( int x, int y, PVOID userData )
 
   draw_osc_circle( param, &frenet );
 
-  //cagdRedraw();
+  cagdRedraw();
 
   frenet_anim_iteration++;
 }

@@ -65,18 +65,16 @@ int draw_osc_circle( double param, frenet_t *frenet )
 
       circ_pnts[ i ] = cur_pnt;
 
-      cagdAddPoint( &cur_pnt ); // temporary for debug
-      cagdRedraw(); // temporary for debug
+      //cagdAddPoint( &cur_pnt ); // temporary for debug
+      //cagdRedraw(); // temporary for debug
     }
 
-    /*if( cur_crv.osc_circ_seg == K_NOT_USED )
+    if( cur_crv.osc_circ_seg == K_NOT_USED )
       cur_crv.osc_circ_seg = cagdAddPolyline( circ_pnts, NUM_OSC_PNTS );
     else
-      cagdReusePolyline( cur_crv.osc_circ_seg, circ_pnts, NUM_OSC_PNTS );*/
+      cagdReusePolyline( cur_crv.osc_circ_seg, circ_pnts, NUM_OSC_PNTS );
 
     free( circ_pnts );
-
-    //cagdRedraw();
   }
 
   return 0;
