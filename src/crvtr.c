@@ -26,12 +26,10 @@ int draw_osc_circle( double param, frenet_t *frenet )
   CAGD_POINT center_pnt;
   CAGD_POINT circ_vec;
 
-  circ_pnts = ( CAGD_POINT * ) malloc( sizeof( CAGD_POINT ) * ( NUM_OSC_PNTS + 1 ) );
-  double deg = ( 360 / NUM_OSC_PNTS ) * ( M_PI / 180 );
+  circ_pnts = ( CAGD_POINT * ) malloc( sizeof( CAGD_POINT ) * ( NUM_OSC_PNTS + 2 ) );
+  double deg = ( 2 * M_PI / NUM_OSC_PNTS );
 
   double radius = scale_not_zero( frenet->crvtr ) ? 1 / frenet->crvtr : 0.0;
-  double cur_x = 0.0;
-  double cur_y = -radius;
 
   if( scale_not_zero( radius )              &&
       vec_3d_not_zero( &frenet->csys[ 0 ] ) &&
@@ -39,18 +37,20 @@ int draw_osc_circle( double param, frenet_t *frenet )
       circ_pnts != NULL )
   {
     eval_cur_crv( param, 0, &crv_pnt );
-    cagdAddPoint( &crv_pnt );
+    //cagdAddPoint( &crv_pnt );
     copy_vec( &frenet->csys[ 1 ], &circ_vec );
     scale_vec( radius, &circ_vec );
     add_vecs( &crv_pnt, &circ_vec, &center_pnt );
 
-    for( int i = 0; i < NUM_OSC_PNTS; ++i )
+    for( int i = 0; i < NUM_OSC_PNTS + 1; ++i )
     {
       CAGD_POINT cur_tan;
       CAGD_POINT cur_normal;
       CAGD_POINT cur_pnt;
 
       double cur_deg = i * deg;
+      double cur_x   = 0.0;
+      double cur_y   = -radius;
 
       rotate_xy( i * deg, &cur_x, &cur_y );
 
@@ -69,10 +69,12 @@ int draw_osc_circle( double param, frenet_t *frenet )
       //cagdRedraw(); // temporary for debug
     }
 
+    set_osc_color();
+
     if( cur_crv.osc_circ_seg == K_NOT_USED )
-      cur_crv.osc_circ_seg = cagdAddPolyline( circ_pnts, NUM_OSC_PNTS );
+      cur_crv.osc_circ_seg = cagdAddPolyline( circ_pnts, NUM_OSC_PNTS + 1 );
     else
-      cagdReusePolyline( cur_crv.osc_circ_seg, circ_pnts, NUM_OSC_PNTS );
+      cagdReusePolyline( cur_crv.osc_circ_seg, circ_pnts, NUM_OSC_PNTS + 1 );
 
     free( circ_pnts );
   }

@@ -41,7 +41,7 @@ void clean_cur_crv()
 }
 
 
-void clear_all_segs()
+void init_all_segs()
 {
   cur_crv.osc_circ_seg = K_NOT_USED;
 
@@ -50,8 +50,11 @@ void clear_all_segs()
 }
 
 
-void free_frenet()
+void free_all_segs()
 {
+  cagdFreeSegment( cur_crv.osc_circ_seg );
+  cur_crv.osc_circ_seg = K_NOT_USED;
+
   for( int i = 0; i < 3; ++i )
   {
     cagdFreeSegment( cur_crv.frenet_segs[ i ] );
@@ -110,6 +113,6 @@ void draw_cur_crv( int num_pnts )
     free( pnts );
   }
 
-  free_frenet();
+  free_all_segs();
   cagdRedraw();
 }

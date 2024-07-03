@@ -335,7 +335,7 @@ void menu_callbacks( int id, int unUsed, PVOID userData )
     if( frenet_anim_running == 1 )
     {
       cagdRegisterCallback( CAGD_TIMER, NULL, NULL );
-      free_frenet();
+      free_all_segs();
       cagdRedraw();
       reset_frenet_anim_iteration();
       frenet_anim_running = 0;
@@ -386,7 +386,7 @@ int main(int argc, char *argv[])
   cagdRegisterCallback( CAGD_MENU, menu_callbacks, NULL );
 
   num_samples = NUM_SAMPS; // Default value
-  clear_all_segs();
+  init_all_segs();
 
   cagdShowHelp();
   cagdMainLoop();

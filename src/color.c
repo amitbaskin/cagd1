@@ -23,3 +23,10 @@ void set_bi_color()
 {
   cagdSetColor( 0, 0, 255 );
 }
+
+
+void set_osc_color()
+{
+  cagdSetColor( 100, 100, 100 );
+}
+
