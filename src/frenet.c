@@ -6,6 +6,7 @@
 
 
 extern int frenet_anim_smoothness;
+extern int frenet_anim_running;
 
 int frenet_anim_iteration = 0;
 
@@ -168,4 +169,22 @@ void frenet_anim_cb( int x, int y, PVOID userData )
 void reset_frenet_anim_iteration()
 {
   frenet_anim_iteration = 0;
+}
+
+/******************************************************************************
+* stop_frenet_animation
+******************************************************************************/
+void stop_frenet_animation()
+{
+  cagdRegisterCallback( CAGD_TIMER, NULL, NULL );
+
+  for( int i = 0; i < 3; ++i )
+  {
+    cagdFreeSegment( cur_crv.frenet_segs[i] );
+    cur_crv.frenet_segs[i] = K_NOT_USED;
+  }
+
+  cagdRedraw();
+  reset_frenet_anim_iteration();
+  frenet_anim_running = 0;
 }

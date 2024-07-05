@@ -334,11 +334,7 @@ void menu_callbacks( int id, int unUsed, PVOID userData )
   case CAGD_FRENET_ANIM_STOP:
     if( frenet_anim_running == 1 )
     {
-      cagdRegisterCallback( CAGD_TIMER, NULL, NULL );
-      free_all_segs();
-      cagdRedraw();
-      reset_frenet_anim_iteration();
-      frenet_anim_running = 0;
+      stop_frenet_animation();
     }
     break;
 
@@ -371,25 +367,70 @@ void menu_callbacks( int id, int unUsed, PVOID userData )
   }
 }
 
+void left_mouse_click_cb( int x, int y, PVOID userData )
+{
+  CAGD_POINT p = { 0.0,0.0,0.0 };
+  cagdHideSegment( myText = cagdAddText( &p, "" ) );
+
+  UINT id;
+  int v;
+  for( cagdPick( x, y ); id = cagdPickNext();)
+    if( cagdGetSegmentType( id ) == CAGD_SEGMENT_POLYLINE )
+      break;
+  if( id && id == cur_crv.my_seg /* actually picked cur_crv and not other curve*/ )
+  {
+    if( v = cagdGetNearestVertex( id, x, y ) )
+    {
+      cagdGetVertex( id, --v, &p );
+      double param = get_param_from_segment_number( v );
+
+      if( frenet_anim_running == 1 )
+      {
+        stop_frenet_animation();
+      }
+
+      frenet_t frenet;
+      calc_frenet( param, &frenet );
+      draw_frenet( param, &frenet );
+    }
+  }
+  cagdRedraw();
+}
+
 int main(int argc, char *argv[])
 {
   HMENU hMenu;
   cagdBegin( "CAGD", 512, 512 );
-  HMENU op_menu = CreatePopupMenu();
-  HMENU fre_menu = CreatePopupMenu();
+  HMENU op_menu = CreatePopupMenu(); // options
+  HMENU fre_menu = CreatePopupMenu(); // frenet
+  HMENU lmb_menu = CreatePopupMenu(); // lmb sub menu
+
+  // options
   AppendMenu( op_menu, MF_STRING, CAGD_SEGS, "Refinement" );
   AppendMenu( op_menu, MF_STRING, CAGD_FRENET_ANIM_SPEED, "Animation Speed" );
+  AppendMenu( op_menu, MF_STRING | MF_POPUP, (UINT_PTR)lmb_menu, "Left Mouse button" );
+
+  // frenet
   AppendMenu( fre_menu, MF_STRING, CAGD_FRENET_ANIM_START, "Start Frenet Animation" );
   AppendMenu( fre_menu, MF_STRING, CAGD_FRENET_ANIM_STOP, "Stop Frenet Animation" );
+
+  // lmb sub menu
+  AppendMenu( lmb_menu, MF_STRING | MF_CHECKED, 0/*TODO*/, "Show Frenet Frame" );
+  AppendMenu( lmb_menu, MF_STRING, 0/*TODO*/, "Show Osculating Circle");
+  AppendMenu( lmb_menu, MF_STRING, 0/*TODO*/, "Show Torsion Helix" );
+
+  // adding to cagd
   cagdAppendMenu( fre_menu, "Frenet" );
   cagdAppendMenu( op_menu, "Options" );
   cagdRegisterCallback( CAGD_MENU, menu_callbacks, NULL );
+
+  cagdRegisterCallback( CAGD_LBUTTONUP, left_mouse_click_cb, NULL );
 
   num_samples = NUM_SAMPS; // Default value
   init_all_segs();
 
   cagdShowHelp();
   cagdMainLoop();
-
+  
   return 0;
 }

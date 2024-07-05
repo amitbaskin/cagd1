@@ -65,4 +65,6 @@ void eval_cur_crv( double param, int d_level, CAGD_POINT *rp_out );
 
 int draw_cur_crv( int num_pnts );
 
+double get_param_from_segment_number( int seg_num );
+
 void clean_cur_crv();

@@ -5,6 +5,8 @@
 #include "evolute_n_offset.h"
 #include "color.h"
 
+extern int num_samples;
+
 
 /******************************************************************************
 * print_err
@@ -156,4 +158,19 @@ int draw_cur_crv( int num_pnts )
   cagdRedraw();
 
   return is_error;
+}
+
+/******************************************************************************
+* get_param_from_segment_number
+******************************************************************************/
+double get_param_from_segment_number( int seg_num )
+{
+  double domain_size = cur_crv.domain[1] - cur_crv.domain[0];
+  double seg_size = domain_size / (double)num_samples;
+  double param = cur_crv.domain[0] + seg_size * (double)seg_num;
+
+  if( param > cur_crv.domain[1] )
+    param = cur_crv.domain[1];
+
+  return param;
 }
