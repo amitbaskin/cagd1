@@ -122,9 +122,8 @@
     <ClCompile Include="src\color.c" />
     <ClCompile Include="src\crvtr.c" />
     <ClCompile Include="src\cur_crv.c" />
-    <ClCompile Include="src\evolute.c" />
+    <ClCompile Include="src\evolute_n_offset.c" />
     <ClCompile Include="src\frenet.c" />
-    <ClCompile Include="src\offset.c" />
     <ClCompile Include="src\segment.c">
       <Optimization Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Disabled</Optimization>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
@@ -142,11 +141,10 @@
     <ClInclude Include="include\color.h" />
     <ClInclude Include="include\crvtr.h" />
     <ClInclude Include="include\cur_crv.h" />
-    <ClInclude Include="include\evolute.h" />
+    <ClInclude Include="include\evolute_n_offset.h" />
     <ClInclude Include="include\frenet.h" />
     <ClInclude Include="include\expr2tree.h" />
     <ClInclude Include="include\load_cur_crv.h" />
-    <ClInclude Include="include\offset.h" />
     <ClInclude Include="include\options.h" />
     <ClInclude Include="include\resource.h" />
     <ClInclude Include="include\trsn.h" />

@@ -8,6 +8,7 @@
 #define DERIVATIVE_LEVEL 4
 #define K_NOT_USED      -1
 #define NUM_SAMPS        200
+#define DEFAULT_OFFSET  -0.4
 
 
 enum derivative_level
@@ -30,9 +31,13 @@ enum trees
 typedef struct
 {
   int            defined;
+  int            draw_evolute;
+  int            draw_offset;
+  double         offset;
   e2t_expr_node *trees[ SPACE_DIM ][ DERIVATIVE_LEVEL ];
   double         domain[ 2 ];
   int            frenet_segs[ 3 ];
+  int            my_seg;
   int            osc_circ_seg;
   int            helix_seg;
   int            evolute_seg;
@@ -52,6 +57,7 @@ typedef struct
 crv_t cur_crv;
 
 
+void free_all_segs();
 
 void print_err( char *p_str );
 

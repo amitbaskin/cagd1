@@ -59,9 +59,6 @@ int draw_helix( double param, frenet_t *p_frenet )
                     &pnt );
 
         pnts[ i ] = pnt;
-
-        //cagdAddPoint( &pnt ); // temporary for debug
-        //cagdRedraw(); // temporary for debug
       }
 
       set_helix_color();

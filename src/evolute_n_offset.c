@@ -1,16 +1,17 @@
 #define _USE_MATH_DEFINES
 #include <math.h>
 
-#include "trsn.h"
 #include "vectors.h"
 #include "frenet.h"
 #include "crvtr.h"
 
 
 /******************************************************************************
-* draw_evolute
+* draw_other_crv
 ******************************************************************************/
-int draw_evolute( int num_pnts )
+int draw_other_crv( int     num_pnts,
+                    double *p_radius,
+                    int    *p_seg_id )
 {
   int is_error = 0;
 
@@ -38,25 +39,21 @@ int draw_evolute( int num_pnts )
       for( int i = 0; i < num_pnts + 1; ++i )
       {
         crvtr_data_t crvtr_data;
-        frenet_t frenet;
+        frenet_t     frenet;
 
         double param = cur_crv.domain[ 0 ] + jump * i;
 
         calc_frenet( param, &frenet );
 
-        get_crvtr_data( param, &frenet, &crvtr_data );
+        get_crvtr_data( param, p_radius , &frenet, &crvtr_data );
 
         pnts[ i ] = crvtr_data.center;
-        //cagdAddPoint( &crvtr_data.center ); // temporary for debug
-        //cagdRedraw(); // temporary for debug
       }
 
-      set_evolute_color();
-
-      if( cur_crv.evolute_seg == K_NOT_USED )
-        cur_crv.evolute_seg = cagdAddPolyline( pnts, num_pnts + 1 );
+      if( *p_seg_id == K_NOT_USED )
+        *p_seg_id = cagdAddPolyline( pnts, num_pnts + 1 );
       else
-        cagdReusePolyline( cur_crv.evolute_seg, pnts, num_pnts + 1 );
+        cagdReusePolyline( *p_seg_id, pnts, num_pnts + 1 );
     }
 
     free( pnts );

@@ -48,10 +48,7 @@
     <ClCompile Include="src\trsn.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\evolute.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\offset.c">
+    <ClCompile Include="src\evolute_n_offset.c">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -89,10 +86,7 @@
     <ClInclude Include="include\trsn.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\evolute.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\offset.h">
+    <ClInclude Include="include\evolute_n_offset.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

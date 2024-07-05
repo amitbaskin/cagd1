@@ -2,7 +2,8 @@
 #include "cagd.h"
 #include "vectors.h"
 #include "frenet.h"
-#include "evolute.h"
+#include "evolute_n_offset.h"
+#include "color.h"
 
 
 /******************************************************************************
@@ -30,12 +31,40 @@ void eval_cur_crv( double param, int d_level, CAGD_POINT *rp_out )
 
 
 /******************************************************************************
+* free_all_segs
+******************************************************************************/
+void free_all_segs()
+{
+  cagdFreeSegment( cur_crv.my_seg );
+  cur_crv.my_seg = K_NOT_USED;
+
+  cagdFreeSegment( cur_crv.osc_circ_seg );
+  cur_crv.osc_circ_seg = K_NOT_USED;
+
+  cagdFreeSegment( cur_crv.helix_seg );
+  cur_crv.helix_seg = K_NOT_USED;
+
+  cagdFreeSegment( cur_crv.evolute_seg );
+  cur_crv.evolute_seg = K_NOT_USED;
+
+  cagdFreeSegment( cur_crv.offset_seg );
+  cur_crv.offset_seg = K_NOT_USED;
+
+  for( int i = 0; i < 3; ++i )
+  {
+    cagdFreeSegment( cur_crv.frenet_segs[ i ] );
+    cur_crv.frenet_segs[ i ] = K_NOT_USED;
+  }
+}
+
+
+/******************************************************************************
 * clean_cur_crv
 ******************************************************************************/
 void clean_cur_crv()
 {
   system( "cls" );
-  cagdFreeAllSegments();
+  free_all_segs();
   cagdRedraw();
   cur_crv.defined = 0;
 
@@ -55,6 +84,7 @@ void clean_cur_crv()
 ******************************************************************************/
 void init_all_segs()
 {
+  cur_crv.my_seg       = K_NOT_USED;
   cur_crv.osc_circ_seg = K_NOT_USED;
   cur_crv.helix_seg    = K_NOT_USED;
   cur_crv.evolute_seg  = K_NOT_USED;
@@ -62,31 +92,6 @@ void init_all_segs()
 
   for( int i = 0; i < 3; ++i )
     cur_crv.frenet_segs[ i ] = K_NOT_USED;
-}
-
-
-/******************************************************************************
-* free_all_segs
-******************************************************************************/
-void free_all_segs()
-{
-  cagdFreeSegment( cur_crv.osc_circ_seg );
-  cur_crv.osc_circ_seg = K_NOT_USED;
-
-  cagdFreeSegment( cur_crv.helix_seg );
-  cur_crv.helix_seg = K_NOT_USED;
-
-  cagdFreeSegment( cur_crv.evolute_seg );
-  cur_crv.evolute_seg = K_NOT_USED;
-
-  cagdFreeSegment( cur_crv.offset_seg );
-  cur_crv.offset_seg = K_NOT_USED;
-
-  for( int i = 0; i < 3; ++i )
-  {
-    cagdFreeSegment( cur_crv.frenet_segs[ i ] );
-    cur_crv.frenet_segs[ i ] = K_NOT_USED;
-  }
 }
 
 
@@ -125,20 +130,28 @@ int draw_cur_crv( int num_pnts )
 
         eval_cur_crv( param, POSITION, &pnt );
         pnts[ i ] = pnt;
-
-        // printf( "param: %f\n", param );
-        //cagdAddPoint( &pnt ); // temporary for debug
-        //cagdRedraw(); // temporary for debug
       }
 
-      cagdAddPolyline( pnts, num_pnts + 1 );
+      cur_crv.my_seg = cagdAddPolyline( pnts, num_pnts + 1 );
       cagdRedraw();
     }
 
     free( pnts );
   }
 
-  draw_evolute( num_pnts );
+  if( cur_crv.draw_evolute )
+  {
+    set_evolute_color();
+    draw_other_crv( num_pnts, NULL, &cur_crv.evolute_seg );
+  }
+
+  if( cur_crv.draw_offset )
+  {
+    set_offset_color();
+    draw_other_crv( num_pnts, &cur_crv.offset, &cur_crv.offset_seg );
+  }
+
+  set_default_color();
 
   cagdRedraw();
 

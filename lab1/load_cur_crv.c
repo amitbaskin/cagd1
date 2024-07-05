@@ -67,11 +67,14 @@ init_cur_crv( char   variables_string[ SPACE_DIM ][ MAX_LINE_LENGTH ],
               double tmin,
               double tmax )
 {
-  int is_error = 0;
+  int is_error = FALSE;
 
   e2t_expr_node *tree = NULL;
 
-  cur_crv.defined = 1;
+  cur_crv.defined      = TRUE;
+  cur_crv.draw_evolute = TRUE;
+  cur_crv.draw_offset  = TRUE;
+  cur_crv.offset       = DEFAULT_OFFSET;
 
   cur_crv.domain[ 0 ] = tmin;
   cur_crv.domain[ 1 ] = tmax;

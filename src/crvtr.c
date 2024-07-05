@@ -34,11 +34,13 @@ static void eval_circ( double            param,
 * get_crvtr_data
 ******************************************************************************/
 void get_crvtr_data( double        param,
+                     double       *p_radius,
                      frenet_t     *p_frenet,
                      crvtr_data_t *rp_crvtr_data )
 {
-  rp_crvtr_data->radius = scale_not_zero( p_frenet->crvtr ) ?
-                           1 / p_frenet->crvtr : 0.0;
+  rp_crvtr_data->radius = p_radius != NULL ? *p_radius :
+                          scale_not_zero( p_frenet->crvtr ) ?
+                          1 / p_frenet->crvtr : 0.0;
 
   eval_cur_crv( param, POSITION, &rp_crvtr_data->crv_pos );
   copy_vec( &p_frenet->csys[ NN ], &rp_crvtr_data->vec );
@@ -72,7 +74,7 @@ int draw_osc_circle( double param, frenet_t *p_frenet )
   {
     crvtr_data_t crvtr_data;
 
-    get_crvtr_data( param, p_frenet, &crvtr_data );
+    get_crvtr_data( param, &radius, p_frenet, &crvtr_data );
 
     double jump = ( double ) 1 / NUM_OSC_PNTS;
 
@@ -92,9 +94,6 @@ int draw_osc_circle( double param, frenet_t *p_frenet )
                  &pnt );
 
       pnts[ i ] = pnt;
-
-      //cagdAddPoint( &pnt ); // temporary for debug
-      //cagdRedraw(); // temporary for debug
     }
 
     set_circ_color();

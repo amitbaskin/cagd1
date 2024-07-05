@@ -14,6 +14,28 @@ int scale_not_zero( double scale )
 
 
 /******************************************************************************
+* double_cmp
+******************************************************************************/
+int double_cmp( double scale_1, double scale_2 )
+{
+  double diff = scale_1 - scale_2;
+
+  int is_zero = !scale_not_zero( diff );
+
+  return is_zero ? 0 : diff > EPSILON ? 1 : -1;
+}
+
+
+/******************************************************************************
+* is_scale_initialized
+******************************************************************************/
+int is_scale_initialized( double scale )
+{
+  return double_cmp( scale, -HUGE_DOUBLE );
+}
+
+
+/******************************************************************************
 * vec_not_zero
 ******************************************************************************/
 int vec_not_zero( const CAGD_POINT *p_vec )

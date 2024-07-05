@@ -15,6 +15,7 @@ typedef struct
 #define NUM_OSC_PNTS 100
 
 void get_crvtr_data( double        param,
+                     double       *p_radius,
                      frenet_t     *p_frenet,
                      crvtr_data_t *rp_crvtr_data );
 

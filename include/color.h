@@ -14,3 +14,5 @@ void set_bi_color();
 void set_circ_color();
 
 void set_evolute_color();
+
+void set_offset_color();

@@ -2,10 +2,14 @@
 
 #include "cagd.h"
 
-#define EPSILON 1e-9
+#define EPSILON        1e-9
+#define HUGE_DOUBLE    1e9
+#define DEFAULT_DOUBLE -HUGE_DOUBLE
 
 
 int scale_not_zero( double scale );
+
+int double_cmp( double scale_1, double scale_2 );
 
 int vec_not_zero( const CAGD_POINT *p_vec );
 
