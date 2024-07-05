@@ -51,6 +51,9 @@
     <ClCompile Include="src\evolute_n_offset.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\circle.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\cagd.h">
@@ -87,6 +90,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\evolute_n_offset.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\circle.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

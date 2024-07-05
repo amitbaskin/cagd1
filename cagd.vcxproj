@@ -119,6 +119,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Use</PrecompiledHeader>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">cagd.h</PrecompiledHeaderFile>
     </ClCompile>
+    <ClCompile Include="src\circle.c" />
     <ClCompile Include="src\color.c" />
     <ClCompile Include="src\crvtr.c" />
     <ClCompile Include="src\cur_crv.c" />
@@ -138,6 +139,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\cagd.h" />
+    <ClInclude Include="include\circle.h" />
     <ClInclude Include="include\color.h" />
     <ClInclude Include="include\crvtr.h" />
     <ClInclude Include="include\cur_crv.h" />

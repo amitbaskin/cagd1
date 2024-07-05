@@ -15,6 +15,7 @@ typedef struct frenet_t
 {
   CAGD_POINT pos;
   CAGD_POINT csys[ 3 ]; // T, N, B
+  CAGD_POINT sphere_vec;
   double crvtr;
   double trsn;
 } frenet_t;

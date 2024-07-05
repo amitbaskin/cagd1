@@ -87,6 +87,8 @@ void calc_frenet( double param, frenet_t *frenet )
   tmp = scale_not_zero( l_d1xd2 ) ? 1 / tmp : 0.0;
   frenet->trsn = d3_mul_d1xd2 * tmp;
 
+  // calc sphere vec
+
   printf( "torsion: %f\n\n", frenet->crvtr );
 }
 
