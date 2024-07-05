@@ -26,6 +26,7 @@ typedef struct
   double domain[ 2 ];
   int frenet_segs[ 3 ];
   int osc_circ_seg;
+  int helix_seg;
 } crv_t;
 
 /*

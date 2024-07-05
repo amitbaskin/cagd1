@@ -25,8 +25,13 @@ void set_bi_color()
 }
 
 
-void set_osc_color()
+void set_circ_color()
 {
-  cagdSetColor( 100, 100, 100 );
+  cagdSetColor( 0, 255, 255 );
 }
 
+
+void set_helix_color()
+{
+  cagdSetColor( 255, 0, 255 );
+}

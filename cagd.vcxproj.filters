@@ -45,6 +45,9 @@
     <ClCompile Include="src\crvtr.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\trsn.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\cagd.h">
@@ -75,6 +78,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\crvtr.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\trsn.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

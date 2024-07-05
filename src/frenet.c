@@ -2,6 +2,7 @@
 #include "vectors.h"
 #include "color.h"
 #include "crvtr.h"
+#include "trsn.h"
 
 
 extern int frenet_anim_smoothness;
@@ -75,7 +76,7 @@ void calc_frenet( double param, frenet_t *frenet )
   eval_cur_crv( param, JERK, &d3 );
   d3_mul_d1xd2 = multiply_vecs( &d3, &d1xd2 );
   tmp = pow( l_d1xd2, 2 );
-  tmp = scale_not_zero( tmp ) ? 1 / tmp : 0.0;
+  tmp = scale_not_zero( l_d1xd2 ) ? 1 / tmp : 0.0;
   frenet->trsn = d3_mul_d1xd2 * tmp;
 }
 
@@ -128,6 +129,10 @@ void frenet_anim_cb( int x, int y, PVOID userData )
   draw_frenet( param, &frenet );
 
   draw_osc_circle( param, &frenet );
+
+  draw_helix( param, &frenet );
+
+  set_default_color();
 
   cagdRedraw();
 
