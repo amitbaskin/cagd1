@@ -9,6 +9,10 @@
 
 int scale_not_zero( double scale );
 
+double get_scale_inv_or_zero( double scale );
+
+int scale_div_vec( double denom, CAGD_POINT *rp_out );
+
 int double_cmp( double scale_1, double scale_2 );
 
 int vec_not_zero( const CAGD_POINT *p_vec );

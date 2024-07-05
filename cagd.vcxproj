@@ -134,6 +134,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">cagd.h</PrecompiledHeaderFile>
     </ClCompile>
+    <ClCompile Include="src\sphere.c" />
     <ClCompile Include="src\trsn.c" />
     <ClCompile Include="src\vectors.c" />
   </ItemGroup>
@@ -149,6 +150,7 @@
     <ClInclude Include="include\load_cur_crv.h" />
     <ClInclude Include="include\options.h" />
     <ClInclude Include="include\resource.h" />
+    <ClInclude Include="include\sphere.h" />
     <ClInclude Include="include\trsn.h" />
     <ClInclude Include="include\vectors.h" />
   </ItemGroup>

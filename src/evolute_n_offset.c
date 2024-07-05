@@ -46,7 +46,7 @@ int draw_other_crv( int     num_pnts,
 
         calc_frenet( param, &frenet );
 
-        get_circle_data( param, p_radius, &frenet, &crvtr_data );
+        get_circle_data( param, p_radius, NULL, &frenet, &crvtr_data );
 
         pnts[ i ] = crvtr_data.center;
       }

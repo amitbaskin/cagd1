@@ -43,20 +43,18 @@ void calc_frenet( double param, frenet_t *frenet )
   eval_cur_crv( param, VELOCITY, &d1 );
   copy_vec( &d1, &frenet->csys[ 0 ] );
   l_d1 = vec_len( &d1 );
-  tmp = scale_not_zero( l_d1 ) ? 1 / l_d1 : 0.0;
-  scale_vec( tmp, &frenet->csys[ 0 ] );
+  scale_div_vec( l_d1, &frenet->csys[ 0 ] );
 
   // calc B
   eval_cur_crv( param, ACCELERATION, &d2 );
   cross_vecs( &d1, &d2, &d1xd2 );
   copy_vec( &d1xd2, &frenet->csys[ 2 ] );
   l_d1xd2 = vec_len( &d1xd2 );
-  tmp = scale_not_zero( l_d1xd2  ) ? 1 / l_d1xd2 : 0.0;
-  scale_vec( tmp, &frenet->csys[ 2 ] );
+  scale_div_vec( l_d1xd2, &frenet->csys[ 2 ] );
 
   // calc curvature
   tmp = pow( l_d1, 3 );
-  tmp = scale_not_zero( l_d1 ) ? 1 / tmp : 0.0;
+  tmp = get_scale_inv_or_zero( tmp );
   frenet->crvtr = tmp * l_d1xd2;
 
   printf( "curvature: %f\n", frenet->crvtr );
@@ -74,18 +72,16 @@ void calc_frenet( double param, frenet_t *frenet )
   // calc N
   diff_vecs( &d1d1_d2, &d1d2_d1, &d2_diff_d1 );
   tmp = l_d1 * l_d1xd2;
-  tmp = scale_not_zero( tmp ) ? 1 / tmp : 0.0;
-  scale_vec( tmp, &d2_diff_d1 );
+  scale_div_vec( l_d1 * l_d1xd2, &d2_diff_d1 );
   l_d2_diff_d1 = vec_len( &d2_diff_d1 );
-  tmp = scale_not_zero( l_d2_diff_d1 ) ? 1 / l_d2_diff_d1 : 0.0;
-  scale_vec( tmp, &d2_diff_d1 );
+  scale_div_vec( l_d2_diff_d1, &d2_diff_d1 );
   copy_vec( &d2_diff_d1, &frenet->csys[ 1 ] );
 
   // calc torsion
   eval_cur_crv( param, JERK, &d3 );
   d3_mul_d1xd2 = multiply_vecs( &d3, &d1xd2 );
   tmp = pow( l_d1xd2, 2 );
-  tmp = scale_not_zero( l_d1xd2 ) ? 1 / tmp : 0.0;
+  tmp = get_scale_inv_or_zero( tmp );
   frenet->trsn = d3_mul_d1xd2 * tmp;
 
   // calc sphere vec

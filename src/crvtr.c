@@ -17,8 +17,7 @@ int draw_osc_circle( double param, frenet_t *p_frenet )
   CAGD_POINT *pnts =
     ( CAGD_POINT * ) malloc( sizeof( CAGD_POINT ) * ( NUM_OSC_PNTS + 2 ) );
 
-  double radius = scale_not_zero( p_frenet->crvtr ) ?
-                  1 / p_frenet->crvtr : 0.0;
+  double radius = get_scale_inv_or_zero( p_frenet->crvtr );
 
   ok = scale_not_zero( radius )               &&
        vec_not_zero( &p_frenet->csys[ TT ] ) &&
@@ -29,7 +28,7 @@ int draw_osc_circle( double param, frenet_t *p_frenet )
   {
     circle_data_t crvtr_data;
 
-    get_circle_data( param, &radius, p_frenet, &crvtr_data );
+    get_circle_data( param, &radius, NULL, p_frenet, &crvtr_data );
 
     double jump = ( double ) 1 / NUM_OSC_PNTS;
 
