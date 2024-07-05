@@ -36,7 +36,7 @@ int draw_osc_circle( double param, frenet_t *frenet )
       vec_3d_not_zero( &frenet->csys[ 1 ] ) &&
       circ_pnts != NULL )
   {
-    eval_cur_crv( param, 0, &crv_pnt );
+    eval_cur_crv( param, POSITION, &crv_pnt );
     //cagdAddPoint( &crv_pnt );
     copy_vec( &frenet->csys[ 1 ], &circ_vec );
     scale_vec( radius, &circ_vec );

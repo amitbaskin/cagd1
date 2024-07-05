@@ -32,7 +32,7 @@ void clean_cur_crv()
 
   for( int i = 0; i < SPACE_DIM; ++i )
   {
-    for( int j = 0; j < DERIVATIVE_DEPTH; ++j )
+    for( int j = 0; j < DERIVATIVE_LEVEL; ++j )
     {
       e2t_freetree( cur_crv.trees[ i ][ j ] );
       cur_crv.trees[ i ][ j ] = NULL;
@@ -95,7 +95,7 @@ void draw_cur_crv( int num_pnts )
         double param = cur_crv.domain[ 0 ] + jump * i;
         printf( "%f\n", param );
 
-        eval_cur_crv( param, 0, &pnt );
+        eval_cur_crv( param, POSITION, &pnt );
         pnts[ i ] = pnt;
 
         //cagdAddPoint( &pnt ); // temporary for debug

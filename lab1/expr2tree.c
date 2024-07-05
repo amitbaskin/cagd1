@@ -64,7 +64,7 @@
 #define SIN         18
 #define SQR         19
 #define SQRT        20
-#define TAN         21
+#define VELOCITY         21
 
 #define PLUS        30 /* Operators */
 #define MINUS       31
@@ -140,7 +140,7 @@ static void make_upper(char s[])
 * EXPR    ::= EXPR    |  EXPR * EXPR    |  EXPR / EXPR                       *
 * EXPR    ::= EXPR    |  EXPR ^ EXPR                                         *
 * EXPR    ::= NUMBER  |  -EXPR          |  (EXPR)        |  FUNCTION         *
-* FUCTION ::= SIN(EXPR)    | COS(EXPR)    | TAN(EXPR)                        *
+* FUCTION ::= SIN(EXPR)    | COS(EXPR)    | VELOCITY(EXPR)                        *
 *             ARCSIN(EXPR) | ARCCOS(EXPR) | ARCTAN(EXPR)                     *
 *             SQRT(EXPR)   | SQR(EXPR)    | ABS(EXPR)                        *
 *             LN(EXPR)     | LOG(EXPR)    | EXP(EXPR)                        *
@@ -224,7 +224,7 @@ static e2t_expr_node *operator_precedence(const char s[], int *i)
 			    case SIN:
 			    case SQR:
 			    case SQRT:
-			    case TAN:
+			    case VELOCITY:
                                 free(stack[temp1]); /* Free the open paran. */
 				stack[stack_pointer] -> node_kind -= 1000;
 				stack[temp1-1] -> node_kind += 1000;
@@ -360,7 +360,7 @@ static int test_preceeding(int token1, int token2)
 	case SIN:
 	case SQR:
 	case SQRT:
-	case TAN:        preced1 =100; break;
+	case VELOCITY:        preced1 =100; break;
 	case NUMBER:
 	case PARAMETER:  preced1 =120; break;
 	case PLUS:
@@ -387,7 +387,7 @@ static int test_preceeding(int token1, int token2)
 	case SIN:
 	case SQR:
 	case SQRT:
-	case TAN:        preced2 = 90; break;
+	case VELOCITY:        preced2 = 90; break;
 	case NUMBER:
 	case PARAMETER:  preced2 =110; break;
 	case PLUS:
@@ -483,7 +483,7 @@ static int get_token(const char s[], int *i, double *data)
                    {
                    case SIN : glbl_last_token = ARCSIN; return ARCSIN;
                    case COS : glbl_last_token = ARCCOS; return ARCCOS;
-                   case TAN : glbl_last_token = ARCTAN; return ARCTAN;
+                   case VELOCITY : glbl_last_token = ARCTAN; return ARCTAN;
                    default :  e2t_parsing_error = E2T_UNDEF_TOKEN_ERROR;
                               return TOKENERROR;
                    }
@@ -552,8 +552,8 @@ static int get_token(const char s[], int *i, double *data)
                }
     case 'T' : if ((s[*i]=='A')&&(s[*i+1]=='N')) {
                    (*i)+=2;
-                   glbl_last_token = TAN;
-                   return TAN;
+                   glbl_last_token = VELOCITY;
+                   return VELOCITY;
                }
                else return TOKENERROR;
     default :  e2t_parsing_error = E2T_UNDEF_TOKEN_ERROR;
@@ -637,7 +637,7 @@ static void localprinttree(const e2t_expr_node *root, int level, char *str)
                    level = 0;        /* Paranthesis are opened */
                    closeflag = TRUE; /* must close paranthesis */
                    break;
-    case TAN :     (void) strcat(str, "tan(");
+    case VELOCITY :     (void) strcat(str, "tan(");
                    level = 0;        /* Paranthesis are opened */
                    closeflag = TRUE; /* must close paranthesis */
                    break;
@@ -715,7 +715,7 @@ e2t_expr_node *e2t_copytree(const e2t_expr_node *root)
     case SIN :
     case SQR :
     case SQRT :
-    case TAN : node -> node_kind = root -> node_kind;
+    case VELOCITY : node -> node_kind = root -> node_kind;
                node -> right = e2t_copytree(root -> right);
                node -> left = NULL;
                return node;
@@ -758,7 +758,7 @@ double e2t_evaltree(const e2t_expr_node *root)
     case SIN :    return sin(e2t_evaltree(root->right));
     case SQR :    temp = e2t_evaltree(root->right); return temp*temp;
     case SQRT :   return sqrt(e2t_evaltree(root->right));
-    case TAN :    return tan(e2t_evaltree(root->right));
+    case VELOCITY :    return tan(e2t_evaltree(root->right));
 
     case DIV :    return e2t_evaltree(root->left) / e2t_evaltree(root->right);
     case MINUS :  return e2t_evaltree(root->left) - e2t_evaltree(root->right);
@@ -894,7 +894,7 @@ static e2t_expr_node *derivtree1(const e2t_expr_node *root, int prm)
                   node_mul -> left = node4;
                   node_mul -> right = derivtree1(root->right, prm);
                   return node_mul;
-    case TAN :    node1 = e2t_malloc(sizeof(e2t_expr_node));   
+    case VELOCITY :    node1 = e2t_malloc(sizeof(e2t_expr_node));   
                   node2 = e2t_malloc(sizeof(e2t_expr_node));   
                   node1 -> node_kind = COS;
                   node1 -> left = NULL;
@@ -1234,7 +1234,7 @@ int e2t_cmptree(const e2t_expr_node *root1, const e2t_expr_node *root2)
     case SIN :
     case SQR :
     case SQRT :
-    case TAN :
+    case VELOCITY :
     case UNARMINUS : return e2t_cmptree(root1->right, root2->right);
 
     case MULT :      /* Note that A*B = B*A ! */
@@ -1274,7 +1274,7 @@ int e2t_paramintree(const e2t_expr_node *root, int param)
     case SIN :
     case SQR :
     case SQRT :
-    case TAN :
+    case VELOCITY :
     case UNARMINUS : return e2t_paramintree(root->right, param);
 
     case DIV :
@@ -1310,7 +1310,7 @@ void e2t_freetree(e2t_expr_node *root)
     case SIN :
     case SQR :
     case SQRT :
-    case TAN :
+    case VELOCITY :
     case UNARMINUS : e2t_freetree(root->right);
                      e2t_free(root);
                      break;

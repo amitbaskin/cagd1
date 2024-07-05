@@ -75,7 +75,7 @@ void init_cur_crv( char variables_string[ SPACE_DIM ][ MAX_LINE_LENGTH ], double
       validate_tree( i, 0 );
     }
 
-    for( int j = 1; !is_error && j < DERIVATIVE_DEPTH; ++j )
+    for( int j = 1; !is_error && j < DERIVATIVE_LEVEL; ++j )
     {
       tree = e2t_derivtree( cur_crv.trees[ i ][ j - 1 ], E2T_PARAM_T );
 
