@@ -6,7 +6,7 @@
 
 
 int scale_not_zero( double scale );
-int vec_3d_not_zero( const CAGD_POINT *p_vec );
+int vec_not_zero( const CAGD_POINT *p_vec );
 void copy_vec( const CAGD_POINT *p_in, CAGD_POINT *rp_out );
 double vec_len( const CAGD_POINT *p_vec );
 void scale_vec( double scale, CAGD_POINT *p_vec );

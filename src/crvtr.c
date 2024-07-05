@@ -6,6 +6,9 @@
 #include "crvtr.h"
 
 
+/******************************************************************************
+* eval_circ
+******************************************************************************/
 static void eval_circ( double            param,
                        double            radius,
                        const CAGD_POINT *p_center,
@@ -27,6 +30,9 @@ static void eval_circ( double            param,
 }
 
 
+/******************************************************************************
+* draw_osc_circle
+******************************************************************************/
 int draw_osc_circle( double param, frenet_t *p_frenet )
 {
   int ok = TRUE;
@@ -34,11 +40,12 @@ int draw_osc_circle( double param, frenet_t *p_frenet )
   CAGD_POINT *pnts =
     ( CAGD_POINT * ) malloc( sizeof( CAGD_POINT ) * ( NUM_OSC_PNTS + 2 ) );
 
-  double radius = scale_not_zero( p_frenet->crvtr ) ? 1 / p_frenet->crvtr : 0.0;
+  double radius = scale_not_zero( p_frenet->crvtr ) ?
+                  1 / p_frenet->crvtr : 0.0;
 
   ok = scale_not_zero( radius )               &&
-       vec_3d_not_zero( &p_frenet->csys[ TT ] ) &&
-       vec_3d_not_zero( &p_frenet->csys[ NN ] ) &&
+       vec_not_zero( &p_frenet->csys[ TT ] ) &&
+       vec_not_zero( &p_frenet->csys[ NN ] ) &&
        pnts != NULL;
 
   if( ok )

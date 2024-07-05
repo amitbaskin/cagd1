@@ -2,12 +2,15 @@
 #include "load_cur_crv.h"
 #include "cur_crv.h"
 
+
 extern int num_samples;
 
 #define MAX_LINE_LENGTH 1024
 
 
-// Function to trim trailing whitespace
+/******************************************************************************
+* trim_whitespaces
+******************************************************************************/
 void trim_whitespaces( char *str )
 {
   int length = strlen( str );
@@ -28,6 +31,9 @@ void trim_whitespaces( char *str )
 }
 
 
+/******************************************************************************
+* validate_tree
+******************************************************************************/
 void validate_tree( int i, int j )
 {
   e2t_expr_node *tree = cur_crv.trees[ i ][ j ];
@@ -35,17 +41,31 @@ void validate_tree( int i, int j )
   if( tree != NULL )
   {
     printf( "\nThe %d, %d tree is:\n", i, j );
+
     e2t_printtree( tree, ( char * ) NULL );
 
     e2t_setparamvalue( cur_crv.domain[ 0 ], E2T_PARAM_T );
-    printf( "\n\nTree value for t = %lf is %lf\n", cur_crv.domain[ 0 ], e2t_evaltree( tree ) );
+
+    printf( "\n\nTree value for t = %lf is %lf\n",
+            cur_crv.domain[ 0 ],
+            e2t_evaltree( tree ) );
+
     e2t_setparamvalue( cur_crv.domain[ 1 ], E2T_PARAM_T );
-    printf( "\nTree value for t = %lf is %lf\n", cur_crv.domain[ 1 ], e2t_evaltree( tree ) );
+
+    printf( "\nTree value for t = %lf is %lf\n",
+            cur_crv.domain[ 1 ],
+            e2t_evaltree( tree ) );
   }
 }
 
 
-void init_cur_crv( char variables_string[ SPACE_DIM ][ MAX_LINE_LENGTH ], double tmin, double tmax )
+/******************************************************************************
+* init_cur_crv
+******************************************************************************/
+static void
+init_cur_crv( char   variables_string[ SPACE_DIM ][ MAX_LINE_LENGTH ],
+              double tmin,
+              double tmax )
 {
   int is_error = 0;
 
@@ -82,7 +102,8 @@ void init_cur_crv( char variables_string[ SPACE_DIM ][ MAX_LINE_LENGTH ], double
       if( tree == NULL )
       {
         char msg[ MAX_LINE_LENGTH ];
-        sprintf( msg, "Error: failed to calculate derivative #%d of variable #%d .\n", j, i );
+        sprintf( msg, "Error: failed to calculate derivative #%d of variable "
+                 "# % d .\n", j, i );
         print_err( msg );
         is_error = 1;
       }
@@ -101,6 +122,9 @@ void init_cur_crv( char variables_string[ SPACE_DIM ][ MAX_LINE_LENGTH ], double
 }
 
 
+/******************************************************************************
+* load_cur_crv
+******************************************************************************/
 void load_cur_crv( int dummy1, int dummy2, void *p_data )
 {
   FILE *file = NULL;

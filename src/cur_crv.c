@@ -4,6 +4,9 @@
 #include "frenet.h"
 
 
+/******************************************************************************
+* print_err
+******************************************************************************/
 void print_err( char *str )
 {
   errno = EPERM;
@@ -13,16 +16,21 @@ void print_err( char *str )
 }
 
 
-// assuming 3 dimentions because CAGD_POINT is 3D
+/******************************************************************************
+* eval_cur_crv
+******************************************************************************/
 void eval_cur_crv( double param, int d_level, CAGD_POINT *rp_out )
 {
   e2t_setparamvalue( param, E2T_PARAM_T );
-  rp_out->x = e2t_evaltree( cur_crv.trees[ 0 ][ d_level ] );
-  rp_out->y = e2t_evaltree( cur_crv.trees[ 1 ][ d_level ] );
-  rp_out->z = e2t_evaltree( cur_crv.trees[ 2 ][ d_level ] );
+  rp_out->x = e2t_evaltree( cur_crv.trees[ X_TREE ][ d_level ] );
+  rp_out->y = e2t_evaltree( cur_crv.trees[ Y_TREE ][ d_level ] );
+  rp_out->z = e2t_evaltree( cur_crv.trees[ Z_TREE ][ d_level ] );
 }
 
 
+/******************************************************************************
+* clean_cur_crv
+******************************************************************************/
 void clean_cur_crv()
 {
   system( "cls" );
@@ -41,6 +49,9 @@ void clean_cur_crv()
 }
 
 
+/******************************************************************************
+* init_all_segs
+******************************************************************************/
 void init_all_segs()
 {
   cur_crv.osc_circ_seg = K_NOT_USED;
@@ -51,6 +62,9 @@ void init_all_segs()
 }
 
 
+/******************************************************************************
+* free_all_segs
+******************************************************************************/
 void free_all_segs()
 {
   cagdFreeSegment( cur_crv.osc_circ_seg );
@@ -67,6 +81,9 @@ void free_all_segs()
 }
 
 
+/******************************************************************************
+* draw_cur_crv
+******************************************************************************/
 void draw_cur_crv( int num_pnts )
 {
   int is_error = 0;
@@ -85,7 +102,8 @@ void draw_cur_crv( int num_pnts )
 
   if( is_error == 0 )
   {
-    CAGD_POINT *pnts = ( CAGD_POINT * ) malloc( sizeof( CAGD_POINT ) * ( num_pnts + 2 ) );
+    CAGD_POINT *pnts = ( CAGD_POINT * ) malloc( sizeof( CAGD_POINT ) *
+                                                ( num_pnts + 2 ) );
 
     if( pnts != NULL )
     {
@@ -93,25 +111,18 @@ void draw_cur_crv( int num_pnts )
 
       for( int i = 0; i < num_pnts + 1; ++i )
       {
-        // frenet_t frenet;
-
         CAGD_POINT pnt = { 0 };
         double param = cur_crv.domain[ 0 ] + jump * i;
-
-        // printf( "param: %f\n", param );
 
         eval_cur_crv( param, POSITION, &pnt );
         pnts[ i ] = pnt;
 
+        // printf( "param: %f\n", param );
         //cagdAddPoint( &pnt ); // temporary for debug
         //cagdRedraw(); // temporary for debug
-
-        //calc_frenet( param, &frenet );
-        //draw_frenet( param, &frenet );
-        //int x = 5; // dummy line for break point
       }
 
-      cagdAddPolyline( pnts, num_pnts + 1); // returns the polyline ID
+      cagdAddPolyline( pnts, num_pnts + 1 );
       cagdRedraw();
     }
 

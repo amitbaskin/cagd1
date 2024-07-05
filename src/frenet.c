@@ -9,6 +9,10 @@ extern int frenet_anim_smoothness;
 
 int frenet_anim_iteration = 0;
 
+
+/******************************************************************************
+* calc_frenet
+******************************************************************************/
 void calc_frenet( double param, frenet_t *frenet )
 {
   CAGD_POINT d0;
@@ -87,6 +91,9 @@ void calc_frenet( double param, frenet_t *frenet )
 }
 
 
+/******************************************************************************
+* draw_frenet
+******************************************************************************/
 void draw_frenet( double param, frenet_t *frenet )
 {
   CAGD_POINT T[ 2 ] = { frenet->pos };
@@ -119,6 +126,10 @@ void draw_frenet( double param, frenet_t *frenet )
   set_default_color();
 }
 
+
+/******************************************************************************
+* frenet_anim_cb
+******************************************************************************/
 void frenet_anim_cb( int x, int y, PVOID userData )
 {
   double jump = ( cur_crv.domain[1] - cur_crv.domain[0] ) / frenet_anim_smoothness;
@@ -146,6 +157,10 @@ void frenet_anim_cb( int x, int y, PVOID userData )
   frenet_anim_iteration++;
 }
 
+
+/******************************************************************************
+* reset_frenet_anim_iteration
+******************************************************************************/
 void reset_frenet_anim_iteration()
 {
   frenet_anim_iteration = 0;

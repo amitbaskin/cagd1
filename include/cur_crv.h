@@ -19,6 +19,14 @@ enum derivative_level
 };
 
 
+enum trees
+{
+  X_TREE = 0,
+  Y_TREE = 1,
+  Z_TREE = 2
+};
+
+
 typedef struct
 {
   int defined;
