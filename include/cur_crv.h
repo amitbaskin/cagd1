@@ -41,7 +41,7 @@ typedef struct
 
 crv_t cur_crv;
 
-void print_err( char *str );
-void eval_cur_crv( double param, int d_level, CAGD_POINT *out );
+void print_err( char *p_str );
+void eval_cur_crv( double param, int d_level, CAGD_POINT *rp_out );
 void draw_cur_crv( int num_pnts );
 void clean_cur_crv();

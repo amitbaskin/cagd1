@@ -14,12 +14,12 @@ void print_err( char *str )
 
 
 // assuming 3 dimentions because CAGD_POINT is 3D
-void eval_cur_crv( double param, int d_level, CAGD_POINT *out )
+void eval_cur_crv( double param, int d_level, CAGD_POINT *rp_out )
 {
   e2t_setparamvalue( param, E2T_PARAM_T );
-  out->x = e2t_evaltree( cur_crv.trees[ 0 ][ d_level ] );
-  out->y = e2t_evaltree( cur_crv.trees[ 1 ][ d_level ] );
-  out->z = e2t_evaltree( cur_crv.trees[ 2 ][ d_level ] );
+  rp_out->x = e2t_evaltree( cur_crv.trees[ 0 ][ d_level ] );
+  rp_out->y = e2t_evaltree( cur_crv.trees[ 1 ][ d_level ] );
+  rp_out->z = e2t_evaltree( cur_crv.trees[ 2 ][ d_level ] );
 }
 
 
@@ -97,7 +97,8 @@ void draw_cur_crv( int num_pnts )
 
         CAGD_POINT pnt = { 0 };
         double param = cur_crv.domain[ 0 ] + jump * i;
-        printf( "%f\n", param );
+
+        // printf( "param: %f\n", param );
 
         eval_cur_crv( param, POSITION, &pnt );
         pnts[ i ] = pnt;

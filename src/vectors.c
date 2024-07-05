@@ -10,84 +10,84 @@ int scale_not_zero( double scale )
 }
 
 
-int vec_3d_not_zero( const CAGD_POINT *vec )
+int vec_3d_not_zero( const CAGD_POINT *p_vec )
 {
   int status = 1;
 
-  status = status && scale_not_zero( vec->x );
-  status = status && scale_not_zero( vec->y );
-  status = status && scale_not_zero( vec->z );
+  status = status && scale_not_zero( p_vec->x );
+  status = status && scale_not_zero( p_vec->y );
+  status = status && scale_not_zero( p_vec->z );
 
   return status;
 }
 
 
-void copy_vec( const CAGD_POINT *in, CAGD_POINT *out )
+void copy_vec( const CAGD_POINT *p_in, CAGD_POINT *rp_out )
 {
-  out->x = in->x;
-  out->y = in->y;
-  out->z = in->z;
+  rp_out->x = p_in->x;
+  rp_out->y = p_in->y;
+  rp_out->z = p_in->z;
 }
 
 
-double vec_len( const CAGD_POINT *vec )
+double vec_len( const CAGD_POINT *p_vec )
 {
-  double sum = vec->x * vec->x +
-               vec->y * vec->y +
-               vec->z * vec->z;;
+  double sum = p_vec->x * p_vec->x +
+               p_vec->y * p_vec->y +
+               p_vec->z * p_vec->z;;
 
   return sqrt( sum );
 }
 
 
-void scale_vec( double scale, CAGD_POINT *vec )
+void scale_vec( double scale, CAGD_POINT *p_vec )
 {
-  vec->x *= scale;
-  vec->y *= scale;
-  vec->z *= scale;
+  p_vec->x *= scale;
+  p_vec->y *= scale;
+  p_vec->z *= scale;
 }
 
 
-void normalize_vec( CAGD_POINT *vec )
+void normalize_vec( CAGD_POINT *p_vec )
 {
-  double length = vec_len( vec );
+  double length = vec_len( p_vec );
 
-  vec->x /= length;
-  vec->y /= length;
-  vec->z /= length;
+  p_vec->x /= length;
+  p_vec->y /= length;
+  p_vec->z /= length;
 }
 
 
-void diff_vecs( const CAGD_POINT *v1, const CAGD_POINT *v2, CAGD_POINT *out )
+void diff_vecs( const CAGD_POINT *p_v1, const CAGD_POINT *p_v2, CAGD_POINT *rp_out )
 {
-  out->x = v1->x - v2->x;
-  out->y = v1->y - v2->y;
-  out->z = v1->z - v2->z;
+  rp_out->x = p_v1->x - p_v2->x;
+  rp_out->y = p_v1->y - p_v2->y;
+  rp_out->z = p_v1->z - p_v2->z;
 }
 
 
-void add_vecs( const CAGD_POINT *v1, const CAGD_POINT *v2, CAGD_POINT *out )
+void add_vecs( const CAGD_POINT *p_v1, const CAGD_POINT *p_v2, CAGD_POINT *rp_out )
 {
-  out->x = v1->x + v2->x;
-  out->y = v1->y + v2->y;
-  out->z = v1->z + v2->z;
+  rp_out->x = p_v1->x + p_v2->x;
+  rp_out->y = p_v1->y + p_v2->y;
+  rp_out->z = p_v1->z + p_v2->z;
 }
 
 
-double multiply_vecs( const CAGD_POINT *v1, const CAGD_POINT *v2 )
+double multiply_vecs( const CAGD_POINT *p_v1, const CAGD_POINT *p_v2 )
 {
-  return v1->x * v2->x + v1->y * v2->y + v1->z * v2->z;
+  return p_v1->x * p_v2->x + p_v1->y * p_v2->y + p_v1->z * p_v2->z;
 }
 
 
-void cross_vecs( const CAGD_POINT *v1, const CAGD_POINT *v2, CAGD_POINT *out )
+void cross_vecs( const CAGD_POINT *p_v1, const CAGD_POINT *p_v2, CAGD_POINT *rp_out )
 {
   /*
   |ii|jj|kk|
   |ax|ay|az|
   |bx|by|bz|
   */
-  out->x = v1->y * v2->z - v1->z * v2->y;
-  out->y = v1->z * v2->x - v1->x * v2->z;
-  out->z = v1->x * v2->y - v1->y * v2->x;
+  rp_out->x = p_v1->y * p_v2->z - p_v1->z * p_v2->y;
+  rp_out->y = p_v1->z * p_v2->x - p_v1->x * p_v2->z;
+  rp_out->z = p_v1->x * p_v2->y - p_v1->y * p_v2->x;
 }

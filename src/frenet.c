@@ -28,6 +28,8 @@ void calc_frenet( double param, frenet_t *frenet )
   double d3_mul_d1xd2;
   double l_d2_diff_d1;
 
+  printf( "param: %f\n", param );
+
   // calc pos
   eval_cur_crv( param, POSITION, &d0 );
   copy_vec( &d0, &frenet->pos );
@@ -51,6 +53,8 @@ void calc_frenet( double param, frenet_t *frenet )
   tmp = pow( l_d1, 3 );
   tmp = scale_not_zero( l_d1 ) ? 1 / tmp : 0.0;
   frenet->crvtr = tmp * l_d1xd2;
+
+  printf( "curvature: %f\n", frenet->crvtr );
 
   // calc d1d1_d2
   d1d1 = multiply_vecs( &d1, &d1 );
@@ -78,6 +82,8 @@ void calc_frenet( double param, frenet_t *frenet )
   tmp = pow( l_d1xd2, 2 );
   tmp = scale_not_zero( l_d1xd2 ) ? 1 / tmp : 0.0;
   frenet->trsn = d3_mul_d1xd2 * tmp;
+
+  printf( "torsion: %f\n\n", frenet->crvtr );
 }
 
 
@@ -125,6 +131,7 @@ void frenet_anim_cb( int x, int y, PVOID userData )
   }
 
   frenet_t frenet;
+
   calc_frenet( param, &frenet );
   draw_frenet( param, &frenet );
 

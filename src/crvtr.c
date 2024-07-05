@@ -6,81 +6,78 @@
 #include "crvtr.h"
 
 
-static void rotate_xy( double deg, double *xx, double *yy )
+static void eval_circ( double            param,
+                       double            radius,
+                       const CAGD_POINT *p_center,
+                       const frenet_t   *p_frenet,
+                       CAGD_POINT       *rp_out )
 {
-  double in_x = *xx;
-  double in_y = *yy;
+  CAGD_POINT T_axis;
+  CAGD_POINT N_axis;
 
-  double cos_deg = cos( deg );
-  double sin_deg = sin( deg );
+  copy_vec( &p_frenet->csys[ TT ], &T_axis );
+  copy_vec( &p_frenet->csys[ NN ], &N_axis );
+  copy_vec( p_center, rp_out );
 
-  *xx = in_x * cos_deg - in_y * sin_deg;
-  *yy = in_x * sin_deg + in_y * cos_deg;
+  scale_vec( radius * sin( param ), &T_axis );
+  scale_vec( radius * cos( param ), &N_axis );
+
+  add_vecs( rp_out, &T_axis, rp_out );
+  add_vecs( rp_out, &N_axis, rp_out );
 }
 
 
-int draw_osc_circle( double param, frenet_t *frenet )
+int draw_osc_circle( double param, frenet_t *p_frenet )
 {
   int ok = TRUE;
 
-  CAGD_POINT *circ_pnts;
-  CAGD_POINT crv_pnt;
-  CAGD_POINT center_pnt;
-  CAGD_POINT circ_vec;
+  CAGD_POINT *pnts =
+    ( CAGD_POINT * ) malloc( sizeof( CAGD_POINT ) * ( NUM_OSC_PNTS + 2 ) );
 
-  circ_pnts = ( CAGD_POINT * ) malloc( sizeof( CAGD_POINT ) * ( NUM_OSC_PNTS + 2 ) );
-  double deg = ( 2 * M_PI / NUM_OSC_PNTS );
+  double radius = scale_not_zero( p_frenet->crvtr ) ? 1 / p_frenet->crvtr : 0.0;
 
-  double radius = scale_not_zero( frenet->crvtr ) ? 1 / frenet->crvtr : 0.0;
-
-  ok = scale_not_zero( radius )              &&
-       vec_3d_not_zero( &frenet->csys[ 0 ] ) &&
-       vec_3d_not_zero( &frenet->csys[ 1 ] ) &&
-       circ_pnts != NULL;
+  ok = scale_not_zero( radius )               &&
+       vec_3d_not_zero( &p_frenet->csys[ TT ] ) &&
+       vec_3d_not_zero( &p_frenet->csys[ NN ] ) &&
+       pnts != NULL;
 
   if( ok )
   {
+    CAGD_POINT crv_pnt;
+    CAGD_POINT center;
+    CAGD_POINT circ_vec;
+
+    double jump = ( double ) 1 / NUM_OSC_PNTS;
+
     eval_cur_crv( param, POSITION, &crv_pnt );
-    //cagdAddPoint( &crv_pnt );
-    copy_vec( &frenet->csys[ 1 ], &circ_vec );
+    copy_vec( &p_frenet->csys[ NN ], &circ_vec );
     scale_vec( radius, &circ_vec );
-    add_vecs( &crv_pnt, &circ_vec, &center_pnt );
+    add_vecs( &crv_pnt, &circ_vec, &center );
 
     for( int i = 0; i < NUM_OSC_PNTS + 1; ++i )
     {
-      CAGD_POINT cur_tan;
-      CAGD_POINT cur_normal;
-      CAGD_POINT cur_pnt;
+      CAGD_POINT pnt = { 0 };
 
-      double cur_deg = i * deg;
-      double cur_x   = 0.0;
-      double cur_y   = -radius;
+      eval_circ( i * jump * 2 * M_PI,
+                 radius,
+                 &center,
+                 p_frenet,
+                 &pnt );
 
-      rotate_xy( i * deg, &cur_x, &cur_y );
+      pnts[ i ] = pnt;
 
-      copy_vec( &frenet->csys[ 0 ], &cur_tan );
-      scale_vec( cur_x, &cur_tan );
-
-      copy_vec( &frenet->csys[ 1 ], &cur_normal );
-      scale_vec( cur_y, &cur_normal );
-
-      add_vecs( &center_pnt, &cur_tan, &cur_pnt );
-      add_vecs( &cur_pnt, &cur_normal, &cur_pnt );
-
-      circ_pnts[ i ] = cur_pnt;
-
-      //cagdAddPoint( &cur_pnt ); // temporary for debug
+      //cagdAddPoint( &pnt ); // temporary for debug
       //cagdRedraw(); // temporary for debug
     }
 
     set_circ_color();
 
     if( cur_crv.osc_circ_seg == K_NOT_USED )
-      cur_crv.osc_circ_seg = cagdAddPolyline( circ_pnts, NUM_OSC_PNTS + 1 );
+      cur_crv.osc_circ_seg = cagdAddPolyline( pnts, NUM_OSC_PNTS + 1 );
     else
-      cagdReusePolyline( cur_crv.osc_circ_seg, circ_pnts, NUM_OSC_PNTS + 1 );
+      cagdReusePolyline( cur_crv.osc_circ_seg, pnts, NUM_OSC_PNTS + 1 );
 
-    free( circ_pnts );
+    free( pnts );
   }
 
   return !ok;
