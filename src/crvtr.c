@@ -31,6 +31,26 @@ static void eval_circ( double            param,
 
 
 /******************************************************************************
+* get_crvtr_data
+******************************************************************************/
+void get_crvtr_data( double        param,
+                     frenet_t     *p_frenet,
+                     crvtr_data_t *rp_crvtr_data )
+{
+  rp_crvtr_data->radius = scale_not_zero( p_frenet->crvtr ) ?
+                           1 / p_frenet->crvtr : 0.0;
+
+  eval_cur_crv( param, POSITION, &rp_crvtr_data->crv_pos );
+  copy_vec( &p_frenet->csys[ NN ], &rp_crvtr_data->vec );
+  scale_vec( rp_crvtr_data->radius, &rp_crvtr_data->vec );
+
+  add_vecs( &rp_crvtr_data->crv_pos,
+            &rp_crvtr_data->vec,
+            &rp_crvtr_data->center );
+}
+
+
+/******************************************************************************
 * draw_osc_circle
 ******************************************************************************/
 int draw_osc_circle( double param, frenet_t *p_frenet )
@@ -50,16 +70,16 @@ int draw_osc_circle( double param, frenet_t *p_frenet )
 
   if( ok )
   {
-    CAGD_POINT crv_pnt;
-    CAGD_POINT center;
-    CAGD_POINT circ_vec;
+    crvtr_data_t crvtr_data;
+
+    get_crvtr_data( param, p_frenet, &crvtr_data );
 
     double jump = ( double ) 1 / NUM_OSC_PNTS;
 
-    eval_cur_crv( param, POSITION, &crv_pnt );
-    copy_vec( &p_frenet->csys[ NN ], &circ_vec );
-    scale_vec( radius, &circ_vec );
-    add_vecs( &crv_pnt, &circ_vec, &center );
+    eval_cur_crv( param, POSITION, &crvtr_data.crv_pos );
+    copy_vec( &p_frenet->csys[ NN ], &crvtr_data.vec );
+    scale_vec( radius, &crvtr_data.vec );
+    add_vecs( &crvtr_data.crv_pos, &crvtr_data.vec, &crvtr_data .center);
 
     for( int i = 0; i < NUM_OSC_PNTS + 1; ++i )
     {
@@ -67,7 +87,7 @@ int draw_osc_circle( double param, frenet_t *p_frenet )
 
       eval_circ( i * jump * 2 * M_PI,
                  radius,
-                 &center,
+                 &crvtr_data.center,
                  p_frenet,
                  &pnt );
 

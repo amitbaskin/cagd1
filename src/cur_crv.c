@@ -2,6 +2,7 @@
 #include "cagd.h"
 #include "vectors.h"
 #include "frenet.h"
+#include "evolute.h"
 
 
 /******************************************************************************
@@ -55,7 +56,9 @@ void clean_cur_crv()
 void init_all_segs()
 {
   cur_crv.osc_circ_seg = K_NOT_USED;
-  cur_crv.helix_seg = K_NOT_USED;
+  cur_crv.helix_seg    = K_NOT_USED;
+  cur_crv.evolute_seg  = K_NOT_USED;
+  cur_crv.offset_seg   = K_NOT_USED;
 
   for( int i = 0; i < 3; ++i )
     cur_crv.frenet_segs[ i ] = K_NOT_USED;
@@ -73,6 +76,12 @@ void free_all_segs()
   cagdFreeSegment( cur_crv.helix_seg );
   cur_crv.helix_seg = K_NOT_USED;
 
+  cagdFreeSegment( cur_crv.evolute_seg );
+  cur_crv.evolute_seg = K_NOT_USED;
+
+  cagdFreeSegment( cur_crv.offset_seg );
+  cur_crv.offset_seg = K_NOT_USED;
+
   for( int i = 0; i < 3; ++i )
   {
     cagdFreeSegment( cur_crv.frenet_segs[ i ] );
@@ -84,7 +93,7 @@ void free_all_segs()
 /******************************************************************************
 * draw_cur_crv
 ******************************************************************************/
-void draw_cur_crv( int num_pnts )
+int draw_cur_crv( int num_pnts )
 {
   int is_error = 0;
 
@@ -129,5 +138,9 @@ void draw_cur_crv( int num_pnts )
     free( pnts );
   }
 
+  draw_evolute( num_pnts );
+
   cagdRedraw();
+
+  return is_error;
 }

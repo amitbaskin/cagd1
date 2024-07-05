@@ -132,7 +132,11 @@ void draw_frenet( double param, frenet_t *frenet )
 ******************************************************************************/
 void frenet_anim_cb( int x, int y, PVOID userData )
 {
-  double jump = ( cur_crv.domain[1] - cur_crv.domain[0] ) / frenet_anim_smoothness;
+  frenet_t frenet;
+
+  double jump = ( cur_crv.domain[1] - cur_crv.domain[0] ) /
+                frenet_anim_smoothness;
+
   double param = cur_crv.domain[0] + jump * frenet_anim_iteration;
 
   if( param > cur_crv.domain[1] )
@@ -140,8 +144,6 @@ void frenet_anim_cb( int x, int y, PVOID userData )
     frenet_anim_iteration = 0;
     param = cur_crv.domain[0] + jump * frenet_anim_iteration;
   }
-
-  frenet_t frenet;
 
   calc_frenet( param, &frenet );
   draw_frenet( param, &frenet );

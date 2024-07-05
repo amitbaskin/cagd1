@@ -29,27 +29,34 @@ enum trees
 
 typedef struct
 {
-  int defined;
+  int            defined;
   e2t_expr_node *trees[ SPACE_DIM ][ DERIVATIVE_LEVEL ];
-  double domain[ 2 ];
-  int frenet_segs[ 3 ];
-  int osc_circ_seg;
-  int helix_seg;
+  double         domain[ 2 ];
+  int            frenet_segs[ 3 ];
+  int            osc_circ_seg;
+  int            helix_seg;
+  int            evolute_seg;
+  int            offset_seg;
 } crv_t;
 
 /*
   trees[ 3 ][ 4 ]:
 
-  x |  x' |  x'' |  x'''
-  ----------------------
-  y |  y' |  y'' |  y'''
-  ----------------------
-  z |  z' |  z'a' |  z'''
+  x | x' | x'' | x'''
+  --------------------
+  y | y' | y'' | y'''
+  --------------------
+  z | z' | z'' | z'''
 */
 
 crv_t cur_crv;
 
+
+
 void print_err( char *p_str );
+
 void eval_cur_crv( double param, int d_level, CAGD_POINT *rp_out );
-void draw_cur_crv( int num_pnts );
+
+int draw_cur_crv( int num_pnts );
+
 void clean_cur_crv();

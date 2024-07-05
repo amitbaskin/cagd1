@@ -21,8 +21,11 @@ typedef struct frenet_t
 
 frenet_t frenet;
 
+
 void calc_frenet( double param, frenet_t *p_frenet );
+
 void draw_frenet( double param, frenet_t *p_frenet );
 
 void frenet_anim_cb( int x, int y, PVOID userData );
+
 void reset_frenet_anim_iteration();

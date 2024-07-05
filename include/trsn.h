@@ -7,4 +7,5 @@ struct frenet_t;
 
 #define HELIX_CYCLES 3
 
+
 int draw_helix( double param, struct frenet_t *p_frenet );
