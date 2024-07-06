@@ -68,10 +68,9 @@ static int get_crvtr_derivative( double    param,
 /******************************************************************************
 * get_sphere_vec
 ******************************************************************************/
-int get_sphere_vec( double      param,
-                    frenet_t   *p_frenet,
-                    double     *rp_radius,
-                    CAGD_POINT *rp_out )
+static int init_circ_data( double         param,
+                           frenet_t      *p_frenet,
+                           circle_data_t *rp_circle_data )
 {
   double d_crvtr;
 
@@ -82,20 +81,25 @@ int get_sphere_vec( double      param,
     CAGD_POINT N_vec;
     CAGD_POINT B_vec;
 
-    // calc N axis
-    copy_vec( &p_frenet->csys[ NN ],&N_vec );
-    scale_div_vec( p_frenet->crvtr, &N_vec );
+    // T axis
+    copy_vec( &p_frenet->csys[ TT ], &rp_circle_data->T_axis );
 
     // calc B axis
     copy_vec( &p_frenet->csys[ BB ], &B_vec );
     scale_vec( d_crvtr, &B_vec );
     scale_div_vec( pow( p_frenet->crvtr, 2 ) * p_frenet->trsn, &B_vec );
 
-    // calc final result
-    diff_vecs( &N_vec, &B_vec, rp_out );
+    // calc N axis
+    copy_vec( &p_frenet->csys[ NN ], &N_vec );
+    scale_div_vec( p_frenet->crvtr, &N_vec );
+    diff_vecs( &N_vec, &B_vec, &rp_circle_data->N_axis );
+    rp_circle_data->radius = vec_len( &rp_circle_data->N_axis );
+    scale_div_vec( rp_circle_data->radius, &rp_circle_data->N_axis );
 
-    *rp_radius = vec_len( rp_out );
-    scale_div_vec( *rp_radius, rp_out );
+    rp_circle_data->radius = 0.5; ///////////////////////////////////////// tmp
+
+    // crv pos and circ center
+    get_center_pnt( param, rp_circle_data );
   }
 
   return is_error;
@@ -103,27 +107,16 @@ int get_sphere_vec( double      param,
 
 
 /******************************************************************************
-* draw_rotate_circs
+* draw_sphere
 ******************************************************************************/
 int draw_sphere( double param, frenet_t *p_frenet )
 {
   circle_data_t circle_data;
 
-  CAGD_POINT center_vec;
-
-  double radius;
-
-  int is_error = get_sphere_vec( param, p_frenet, &radius, &center_vec );
+  int is_error = init_circ_data( param, p_frenet, &circle_data );
 
   if( is_error == FALSE )
   {
-    circle_data.radius = 0.5;
-    circle_data.is_center_defined = TRUE;
-
-    copy_vec( &p_frenet->csys[ TT ], &circle_data.T_axis );
-    copy_vec( &center_vec, &circle_data.N_axis );
-    get_center_pnt( param, &circle_data );
-
     set_sphere_color();
 
     double angle = 2.0 * M_PI / NUM_SPHERE_CIRCS;

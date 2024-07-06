@@ -175,23 +175,37 @@ void rotate_vec( double      angle,
                  CAGD_POINT *p_rot,
                  CAGD_POINT *p_out )
 {
-  // Compute sine and cosine of the angle
-  double cosTheta = cos( angle );
-  double sinTheta = sin( angle );
+  double cos_a = cos( angle );
+  double sin_a = sin( angle );
 
-  // Compute the rotation matrix elements
   double ux = p_rot->x;
   double uy = p_rot->y;
   double uz = p_rot->z;
 
-  double R[ 3 ][ 3 ] = {
-      { cosTheta + ux * ux * ( 1 - cos( angle ) ), ux * uy * ( 1 - cos( angle ) ) - uz * sin( angle ), ux * uz * ( 1 - cos( angle ) ) + uy * sin( angle ) },
-      { uy * ux * ( 1 - cos( angle ) ) + uz * sin( angle ), cos( angle ) + uy * uy * ( 1 - cos( angle ) ), uy * uz * ( 1 - cos( angle ) ) - ux * sin( angle ) },
-      { uz * ux * ( 1 - cos( angle ) ) - uy * sin( angle ), uz * uy * ( 1 - cos( angle ) ) + ux * sin( angle ), cos( angle ) + uz * uz * ( 1 - cos( angle ) ) }
+  double mat[ 3 ][ 3 ] =
+  {
+    { cos_a + ux * ux * ( 1 - cos( angle )             ),
+      ux * uy * ( 1 - cos( angle ) ) - uz * sin( angle ),
+      ux * uz * ( 1 - cos( angle ) ) + uy * sin( angle ) },
+
+    { uy * ux * ( 1 - cos( angle ) ) + uz * sin( angle ),
+      cos( angle ) + uy * uy * ( 1 - cos( angle )      ),
+      uy * uz * ( 1 - cos( angle ) ) - ux * sin( angle ) },
+
+    { uz * ux * ( 1 - cos( angle ) ) - uy * sin( angle ),
+      uz * uy * ( 1 - cos( angle ) ) + ux * sin( angle ),
+      cos( angle ) + uz * uz * ( 1 - cos( angle )      ) }
   };
 
-  // Rotate the vector
-  p_out->x = R[ 0 ][ 0 ] * p_in->x + R[ 0 ][ 1 ] * p_in->y + R[ 0 ][ 2 ] * p_in->z;
-  p_out->y = R[ 1 ][ 0 ] * p_in->x + R[ 1 ][ 1 ] * p_in->y + R[ 1 ][ 2 ] * p_in->z;
-  p_out->z = R[ 2 ][ 0 ] * p_in->x + R[ 2 ][ 1 ] * p_in->y + R[ 2 ][ 2 ] * p_in->z;
+  p_out->x = mat[ 0 ][ 0 ] * p_in->x +
+             mat[ 0 ][ 1 ] * p_in->y +
+             mat[ 0 ][ 2 ] * p_in->z;
+
+  p_out->y = mat[ 1 ][ 0 ] * p_in->x +
+             mat[ 1 ][ 1 ] * p_in->y +
+             mat[ 1 ][ 2 ] * p_in->z;
+
+  p_out->z = mat[ 2 ][ 0 ] * p_in->x +
+             mat[ 2 ][ 1 ] * p_in->y +
+             mat[ 2 ][ 2 ] * p_in->z;
 }

@@ -13,14 +13,16 @@
 void get_center_pnt( double param, circle_data_t *rp_circle_data )
 {
   CAGD_POINT N_axis;
+
   copy_vec( &rp_circle_data->N_axis, &N_axis );
   scale_vec( rp_circle_data->radius, &N_axis );
 
   eval_cur_crv( param, POSITION, &rp_circle_data->crv_pos );
-
   add_vecs( &rp_circle_data->crv_pos,
             &N_axis,
             &rp_circle_data->center );
+
+  rp_circle_data->is_center_defined = TRUE;
 }
 
 

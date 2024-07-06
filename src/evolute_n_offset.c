@@ -8,7 +8,7 @@
 
 
 /******************************************************************************
-* draw_other_crv
+* init_circle_data
 ******************************************************************************/
 static void init_circle_data( double         param,
                               double        *p_radius,
@@ -26,6 +26,8 @@ static void init_circle_data( double         param,
   copy_vec( &frenet.csys[ TT ], &p_circle_data->T_axis );
   copy_vec( &frenet.csys[ NN ], &p_circle_data->N_axis );
   get_center_pnt( param, p_circle_data );
+
+  p_circle_data->is_center_defined = TRUE;
 }
 
 
@@ -52,7 +54,6 @@ int draw_other_crv( int     num_pnts,
       for( int i = 0; i < num_pnts; ++i )
       {
         circle_data_t circle_data = { 0 };
-        circle_data.is_center_defined = FALSE;
 
         double param = cur_crv.domain[ 0 ] + jump * i;
 
