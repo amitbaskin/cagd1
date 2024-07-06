@@ -179,26 +179,37 @@ void rotate_vec( double      angle,
                  CAGD_POINT *p_rot,
                  CAGD_POINT *p_out )
 {
-  CAGD_POINT rot_scaled;
-  CAGD_POINT rot_x_in;
+  CAGD_POINT trans;
 
-  double rot_m_in;
-  double cos_ang = cos( angle );
+  double sin_a = sin( angle );
+  double cos_a = cos( angle );
+  double n_cos_a = 1 - cos( angle );
 
-  // first item
-  copy_vec( p_in, p_out );
-  scale_vec( cos_ang, p_out );
+  double ux = p_rot->x;
+  double uy = p_rot->x;
+  double uz = p_rot->x;
 
-  // second term
-  cross_vecs( p_rot, p_in, &rot_x_in );
-  scale_vec( sin( angle ), &rot_x_in );
+  double uxux = pow( p_rot->x, 2 );
+  double uyuy = pow( p_rot->y, 2 );
+  double uzuz = pow( p_rot->z, 2 );
 
-  // third item
-  copy_vec( p_rot, &rot_scaled );
-  rot_m_in = multiply_vecs( p_rot, p_in );
-  scale_vec( ( 1 - cos_ang ) * rot_m_in, &rot_scaled );
+  double uxuy = ux * uy;
+  double uxuz = ux * uz;
+  double uyuz = uy * uz;
 
-  // adding items
-  add_vecs( p_out, &rot_x_in, p_out );
-  add_vecs( p_out, &rot_scaled, p_out );
+  diff_vecs( p_in, p_rot, &trans );
+
+  p_out->x = ( cos_a + uxux * n_cos_a )      * trans.x +
+             ( uxuy * n_cos_a - uz * sin_a ) * trans.y +
+             ( uxuz * n_cos_a + uy * sin_a ) * trans.z;
+
+  p_out->y = ( uxuy * n_cos_a + uz * sin_a ) * trans.x +
+             ( cos_a + uyuy * n_cos_a )      * trans.y +
+             ( uyuz * n_cos_a - ux * sin_a ) * trans.z;
+
+  p_out->z = ( uxuz * n_cos_a - uy * sin_a ) * trans.x +
+             ( uyuz * n_cos_a + ux * sin_a ) * trans.y +
+             ( cos_a + uzuz * n_cos_a )      * trans.z;
+
+  add_vecs( p_out, p_rot, p_out );
 }
