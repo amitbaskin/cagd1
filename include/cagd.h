@@ -63,7 +63,8 @@ enum { /* id's of standard controls */
   CAGD_LMB_TORSION_MENU,
   CAGD_ANIM_FRENET_MENU,
   CAGD_ANIM_OSCULATING_MENU,
-  CAGD_ANIM_TORSION_MENU
+  CAGD_ANIM_TORSION_MENU,
+  CAGD_SHOW_EVOLUTE_MENU
 };
 
 #ifdef __cplusplus

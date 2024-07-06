@@ -4,6 +4,7 @@
 #include "frenet.h"
 #include "evolute_n_offset.h"
 #include "color.h"
+#include "menus.h"
 
 extern int num_samples;
 
@@ -144,13 +145,13 @@ int draw_cur_crv( int num_pnts )
     free( pnts );
   }
 
-  /*if( cur_crv.draw_evolute )
+  if( is_show_evolute_menu_checked() )
   {
     set_evolute_color();
     draw_other_crv( num_pnts, NULL, &cur_crv.evolute_seg );
   }
 
-  if( cur_crv.draw_offset )
+  /*if( cur_crv.draw_offset )
   {
     set_offset_color();
     draw_other_crv( num_pnts, &cur_crv.offset, &cur_crv.offset_seg );

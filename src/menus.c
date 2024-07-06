@@ -3,10 +3,13 @@
 #include "menus.h"
 #include "resource.h"
 #include "frenet.h"
+#include "evolute_n_offset.h"
+#include "color.h"
 
 char myBuffer[BUFSIZ];
 UINT myText;
 HMENU g_lmb_menu = NULL;
+HMENU g_options_menu = NULL;
 
 extern HMENU g_anim_settings_menu;
 extern int num_samples;
@@ -26,9 +29,11 @@ void init_menus()
 
   g_lmb_menu = lmb_menu;
   g_anim_settings_menu = anim_settings_menu;
+  g_options_menu = op_menu;
 
   // options
-  AppendMenu( op_menu, MF_STRING, CAGD_SEGS, "Refinement" );
+  AppendMenu( op_menu, MF_STRING, CAGD_SEGS, "Change Refinement" );
+  AppendMenu( op_menu, MF_STRING, CAGD_SHOW_EVOLUTE_MENU, "Show Evolute Curve" );
   AppendMenu( op_menu, MF_STRING | MF_POPUP, ( UINT_PTR )lmb_menu, "Left Mouse button" );
   AppendMenu( op_menu, MF_STRING | MF_POPUP, ( UINT_PTR )anim_settings_menu, "Animation Settings" );
 
@@ -148,6 +153,10 @@ void menu_callbacks( int id, int unUsed, PVOID userData )
   case CAGD_ANIM_TORSION_MENU:
     toggle_check_menu( g_anim_settings_menu, CAGD_ANIM_TORSION_MENU );
     break;
+
+  case CAGD_SHOW_EVOLUTE_MENU:
+    handle_evolute_check_menu();
+    break;
   }
 }
 
@@ -198,6 +207,28 @@ void left_mouse_click_cb( int x, int y, PVOID userData )
     }
   }
   cagdRedraw();
+}
+
+/******************************************************************************
+* handle_evolute_check_menu
+******************************************************************************/
+void handle_evolute_check_menu()
+{
+  toggle_check_menu( g_options_menu, CAGD_SHOW_EVOLUTE_MENU );
+
+  if( is_show_evolute_menu_checked() )
+  {
+    set_evolute_color();
+    draw_other_crv( num_samples * 2, NULL, &cur_crv.evolute_seg );
+
+    set_default_color();
+  }
+  else
+  {
+    cagdFreeSegment( cur_crv.evolute_seg );
+    cur_crv.evolute_seg = K_NOT_USED;
+    cagdRedraw();
+  }
 }
 
 /******************************************************************************
@@ -287,4 +318,12 @@ void toggle_check_menu( HMENU main_menu, UINT sub_menu_id )
 int is_menu_checked( HMENU main_menu, UINT sub_menu_id )
 {
   return ( GetMenuState( main_menu, sub_menu_id, MF_BYCOMMAND ) & MF_CHECKED );
+}
+
+/******************************************************************************
+* show_evolute_menu_checked
+******************************************************************************/
+int is_show_evolute_menu_checked()
+{
+  return is_menu_checked( g_options_menu, CAGD_SHOW_EVOLUTE_MENU );
 }
