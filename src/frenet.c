@@ -158,6 +158,26 @@ void frenet_anim_cb( int x, int y, PVOID userData )
   frenet_anim_iteration++;
 }
 
+/******************************************************************************
+* frenet_start_animation
+******************************************************************************/
+int frenet_start_animation()
+{
+  int is_error = 0;
+
+  if( cur_crv.defined == 0 )
+  {
+    print_err( "Please Load a Curve first" );
+    is_error = 1;
+  }
+  if( is_error == 0 )
+  {
+    frenet_anim_running = 1;
+    cagdRegisterCallback( CAGD_TIMER, frenet_anim_cb, NULL );
+  }
+
+  return is_error;
+}
 
 /******************************************************************************
 * reset_frenet_anim_iteration

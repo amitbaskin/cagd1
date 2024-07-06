@@ -12,6 +12,9 @@ extern int num_samples;
 extern int frenet_anim_running;
 extern int frenet_anim_speed;
 
+/******************************************************************************
+* init_menus
+******************************************************************************/
 void init_menus()
 {
   HMENU op_menu = CreatePopupMenu(); // options
@@ -37,11 +40,17 @@ void init_menus()
   // adding to cagd
   cagdAppendMenu( fre_menu, "Frenet" );
   cagdAppendMenu( op_menu, "Options" );
+
+  // register callback to handle all menus
   cagdRegisterCallback( CAGD_MENU, menu_callbacks, NULL );
 
+  // register callback to handle lmb on cur_curve
   cagdRegisterCallback( CAGD_LBUTTONUP, left_mouse_click_cb, NULL );
 }
 
+/******************************************************************************
+* myDialogProc
+******************************************************************************/
 LRESULT CALLBACK myDialogProc( HWND hDialog, UINT message, WPARAM wParam, LPARAM lParam )
 {
   if( message != WM_COMMAND )
@@ -60,6 +69,9 @@ LRESULT CALLBACK myDialogProc( HWND hDialog, UINT message, WPARAM wParam, LPARAM
   }
 }
 
+/******************************************************************************
+* myDialogProc2
+******************************************************************************/
 LRESULT CALLBACK myDialogProc2( HWND hDialog, UINT message, WPARAM wParam, LPARAM lParam )
 {
   if( message != WM_COMMAND )
@@ -78,6 +90,9 @@ LRESULT CALLBACK myDialogProc2( HWND hDialog, UINT message, WPARAM wParam, LPARA
   }
 }
 
+/******************************************************************************
+* menu_callbacks
+******************************************************************************/
 void menu_callbacks( int id, int unUsed, PVOID userData )
 {
   int is_error = 0;
@@ -85,37 +100,11 @@ void menu_callbacks( int id, int unUsed, PVOID userData )
   switch( id )
   {
   case CAGD_SEGS:
-    if( DialogBox( cagdGetModule(),
-        MAKEINTRESOURCE( IDD_COLOR ),
-        cagdGetWindow(),
-        ( DLGPROC )myDialogProc ) )
-    {
-      int new_samples = 0;
-
-      if( sscanf( myBuffer, "%d", &new_samples ) == 1 && new_samples > 2 )
-      {
-        cagdFreeAllSegments();
-        num_samples = new_samples;
-        draw_cur_crv( num_samples );
-      }
-      else
-      {
-        myMessage( "Invalid segments number", "invalid segs", MB_ICONERROR );
-      }
-    }
+    handle_num_samples_menu();
     break;
 
   case CAGD_FRENET_ANIM_START:
-    if( cur_crv.defined == 0 )
-    {
-      print_err( "Please Load a Curve first" );
-      is_error = 1;
-    }
-    if( is_error == 0 )
-    {
-      frenet_anim_running = 1;
-      cagdRegisterCallback( CAGD_TIMER, frenet_anim_cb, NULL );
-    }
+    is_error = frenet_start_animation();
     break;
 
   case CAGD_FRENET_ANIM_STOP:
@@ -126,30 +115,7 @@ void menu_callbacks( int id, int unUsed, PVOID userData )
     break;
 
   case CAGD_FRENET_ANIM_SPEED:
-    if( DialogBox( cagdGetModule(),
-        MAKEINTRESOURCE( IDC_ANIM_SPEED ),
-        cagdGetWindow(),
-        ( DLGPROC )myDialogProc2 ) )
-    {
-      int speed = 0;
-
-      if( sscanf( myBuffer, "%d", &speed ) == 1 )
-      {
-        double inv_speed = 1 / ( double )speed;
-        frenet_anim_speed = ( inv_speed ) * 100;
-
-        if( frenet_anim_running == 1 )
-        {
-          // apply new animation speed
-          cagdRegisterCallback( CAGD_TIMER, NULL, NULL );
-          cagdRegisterCallback( CAGD_TIMER, frenet_anim_cb, NULL );
-        }
-      }
-      else
-      {
-        myMessage( "Invalid Speed", "Please pick a valid speed", MB_ICONERROR );
-      }
-    }
+    handle_anim_speed_menu();
     break;
 
   case CAGD_LMB_FRENET:
@@ -173,6 +139,9 @@ void menu_callbacks( int id, int unUsed, PVOID userData )
   }
 }
 
+/******************************************************************************
+* left_mouse_click_cb
+******************************************************************************/
 void left_mouse_click_cb( int x, int y, PVOID userData )
 {
   CAGD_POINT p = { 0.0,0.0,0.0 };
@@ -217,4 +186,60 @@ void left_mouse_click_cb( int x, int y, PVOID userData )
     }
   }
   cagdRedraw();
+}
+
+/******************************************************************************
+* handle_anim_speed_menu
+******************************************************************************/
+void handle_anim_speed_menu()
+{
+  if( DialogBox( cagdGetModule(),
+      MAKEINTRESOURCE( IDC_ANIM_SPEED ),
+      cagdGetWindow(),
+      ( DLGPROC )myDialogProc2 ) )
+  {
+    int speed = 0;
+
+    if( sscanf( myBuffer, "%d", &speed ) == 1 )
+    {
+      double inv_speed = 1 / ( double )speed;
+      frenet_anim_speed = ( inv_speed ) * 100;
+
+      if( frenet_anim_running == 1 )
+      {
+        // apply new animation speed
+        cagdRegisterCallback( CAGD_TIMER, NULL, NULL );
+        cagdRegisterCallback( CAGD_TIMER, frenet_anim_cb, NULL );
+      }
+    }
+    else
+    {
+      myMessage( "Invalid Speed", "Please pick a valid speed", MB_ICONERROR );
+    }
+  }
+}
+
+/******************************************************************************
+* handle_num_samples_menu
+******************************************************************************/
+void handle_num_samples_menu()
+{
+  if( DialogBox( cagdGetModule(),
+      MAKEINTRESOURCE( IDD_COLOR ),
+      cagdGetWindow(),
+      ( DLGPROC )myDialogProc ) )
+  {
+    int new_samples = 0;
+
+    if( sscanf( myBuffer, "%d", &new_samples ) == 1 && new_samples > 2 )
+    {
+      cagdFreeAllSegments();
+      num_samples = new_samples;
+      draw_cur_crv( num_samples );
+    }
+    else
+    {
+      myMessage( "Invalid segments number", "invalid segs", MB_ICONERROR );
+    }
+  }
 }

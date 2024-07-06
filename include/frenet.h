@@ -27,6 +27,7 @@ void calc_frenet( double param, frenet_t *p_frenet );
 
 void draw_frenet( double param, frenet_t *p_frenet );
 
+int frenet_start_animation();
 void frenet_anim_cb( int x, int y, PVOID userData );
 
 void reset_frenet_anim_iteration();
