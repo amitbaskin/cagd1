@@ -80,7 +80,7 @@ void myTimer(int x, int y, PVOID userData)
 
 int main(int argc, char *argv[])
 {
-  cagdBegin( "CAGD", 512, 512 );
+  cagdBegin( "CAGD", 800, 800 );
   init_menus();
 
   num_samples = NUM_SAMPS; // Default value

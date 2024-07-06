@@ -7,3 +7,4 @@ int num_samples = 200;
 // for code
 int frenet_anim_running = 0;
 int frenet_anim_smoothness = 2000;
+HMENU g_anim_settings_menu = NULL;

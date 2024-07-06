@@ -8,9 +8,11 @@ char myBuffer[BUFSIZ];
 UINT myText;
 HMENU g_lmb_menu = NULL;
 
+extern HMENU g_anim_settings_menu;
 extern int num_samples;
 extern int frenet_anim_running;
 extern int frenet_anim_speed;
+extern int frenet_anim_smoothness;
 
 /******************************************************************************
 * init_menus
@@ -20,25 +22,34 @@ void init_menus()
   HMENU op_menu = CreatePopupMenu(); // options
   HMENU fre_menu = CreatePopupMenu(); // frenet
   HMENU lmb_menu = CreatePopupMenu(); // lmb sub menu
+  HMENU anim_settings_menu = CreatePopupMenu(); // animation settings menu
 
   g_lmb_menu = lmb_menu;
+  g_anim_settings_menu = anim_settings_menu;
 
   // options
   AppendMenu( op_menu, MF_STRING, CAGD_SEGS, "Refinement" );
-  AppendMenu( op_menu, MF_STRING, CAGD_FRENET_ANIM_SPEED, "Animation Speed" );
   AppendMenu( op_menu, MF_STRING | MF_POPUP, ( UINT_PTR )lmb_menu, "Left Mouse button" );
+  AppendMenu( op_menu, MF_STRING | MF_POPUP, ( UINT_PTR )anim_settings_menu, "Animation Settings" );
 
   // frenet
-  AppendMenu( fre_menu, MF_STRING, CAGD_FRENET_ANIM_START, "Start Frenet Animation" );
-  AppendMenu( fre_menu, MF_STRING, CAGD_FRENET_ANIM_STOP, "Stop Frenet Animation" );
+  AppendMenu( fre_menu, MF_STRING, CAGD_FRENET_ANIM_START, "Start Animation" );
+  AppendMenu( fre_menu, MF_STRING, CAGD_FRENET_ANIM_STOP, "Stop Animation" );
 
   // lmb sub menu
-  AppendMenu( lmb_menu, MF_STRING | MF_CHECKED, CAGD_LMB_FRENET, "Show Frenet Frame" );
-  AppendMenu( lmb_menu, MF_STRING, CAGD_LMB_OSCULATING, "Show Osculating Circle" );
-  AppendMenu( lmb_menu, MF_STRING, CAGD_LMB_TORSION, "Show Torsion Helix" );
+  AppendMenu( lmb_menu, MF_STRING | MF_CHECKED, CAGD_LMB_FRENET_MENU, "Show Frenet Frame" );
+  AppendMenu( lmb_menu, MF_STRING, CAGD_LMB_OSCULATING_MENU, "Show Osculating Circle" );
+  AppendMenu( lmb_menu, MF_STRING, CAGD_LMB_TORSION_MENU, "Show Torsion Helix" );
+
+  // animation settings menu
+  AppendMenu( anim_settings_menu, MF_STRING | MF_CHECKED, CAGD_ANIM_FRENET_MENU, "Animate Frenet Frame" );
+  AppendMenu( anim_settings_menu, MF_STRING, CAGD_ANIM_OSCULATING_MENU, "Animate Osculating Circle" );
+  AppendMenu( anim_settings_menu, MF_STRING, CAGD_ANIM_TORSION_MENU , "Animate Torsion Helix" );
+  AppendMenu( anim_settings_menu, MF_SEPARATOR, 0, NULL );
+  AppendMenu( anim_settings_menu, MF_STRING, CAGD_FRENET_ANIM_SPEED, "Set Animation Speed" );
 
   // adding to cagd
-  cagdAppendMenu( fre_menu, "Frenet" );
+  cagdAppendMenu( fre_menu, "Animation" );
   cagdAppendMenu( op_menu, "Options" );
 
   // register callback to handle all menus
@@ -118,23 +129,24 @@ void menu_callbacks( int id, int unUsed, PVOID userData )
     handle_anim_speed_menu();
     break;
 
-  case CAGD_LMB_FRENET:
-    if( GetMenuState( g_lmb_menu, CAGD_LMB_FRENET, MF_BYCOMMAND ) & MF_CHECKED )
-      CheckMenuItem( g_lmb_menu, CAGD_LMB_FRENET, MF_UNCHECKED );
-    else
-      CheckMenuItem( g_lmb_menu, CAGD_LMB_FRENET, MF_CHECKED );
+  case CAGD_LMB_FRENET_MENU:
+    toggle_check_menu( g_lmb_menu, CAGD_LMB_FRENET_MENU );
     break;
-  case CAGD_LMB_OSCULATING:
-    if( GetMenuState( g_lmb_menu, CAGD_LMB_OSCULATING, MF_BYCOMMAND ) & MF_CHECKED )
-      CheckMenuItem( g_lmb_menu, CAGD_LMB_OSCULATING, MF_UNCHECKED );
-    else
-      CheckMenuItem( g_lmb_menu, CAGD_LMB_OSCULATING, MF_CHECKED );
+  case CAGD_LMB_OSCULATING_MENU:
+    toggle_check_menu( g_lmb_menu, CAGD_LMB_OSCULATING_MENU );
     break;
-  case CAGD_LMB_TORSION:
-    if( GetMenuState( g_lmb_menu, CAGD_LMB_TORSION, MF_BYCOMMAND ) & MF_CHECKED )
-      CheckMenuItem( g_lmb_menu, CAGD_LMB_TORSION, MF_UNCHECKED );
-    else
-      CheckMenuItem( g_lmb_menu, CAGD_LMB_TORSION, MF_CHECKED );
+  case CAGD_LMB_TORSION_MENU:
+    toggle_check_menu( g_lmb_menu, CAGD_LMB_TORSION_MENU );
+    break;
+
+  case CAGD_ANIM_FRENET_MENU:
+    toggle_check_menu( g_anim_settings_menu, CAGD_ANIM_FRENET_MENU );
+    break;
+  case CAGD_ANIM_OSCULATING_MENU:
+    toggle_check_menu( g_anim_settings_menu, CAGD_ANIM_OSCULATING_MENU );
+    break;
+  case CAGD_ANIM_TORSION_MENU:
+    toggle_check_menu( g_anim_settings_menu, CAGD_ANIM_TORSION_MENU );
     break;
   }
 }
@@ -169,17 +181,17 @@ void left_mouse_click_cb( int x, int y, PVOID userData )
         stop_frenet_animation();
       }
 
-      if( GetMenuState( g_lmb_menu, CAGD_LMB_FRENET, MF_BYCOMMAND ) & MF_CHECKED )
+      if( is_menu_checked( g_lmb_menu, CAGD_LMB_FRENET_MENU ) )
       {
         draw_frenet( param, &frenet );
       }
 
-      if( GetMenuState( g_lmb_menu, CAGD_LMB_OSCULATING, MF_BYCOMMAND ) & MF_CHECKED )
+      if( is_menu_checked( g_lmb_menu, CAGD_LMB_OSCULATING_MENU ) )
       {
         draw_osc_circle( param, &frenet );
       }
 
-      if( GetMenuState( g_lmb_menu, CAGD_LMB_TORSION, MF_BYCOMMAND ) & MF_CHECKED )
+      if( is_menu_checked( g_lmb_menu, CAGD_LMB_TORSION_MENU ) )
       {
         draw_helix( param, &frenet );
       }
@@ -204,6 +216,20 @@ void handle_anim_speed_menu()
     {
       double inv_speed = 1 / ( double )speed;
       frenet_anim_speed = ( inv_speed ) * 100;
+
+      //TODO if have time. adjust anim speed values
+
+      /*if( frenet_anim_speed == 1 )
+      {
+        int new_anim_smoothness = frenet_anim_smoothness - speed * 10;
+
+        if( new_anim_smoothness < 200 )
+          frenet_anim_smoothness = 200;
+        else
+          frenet_anim_smoothness = new_anim_smoothness;
+      }
+      else
+        frenet_anim_smoothness = 2000;*/
 
       if( frenet_anim_running == 1 )
       {
@@ -242,4 +268,23 @@ void handle_num_samples_menu()
       myMessage( "Invalid segments number", "invalid segs", MB_ICONERROR );
     }
   }
+}
+
+/******************************************************************************
+* toggle_check_menu
+******************************************************************************/
+void toggle_check_menu( HMENU main_menu, UINT sub_menu_id )
+{
+  if( GetMenuState( main_menu, sub_menu_id, MF_BYCOMMAND ) & MF_CHECKED )
+    CheckMenuItem( main_menu, sub_menu_id, MF_UNCHECKED );
+  else
+    CheckMenuItem( main_menu, sub_menu_id, MF_CHECKED );
+}
+
+/******************************************************************************
+* is_menu_checked
+******************************************************************************/
+int is_menu_checked( HMENU main_menu, UINT sub_menu_id )
+{
+  return ( GetMenuState( main_menu, sub_menu_id, MF_BYCOMMAND ) & MF_CHECKED );
 }

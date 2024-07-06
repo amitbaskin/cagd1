@@ -3,10 +3,12 @@
 #include "color.h"
 #include "crvtr.h"
 #include "trsn.h"
+#include "menus.h"
 
 
 extern int frenet_anim_smoothness;
 extern int frenet_anim_running;
+extern HMENU g_anim_settings_menu;
 
 int frenet_anim_iteration = 0;
 
@@ -131,6 +133,14 @@ void draw_frenet( double param, frenet_t *frenet )
 ******************************************************************************/
 void frenet_anim_cb( int x, int y, PVOID userData )
 {
+  if( !is_menu_checked( g_anim_settings_menu, CAGD_ANIM_FRENET_MENU ) &&
+      !is_menu_checked( g_anim_settings_menu, CAGD_ANIM_OSCULATING_MENU ) &&
+      !is_menu_checked( g_anim_settings_menu, CAGD_ANIM_TORSION_MENU ) )
+  {
+    stop_frenet_animation();
+    return;
+  }
+
   frenet_t frenet;
 
   double jump = ( cur_crv.domain[1] - cur_crv.domain[0] ) /
@@ -144,12 +154,24 @@ void frenet_anim_cb( int x, int y, PVOID userData )
     param = cur_crv.domain[0] + jump * frenet_anim_iteration;
   }
 
+  free_all_segs( FALSE );
+
   calc_frenet( param, &frenet );
-  draw_frenet( param, &frenet );
 
-  draw_osc_circle( param, &frenet );
+  if( is_menu_checked( g_anim_settings_menu, CAGD_ANIM_FRENET_MENU ) )
+  {
+    draw_frenet( param, &frenet );
+  }
 
-  draw_helix( param, &frenet );
+  if( is_menu_checked( g_anim_settings_menu, CAGD_ANIM_OSCULATING_MENU ) )
+  {
+    draw_osc_circle( param, &frenet );
+  }
+
+  if( is_menu_checked( g_anim_settings_menu, CAGD_ANIM_TORSION_MENU ) )
+  {
+    draw_helix( param, &frenet );
+  }
 
   set_default_color();
 
