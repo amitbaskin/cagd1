@@ -48,7 +48,7 @@ typedef struct
   int            helix_seg;
   int            evolute_seg;
   int            offset_seg;
-  int            sphere_segs[ NUM_SPHERE_CIRCS ];
+  int            sphere_segs[ NUM_SPHERE_CIRCS - 1 ];
 } crv_t;
 
 /*

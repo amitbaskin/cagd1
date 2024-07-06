@@ -105,9 +105,10 @@ int get_sphere_vec( double      param,
 /******************************************************************************
 * draw_init_sphere_circle
 ******************************************************************************/
-int draw_init_sphere_circle( double      param,
-                             frenet_t   *p_frenet,
-                             CAGD_POINT *rp_pnts )
+int draw_init_sphere_circle( double         param,
+                             frenet_t      *p_frenet,
+                             circle_data_t *rp_circle_data,
+                             CAGD_POINT    *rp_pnts )
 {
   CAGD_POINT center_vec;
 
@@ -117,17 +118,85 @@ int draw_init_sphere_circle( double      param,
 
   if( is_error == FALSE )
   {
-    circle_data_t circle_data;
-    circle_data.radius = 1.0;
-    copy_vec( &p_frenet->csys[ TT ], &circle_data.T_axis );
-    copy_vec( &center_vec, &circle_data.N_axis );
+    rp_circle_data->radius = 1.0;
+    copy_vec( &p_frenet->csys[ TT ], &rp_circle_data->T_axis );
+    copy_vec( &center_vec, &rp_circle_data->N_axis );
 
     set_sphere_color();
 
-    is_error = draw_circle( param,
-                            &circle_data,
+    is_error = draw_circle(  param,
+                             rp_circle_data,
                             &cur_crv.sphere_segs[ 0 ],
-                            rp_pnts );
+                             rp_pnts );
+  }
+
+  return is_error;
+}
+
+
+/******************************************************************************
+* draw_rotate_circ
+******************************************************************************/
+int draw_rotate_circ( double         param,
+                      int            start_seg_idx,
+                      circle_data_t *p_circle_data,
+                      CAGD_POINT    *p_rot_vec,
+                      CAGD_POINT    *p_pnts )
+{
+  int is_error = FALSE;
+
+  double angle = 2 * M_PI / ( NUM_SPHERE_CIRCS / 2 );
+
+  for( int i = 0; is_error == FALSE && i < NUM_SPHERE_CIRCS / 2 - 1; ++i )
+  {
+    CAGD_POINT *p_new_pnts = ( CAGD_POINT * )malloc( sizeof( CAGD_POINT ) *
+                                                     NUM_OSC_PNTS );
+
+    rotate_circ( angle, p_pnts, p_rot_vec, p_new_pnts );
+
+    is_error = draw_circle(  param,
+                             p_circle_data,
+                            &cur_crv.sphere_segs[ start_seg_idx + i ],
+                             p_new_pnts );
+
+    free( p_new_pnts );
+  }
+
+  return is_error;
+}
+
+
+/******************************************************************************
+* draw_rotate_circ
+******************************************************************************/
+int draw_sphere( double param, frenet_t *p_frenet )
+{
+  circle_data_t circle_data;
+
+  CAGD_POINT *p_init_pnts = ( CAGD_POINT * )malloc( sizeof( CAGD_POINT ) *
+                                                    NUM_OSC_PNTS );
+
+  int is_error = draw_init_sphere_circle(  param,
+                                           p_frenet,
+                                          &circle_data,
+                                           p_init_pnts );
+
+  if( is_error == FALSE )
+  {
+    is_error = draw_rotate_circ( param,
+                                 1,
+                                 &circle_data,
+                                 &circle_data.T_axis,
+                                 p_init_pnts );
+  }
+
+  if( is_error == FALSE )
+  {
+    is_error = draw_rotate_circ(  param,
+                                  NUM_SPHERE_CIRCS / 2 - 1,
+                                 &circle_data,
+                                 &circle_data.N_axis,
+                                  p_init_pnts );
   }
 
   return is_error;

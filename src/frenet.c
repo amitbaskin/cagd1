@@ -160,7 +160,7 @@ void frenet_anim_cb( int x, int y, PVOID userData )
     draw_helix( param, &frenet );
 
   if( cur_crv.draw_sphere == TRUE )
-    draw_init_sphere_circle( param, &frenet, p_sphere_pnts );
+    draw_sphere( param, &frenet );
 
   set_default_color();
 
