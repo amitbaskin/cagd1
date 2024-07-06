@@ -5,7 +5,7 @@
 
 
 #define SPACE_DIM        3
-#define DERIVATIVE_LEVEL 5
+#define DERIVATIVE_LEVEL 4
 #define K_NOT_USED      -1
 #define NUM_SAMPS        200
 #define DEFAULT_OFFSET  -0.4
@@ -16,8 +16,7 @@ enum derivative_level
   POSITION     = 0,
   VELOCITY     = 1,
   ACCELERATION = 2,
-  JERK         = 3,
-  D4           = 4
+  JERK         = 3
 };
 
 

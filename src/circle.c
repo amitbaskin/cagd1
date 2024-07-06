@@ -122,11 +122,7 @@ int draw_circle( double         param,
     for( int i = 0; i < NUM_OSC_PNTS; ++i )
     {
       CAGD_POINT pnt = { 0 };
-
-      eval_circ(  i * jump,
-                      p_circle_data,
-                     &pnt );
-
+      eval_circ(  i * jump, p_circle_data, &pnt );
       rp_pnts[ i ] = pnt;
     }
 

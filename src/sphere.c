@@ -25,53 +25,40 @@ static int get_crvtr_derivative( double    param,
     double numer_2;
     double denom_1;
     double denom_2;
-    double frac_1;
-    double frac_2;
 
     CAGD_POINT d1;
     CAGD_POINT d2;
     CAGD_POINT d3;
-    CAGD_POINT d4;
     CAGD_POINT d1xd2;
     CAGD_POINT d1xd3;
-    CAGD_POINT d1xd4;
-    CAGD_POINT d2xd3;
 
     eval_cur_crv( param, VELOCITY,     &d1 );
     eval_cur_crv( param, ACCELERATION, &d2 );
     eval_cur_crv( param, JERK,         &d3 );
-    eval_cur_crv( param, D4,           &d4 );
 
     l_d1 = vec_len( &d1 );
 
     cross_vecs( &d1, &d2, &d1xd2 );
     l_d1xd2 = vec_len( &d1xd2 );
 
-    cross_vecs( &d1, &d4, &d1xd3 );
-    cross_vecs( &d1, &d4, &d1xd4 );
-    cross_vecs( &d1, &d4, &d2xd3 );
+    cross_vecs( &d1, &d2, &d1xd3 );
 
     // calc first numerator
-    add_vecs( &d2xd3, &d1xd4, &d2xd3 );
-    numer_1 = multiply_vecs( &d1xd3, &d2xd3 );
+    numer_1 = multiply_vecs( &d1xd2, &d1xd3 );
 
     // calc second numerator
-    numer_2 = multiply_vecs( &d2, &d3 );
-    numer_2 = 3 * numer_2 * l_d1xd2;
+    numer_2 = multiply_vecs( &d1, &d2 );
+    numer_2 = 3.0 * l_d1xd2 * numer_2;
 
     // calc first denominator
-    denom_1 = l_d1 * pow( l_d1xd2, 2 );
+    denom_1 = l_d1xd2 * pow( l_d1, 3 );
     denom_1 = get_scale_inv_or_zero( denom_1 );
 
     // calc second denominator
-    denom_2 = pow( l_d1, 2 );
+    denom_2 = pow( l_d1, 5 );
     denom_2 = get_scale_inv_or_zero( denom_2 );
 
-    // calc fracs
-    frac_1 = denom_1 * numer_1;
-    frac_2 = denom_2 * numer_2;
-
-    *rp_out = frac_1 - frac_2;
+    *rp_out = denom_1 * numer_1 - denom_2 * numer_2;
   }
 
   return is_error;

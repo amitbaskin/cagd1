@@ -55,6 +55,12 @@ void free_all_segs()
     cagdFreeSegment( cur_crv.frenet_segs[ i ] );
     cur_crv.frenet_segs[ i ] = K_NOT_USED;
   }
+
+  for( int i = 0; i < NUM_SPHERE_CIRCS; ++i )
+  {
+    cagdFreeSegment( cur_crv.sphere_segs[ i ] );
+    cur_crv.sphere_segs[ i ] = K_NOT_USED;
+  }
 }
 
 
