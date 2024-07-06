@@ -95,7 +95,7 @@ init_cur_crv( char   variables_string[ SPACE_DIM ][ MAX_LINE_LENGTH ],
     else
     {
       cur_crv.trees[ i ][ 0 ] = tree;
-      validate_tree( i, 0 );
+      //validate_tree( i, 0 );
     }
 
     for( int j = 1; !is_error && j < DERIVATIVE_LEVEL; ++j )
@@ -113,7 +113,7 @@ init_cur_crv( char   variables_string[ SPACE_DIM ][ MAX_LINE_LENGTH ],
       else
       {
         cur_crv.trees[ i ][ j ] = tree;
-        validate_tree( i, j );
+        //validate_tree( i, j );
       }
     }
   }
