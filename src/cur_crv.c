@@ -98,6 +98,9 @@ void init_all_segs()
 
   for( int i = 0; i < 3; ++i )
     cur_crv.frenet_segs[ i ] = K_NOT_USED;
+
+  for( int i = 0; i < NUM_SPHERE_CIRCS; ++i )
+    cur_crv.sphere_segs[ i ] = K_NOT_USED;
 }
 
 

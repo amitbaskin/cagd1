@@ -25,15 +25,14 @@ static void rotate_pnt( double      angle,
   copy_vec( p_in, p_out );
   scale_vec( cos_ang, p_out );
 
-  // second item
-  cross_vecs( p_rot_vec, p_out, &rot_x_in );
+  // second term
+  cross_vecs( p_rot_vec, p_in, &rot_x_in );
   scale_vec( sin( angle ), &rot_x_in );
 
   // third item
   copy_vec( p_rot_vec, &rot_scaled );
-  rot_m_in = multiply_vecs( p_rot_vec, p_out );
-  scale_vec( rot_m_in, &rot_scaled );
-  scale_vec( 1 - cos_ang, &rot_scaled );
+  rot_m_in = multiply_vecs( p_rot_vec, p_in );
+  scale_vec( ( 1 - cos_ang ) * rot_m_in, &rot_scaled );
 
   // adding items
   add_vecs( p_out, &rot_x_in, p_out );
@@ -66,7 +65,7 @@ void get_center_pnt( double param, circle_data_t *rp_circle_data )
 {
   CAGD_POINT N_axis;
   copy_vec( &rp_circle_data->N_axis, &N_axis );
-  scale_vec(rp_circle_data->radius, &N_axis);
+  scale_vec( rp_circle_data->radius, &N_axis );
 
   eval_cur_crv( param, POSITION, &rp_circle_data->crv_pos );
 
@@ -120,11 +119,7 @@ int draw_circle( double         param,
     get_center_pnt( param, p_circle_data );
 
     for( int i = 0; i < NUM_OSC_PNTS; ++i )
-    {
-      CAGD_POINT pnt = { 0 };
-      eval_circ(  i * jump, p_circle_data, &pnt );
-      rp_pnts[ i ] = pnt;
-    }
+      eval_circ( i * jump, p_circle_data, &rp_pnts[ i ] );
 
     if( *p_seg_id == K_NOT_USED )
       *p_seg_id = cagdAddPolyline( rp_pnts, NUM_OSC_PNTS );
