@@ -57,6 +57,9 @@
     <ClCompile Include="src\sphere.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\menus.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\cagd.h">
@@ -99,6 +102,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\sphere.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\menus.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

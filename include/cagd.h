@@ -57,7 +57,10 @@ enum { /* id's of standard controls */
   CAGD_SEGS,
   CAGD_FRENET_ANIM_START,
   CAGD_FRENET_ANIM_STOP,
-  CAGD_FRENET_ANIM_SPEED
+  CAGD_FRENET_ANIM_SPEED,
+  CAGD_LMB_FRENET,
+  CAGD_LMB_OSCULATING,
+  CAGD_LMB_TORSION
 };
 
 #ifdef __cplusplus

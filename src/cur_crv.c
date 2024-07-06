@@ -35,10 +35,13 @@ void eval_cur_crv( double param, int d_level, CAGD_POINT *rp_out )
 /******************************************************************************
 * free_all_segs
 ******************************************************************************/
-void free_all_segs()
+void free_all_segs( BOOL clean_cur_crv_seg )
 {
-  cagdFreeSegment( cur_crv.my_seg );
-  cur_crv.my_seg = K_NOT_USED;
+  if( clean_cur_crv_seg )
+  {
+    cagdFreeSegment( cur_crv.my_seg );
+    cur_crv.my_seg = K_NOT_USED;
+  }
 
   cagdFreeSegment( cur_crv.osc_circ_seg );
   cur_crv.osc_circ_seg = K_NOT_USED;
@@ -66,7 +69,7 @@ void free_all_segs()
 void clean_cur_crv()
 {
   system( "cls" );
-  free_all_segs();
+  free_all_segs( TRUE );
   cagdRedraw();
   cur_crv.defined = 0;
 
@@ -141,7 +144,7 @@ int draw_cur_crv( int num_pnts )
     free( pnts );
   }
 
-  if( cur_crv.draw_evolute )
+  /*if( cur_crv.draw_evolute )
   {
     set_evolute_color();
     draw_other_crv( num_pnts, NULL, &cur_crv.evolute_seg );
@@ -151,7 +154,7 @@ int draw_cur_crv( int num_pnts )
   {
     set_offset_color();
     draw_other_crv( num_pnts, &cur_crv.offset, &cur_crv.offset_seg );
-  }
+  }*/
 
   set_default_color();
 

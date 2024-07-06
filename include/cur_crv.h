@@ -58,7 +58,7 @@ typedef struct
 crv_t cur_crv;
 
 
-void free_all_segs();
+void free_all_segs( BOOL clean_cur_crv_seg );
 
 void print_err( char *p_str );
 
