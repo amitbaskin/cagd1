@@ -59,11 +59,11 @@ int is_scale_initialized( double scale )
 ******************************************************************************/
 int vec_not_zero( const CAGD_POINT *p_vec )
 {
-  int status = 1;
+  int status = FALSE;
 
-  status = status && scale_not_zero( p_vec->x );
-  status = status && scale_not_zero( p_vec->y );
-  status = status && scale_not_zero( p_vec->z );
+  status = status || scale_not_zero( p_vec->x );
+  status = status || scale_not_zero( p_vec->y );
+  status = status || scale_not_zero( p_vec->z );
 
   return status;
 }
