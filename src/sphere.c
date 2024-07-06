@@ -122,12 +122,13 @@ int draw_sphere( double param, frenet_t *p_frenet )
 
     copy_vec( &p_frenet->csys[ TT ], &circle_data.T_axis );
     copy_vec( &center_vec, &circle_data.N_axis );
-    eval_cur_crv( param, POSITION, &circle_data.crv_pos );
+    get_center_pnt( param, &circle_data );
+
     set_sphere_color();
 
-    double angle = 2 * M_PI / NUM_SPHERE_CIRCS;
+    double angle = 2.0 * M_PI / NUM_SPHERE_CIRCS;
 
-    for( int i = 1; is_error == FALSE && i < NUM_SPHERE_CIRCS; ++i )
+    for( int i = 0; is_error == FALSE && i < NUM_SPHERE_CIRCS; ++i )
     {
       circle_data_t cur_circ_data = circle_data;
 

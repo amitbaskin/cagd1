@@ -175,45 +175,23 @@ void rotate_vec( double      angle,
                  CAGD_POINT *p_rot,
                  CAGD_POINT *p_out )
 {
-  CAGD_POINT trans;
+  // Compute sine and cosine of the angle
+  double cosTheta = cos( angle );
+  double sinTheta = sin( angle );
 
-  //normalize_vec( p_rot );
-
-  double sin_a = sin( angle );
-  double cos_a = cos( angle );
-  double n_cos_a = 1 - cos( angle );
-
+  // Compute the rotation matrix elements
   double ux = p_rot->x;
-  double uy = p_rot->x;
-  double uz = p_rot->x;
+  double uy = p_rot->y;
+  double uz = p_rot->z;
 
-  double uxux = pow( p_rot->x, 2 );
-  double uyuy = pow( p_rot->y, 2 );
-  double uzuz = pow( p_rot->z, 2 );
+  double R[ 3 ][ 3 ] = {
+      { cosTheta + ux * ux * ( 1 - cos( angle ) ), ux * uy * ( 1 - cos( angle ) ) - uz * sin( angle ), ux * uz * ( 1 - cos( angle ) ) + uy * sin( angle ) },
+      { uy * ux * ( 1 - cos( angle ) ) + uz * sin( angle ), cos( angle ) + uy * uy * ( 1 - cos( angle ) ), uy * uz * ( 1 - cos( angle ) ) - ux * sin( angle ) },
+      { uz * ux * ( 1 - cos( angle ) ) - uy * sin( angle ), uz * uy * ( 1 - cos( angle ) ) + ux * sin( angle ), cos( angle ) + uz * uz * ( 1 - cos( angle ) ) }
+  };
 
-  double uxuy = ux * uy;
-  double uxuz = ux * uz;
-  double uyuz = uy * uz;
-
-  copy_vec( p_in, &trans );
-
-  // translation
-  //diff_vecs( p_in, p_rot, &trans );
-
-  p_out->x = ( cos_a + uxux * n_cos_a )      * trans.x +
-             ( uxuy * n_cos_a - uz * sin_a ) * trans.y +
-             ( uxuz * n_cos_a + uy * sin_a ) * trans.z;
-
-  p_out->y = ( uxuy * n_cos_a + uz * sin_a ) * trans.x +
-             ( cos_a + uyuy * n_cos_a )      * trans.y +
-             ( uyuz * n_cos_a - ux * sin_a ) * trans.z;
-
-  p_out->z = ( uxuz * n_cos_a - uy * sin_a ) * trans.x +
-             ( uyuz * n_cos_a + ux * sin_a ) * trans.y +
-             ( cos_a + uzuz * n_cos_a )      * trans.z;
-
-  // retranslation
-  //add_vecs( p_out, p_rot, p_out );
-
-  //normalize_vec( p_out );
+  // Rotate the vector
+  p_out->x = R[ 0 ][ 0 ] * p_in->x + R[ 0 ][ 1 ] * p_in->y + R[ 0 ][ 2 ] * p_in->z;
+  p_out->y = R[ 1 ][ 0 ] * p_in->x + R[ 1 ][ 1 ] * p_in->y + R[ 1 ][ 2 ] * p_in->z;
+  p_out->z = R[ 2 ][ 0 ] * p_in->x + R[ 2 ][ 1 ] * p_in->y + R[ 2 ][ 2 ] * p_in->z;
 }
