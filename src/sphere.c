@@ -118,7 +118,7 @@ int draw_init_sphere_circle( double      param,
   if( is_error == FALSE )
   {
     circle_data_t circle_data;
-    circle_data.radius = radius;
+    circle_data.radius = 1.0;
     copy_vec( &p_frenet->csys[ TT ], &circle_data.T_axis );
     copy_vec( &center_vec, &circle_data.N_axis );
 
