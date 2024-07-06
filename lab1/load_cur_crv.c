@@ -1,6 +1,7 @@
 #include <errno.h>
 #include "load_cur_crv.h"
 #include "cur_crv.h"
+#include "color.h"
 
 
 extern int num_samples;
@@ -65,13 +66,14 @@ void validate_tree( int i, int j )
 static void
 turn_on_draw()
 {
-  cur_crv.draw_evolute  = TRUE;
-  cur_crv.draw_offset   = TRUE;
-  /*cur_crv.draw_cur_crv  = FALSE;
-  cur_crv.draw_debug    = TRUE;
-  cur_crv.draw_csys     = TRUE;
-  cur_crv.draw_osc_circ = TRUE;
-  cur_crv.draw_sphere   = TRUE;*/
+  //cur_crv.draw_evolute  = TRUE;
+  //cur_crv.draw_offset   = TRUE;
+  //cur_crv.draw_cur_crv  = FALSE;
+  //cur_crv.draw_debug    = TRUE;
+  //cur_crv.draw_csys     = TRUE;
+  //cur_crv.draw_osc_circ = TRUE;
+  //  cur_crv.draw_helix  = TRUE;
+  cur_crv.draw_sphere   = TRUE;
 }
 
 
@@ -94,6 +96,7 @@ init_cur_crv( char   variables_string[ SPACE_DIM ][ MAX_LINE_LENGTH ],
   cur_crv.draw_offset   = FALSE;
   cur_crv.draw_csys     = FALSE;
   cur_crv.draw_osc_circ = FALSE;
+  cur_crv.draw_helix    = FALSE;
   cur_crv.draw_sphere   = FALSE;
   cur_crv.offset        = DEFAULT_OFFSET;
 
@@ -144,7 +147,7 @@ init_cur_crv( char   variables_string[ SPACE_DIM ][ MAX_LINE_LENGTH ],
   if( is_error )
     clean_cur_crv();
   else
-    draw_cur_crv( num_samples );
+    draw_cur_crv( NUM_SAMPS );
 }
 
 

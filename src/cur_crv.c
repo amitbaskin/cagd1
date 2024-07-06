@@ -102,15 +102,15 @@ int validate_pre_draw( int num_pnts )
 {
   int is_error = 0;
 
-  if (num_pnts < 0)
+  if( num_pnts < 0 )
   {
-    print_err("Invalid number of pnts");
+    print_err( "Invalid number of pnts" );
     is_error = 1;
   }
 
-  if (is_error == 0 && cur_crv.defined == 0)
+  if( is_error == 0 && cur_crv.defined == 0 )
   {
-    print_err("current curve is not defined");
+    print_err( "current curve is not defined" );
     is_error = 1;
   }
 
@@ -134,7 +134,7 @@ int draw_cur_crv( int num_pnts )
 {
   int is_error = validate_pre_draw( num_pnts );
 
-  if( is_error == FALSE )
+  if( is_error == FALSE && cur_crv.draw_cur_crv == TRUE )
   {
     CAGD_POINT *pnts = ( CAGD_POINT * ) malloc( sizeof( CAGD_POINT ) *
                                                 num_pnts );
@@ -154,8 +154,8 @@ int draw_cur_crv( int num_pnts )
           cagdAddPoint(&pnts[i]); /////////////////////////////////// for debug
       }
 
-      if( cur_crv.draw_cur_crv == TRUE )
-        cur_crv.my_seg = cagdAddPolyline( pnts, num_pnts );
+      set_default_color();
+      cur_crv.my_seg = cagdAddPolyline( pnts, num_pnts );
     }
 
     free( pnts );
@@ -172,8 +172,6 @@ int draw_cur_crv( int num_pnts )
     set_offset_color();
     draw_other_crv( num_pnts, &cur_crv.offset, &cur_crv.offset_seg );
   }
-
-  set_default_color();
 
   cagdRedraw();
 

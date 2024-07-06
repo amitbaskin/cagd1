@@ -11,8 +11,8 @@
 /******************************************************************************
 * init_circle_circle
 ******************************************************************************/
-static void init_circle_circle( frenet_t      *p_frenet,
-                                circle_data_t *p_circle_data )
+static void init_circle_data( frenet_t      *p_frenet,
+                              circle_data_t *p_circle_data )
 {
   p_circle_data->radius = get_scale_inv_or_zero( p_frenet->crvtr );
   copy_vec( &p_frenet->csys[ TT ], &p_circle_data->T_axis );
@@ -35,7 +35,7 @@ int draw_osc_circle( double param, frenet_t *p_frenet )
   if( is_error == FALSE )
   {
     circle_data_t circle_data;
-    init_circle_circle(p_frenet, &circle_data);
+    init_circle_data( p_frenet, &circle_data );
     set_osc_circ_color();
 
     is_error = draw_circle(  param,

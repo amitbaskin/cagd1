@@ -18,3 +18,5 @@ void set_helix_color();
 void set_evolute_color();
 
 void set_offset_color();
+
+void set_sphere_color();

@@ -9,7 +9,7 @@
 #define K_NOT_USED      -1
 #define NUM_SAMPS        200
 #define DEFAULT_OFFSET  -0.4
-
+#define NUM_SPHERE_CIRCS     12
 
 enum derivative_level
 {
@@ -38,6 +38,7 @@ typedef struct
   int            draw_offset;
   int            draw_csys;
   int            draw_osc_circ;
+  int            draw_helix;
   int            draw_sphere;
   double         offset;
   e2t_expr_node *trees[ SPACE_DIM ][ DERIVATIVE_LEVEL ];
@@ -48,6 +49,7 @@ typedef struct
   int            helix_seg;
   int            evolute_seg;
   int            offset_seg;
+  int            sphere_segs[ NUM_SPHERE_CIRCS ];
 } crv_t;
 
 /*

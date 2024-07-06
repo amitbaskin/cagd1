@@ -4,6 +4,8 @@
 #include "color.h"
 #include "crvtr.h"
 #include "trsn.h"
+#include "circle.h"
+#include "sphere.h"
 
 
 extern int frenet_anim_smoothness;
@@ -131,31 +133,40 @@ void draw_frenet( double param, frenet_t *frenet )
 ******************************************************************************/
 void frenet_anim_cb( int x, int y, PVOID userData )
 {
+  CAGD_POINT *p_sphere_pnts = ( CAGD_POINT * )malloc( sizeof( CAGD_POINT ) *
+                                                      NUM_OSC_PNTS );
   frenet_t frenet;
 
-  double jump = ( cur_crv.domain[1] - cur_crv.domain[0] ) /
+  double jump = ( cur_crv.domain[ 1 ] - cur_crv.domain[ 0 ] ) /
                 frenet_anim_smoothness;
 
-  double param = cur_crv.domain[0] + jump * frenet_anim_iteration;
+  double param = cur_crv.domain[ 0 ] + jump * frenet_anim_iteration;
 
-  if( param > cur_crv.domain[1] )
+  if( param > cur_crv.domain[ 1 ] )
   {
     frenet_anim_iteration = 0;
-    param = cur_crv.domain[0] + jump * frenet_anim_iteration;
+    param = cur_crv.domain[ 0 ] + jump * frenet_anim_iteration;
   }
 
   calc_frenet( param, &frenet );
-  draw_frenet( param, &frenet );
 
-  draw_osc_circle( param, &frenet );
+  if( cur_crv.draw_csys == TRUE )
+    draw_frenet( param, &frenet );
 
-  draw_helix( param, &frenet );
+  if( cur_crv.draw_osc_circ == TRUE )
+    draw_osc_circle( param, &frenet );
+
+  if( cur_crv.draw_helix == TRUE )
+    draw_helix( param, &frenet );
+
+  if( cur_crv.draw_sphere == TRUE )
+    draw_init_sphere_circle( param, &frenet, p_sphere_pnts );
 
   set_default_color();
 
   cagdRedraw();
 
-  frenet_anim_iteration++;
+  ++frenet_anim_iteration;
 }
 
 
