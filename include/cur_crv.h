@@ -32,8 +32,13 @@ enum trees
 typedef struct
 {
   int            defined;
+  int            draw_debug;
+  int            draw_cur_crv;
   int            draw_evolute;
   int            draw_offset;
+  int            draw_csys;
+  int            draw_osc_circ;
+  int            draw_sphere;
   double         offset;
   e2t_expr_node *trees[ SPACE_DIM ][ DERIVATIVE_LEVEL ];
   double         domain[ 2 ];
@@ -57,6 +62,12 @@ typedef struct
 
 crv_t cur_crv;
 
+
+int validate_pre_draw( int num_pnts );
+
+double get_jump_sample_val( double start, double end, int num_pnts );
+
+void init_all_segs();
 
 void free_all_segs();
 

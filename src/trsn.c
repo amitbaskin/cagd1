@@ -4,6 +4,7 @@
 #include "trsn.h"
 #include "vectors.h"
 #include "frenet.h"
+#include "color.h"
 
 
 /******************************************************************************
@@ -45,20 +46,16 @@ int draw_helix( double param, frenet_t *p_frenet )
 
     if( pnts != NULL )
     {
-      double jump = ( double ) 1 / HELIX_DENSITY_SAMPLES;
+      double jump = 2.0 * M_PI / HELIX_DENSITY_SAMPLES;
 
       for( int i = 0;
            i < HELIX_CYCLES * HELIX_DENSITY_SAMPLES + HELIX_CYCLES; ++i )
       {
-        CAGD_POINT pnt = { 0 };
-
-        eval_helix( jump * i * 2 * M_PI,
-                    radius,
-                    p_frenet->trsn,
+        eval_helix(  i * jump,
+                     radius,
+                     p_frenet->trsn,
                     &start_pnt,
-                    &pnt );
-
-        pnts[ i ] = pnt;
+                    &pnts[ i ] );
       }
 
       set_helix_color();

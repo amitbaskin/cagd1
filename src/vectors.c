@@ -25,7 +25,7 @@ double get_scale_inv_or_zero( double scale )
 /******************************************************************************
 * scale_div_vec
 ******************************************************************************/
-int scale_div_vec( double denom, CAGD_POINT *rp_out )
+void scale_div_vec( double denom, CAGD_POINT *rp_out )
 {
   denom = get_scale_inv_or_zero( denom );
   scale_vec( denom, rp_out );

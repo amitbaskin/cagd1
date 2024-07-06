@@ -11,14 +11,18 @@ typedef struct
   double     radius;
   CAGD_POINT crv_pos;
   CAGD_POINT center;
-  CAGD_POINT vec_to_center;
+  CAGD_POINT T_axis;
+  CAGD_POINT N_axis;
 } circle_data_t;
 
 
 void get_center_pnt( double param, circle_data_t *rp_circle_data );
 
+void eval_circ( double         param,
+                circle_data_t *p_circle_data,
+                CAGD_POINT    *rp_out );
+
 int draw_circle( double         param,
-                 frenet_t      *p_frenet,
                  circle_data_t *p_circle_data,
                  int           *p_seg_id,
                  CAGD_POINT    *rp_pnts );

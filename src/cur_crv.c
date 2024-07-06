@@ -96,56 +96,78 @@ void init_all_segs()
 
 
 /******************************************************************************
+* validate_pre_draw
+******************************************************************************/
+int validate_pre_draw( int num_pnts )
+{
+  int is_error = 0;
+
+  if (num_pnts < 0)
+  {
+    print_err("Invalid number of pnts");
+    is_error = 1;
+  }
+
+  if (is_error == 0 && cur_crv.defined == 0)
+  {
+    print_err("current curve is not defined");
+    is_error = 1;
+  }
+
+  return is_error;
+}
+
+
+/******************************************************************************
+* get_jump_sample_val
+******************************************************************************/
+double get_jump_sample_val( double start, double end, int num_pnts )
+{
+  return ( end - start ) / ( ( double )num_pnts - 1 );
+}
+
+
+/******************************************************************************
 * draw_cur_crv
 ******************************************************************************/
 int draw_cur_crv( int num_pnts )
 {
-  int is_error = 0;
+  int is_error = validate_pre_draw( num_pnts );
 
-  if( num_pnts < 0 )
-  {
-    print_err( "Invalid number of pnts" );
-    is_error = 1;
-  }
-
-  if( is_error == 0 && cur_crv.defined == 0 )
-  {
-    print_err( "current curve is not defined" );
-    is_error = 1;
-  }
-
-  if( is_error == 0 )
+  if( is_error == FALSE )
   {
     CAGD_POINT *pnts = ( CAGD_POINT * ) malloc( sizeof( CAGD_POINT ) *
-                                                ( num_pnts + 2 ) );
+                                                num_pnts );
 
     if( pnts != NULL )
     {
-      double jump = ( cur_crv.domain[ 1 ] - cur_crv.domain[ 0 ] ) / num_pnts;
+      double jump = get_jump_sample_val( cur_crv.domain[ 0 ],
+                                         cur_crv.domain[ 1 ],
+                                         num_pnts );
 
-      for( int i = 0; i < num_pnts + 1; ++i )
+      for( int i = 0; i < num_pnts; ++i )
       {
-        CAGD_POINT pnt = { 0 };
         double param = cur_crv.domain[ 0 ] + jump * i;
+        eval_cur_crv( param, POSITION, &pnts[ i ] );
 
-        eval_cur_crv( param, POSITION, &pnt );
-        pnts[ i ] = pnt;
+        if( cur_crv.draw_debug == TRUE )
+          cagdAddPoint(&pnts[i]); /////////////////////////////////// for debug
       }
 
-      cur_crv.my_seg = cagdAddPolyline( pnts, num_pnts + 1 );
-      cagdRedraw();
+      if( cur_crv.draw_cur_crv == TRUE )
+        cur_crv.my_seg = cagdAddPolyline( pnts, num_pnts );
     }
 
     free( pnts );
   }
 
-  if( cur_crv.draw_evolute )
+  if( cur_crv.draw_evolute == TRUE )
   {
     set_evolute_color();
     draw_other_crv( num_pnts, NULL, &cur_crv.evolute_seg );
   }
 
-  if( cur_crv.draw_offset )
+  if( cur_crv.draw_offset == TRUE )
   {
     set_offset_color();
     draw_other_crv( num_pnts, &cur_crv.offset, &cur_crv.offset_seg );

@@ -1,3 +1,4 @@
+#include <stdio.h>
 #include "frenet.h"
 #include "vectors.h"
 #include "color.h"

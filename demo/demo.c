@@ -353,7 +353,7 @@ void menu_callbacks( int id, int unUsed, PVOID userData )
       if( sscanf( myBuffer, "%d", &speed ) == 1 )
       {
         double inv_speed = 1 / (double)speed;
-        frenet_anim_speed = ( inv_speed ) * 100; 
+        frenet_anim_speed = (int ) ( ( inv_speed ) * 100 );
 
         if( frenet_anim_running == 1 )
         {
@@ -373,7 +373,6 @@ void menu_callbacks( int id, int unUsed, PVOID userData )
 
 int main(int argc, char *argv[])
 {
-  HMENU hMenu;
   cagdBegin( "CAGD", 512, 512 );
   HMENU op_menu = CreatePopupMenu();
   HMENU fre_menu = CreatePopupMenu();

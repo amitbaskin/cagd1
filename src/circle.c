@@ -64,27 +64,30 @@ void rotate_circ( double      angle,
 ******************************************************************************/
 void get_center_pnt( double param, circle_data_t *rp_circle_data )
 {
+  CAGD_POINT N_axis;
+  copy_vec( &rp_circle_data->N_axis, &N_axis );
+  scale_vec(rp_circle_data->radius, &N_axis);
+
   eval_cur_crv( param, POSITION, &rp_circle_data->crv_pos );
-  scale_vec( rp_circle_data->radius, &rp_circle_data->vec_to_center );
+
   add_vecs( &rp_circle_data->crv_pos,
-            &rp_circle_data->vec_to_center,
+            &N_axis,
             &rp_circle_data->center );
 }
 
 
 /******************************************************************************
-* eval_osc_circ
+* eval_circ
 ******************************************************************************/
-static void eval_osc_circ( double          param,
-                           circle_data_t *p_circle_data,
-                           const frenet_t *p_frenet,
-                           CAGD_POINT *rp_out )
+void eval_circ( double         param,
+                circle_data_t *p_circle_data,
+                CAGD_POINT    *rp_out )
 {
   CAGD_POINT T_axis;
   CAGD_POINT N_axis;
 
-  copy_vec( &p_frenet->csys[ TT ], &T_axis );
-  copy_vec( &p_frenet->csys[ NN ], &N_axis );
+  copy_vec( &p_circle_data->T_axis, &T_axis );
+  copy_vec( &p_circle_data->N_axis, &N_axis );
   copy_vec( &p_circle_data->center, rp_out );
 
   scale_vec( p_circle_data->radius * sin( param ), &T_axis );
@@ -99,7 +102,6 @@ static void eval_osc_circ( double          param,
 * draw_circle
 ******************************************************************************/
 int draw_circle( double         param,
-                 frenet_t      *p_frenet,
                  circle_data_t *p_circle_data,
                  int           *p_seg_id,
                  CAGD_POINT    *rp_pnts )
@@ -107,13 +109,13 @@ int draw_circle( double         param,
   int ok = TRUE;
 
   ok = scale_not_zero( p_circle_data->radius ) &&
-       vec_not_zero( &p_frenet->csys[ TT ] )   &&
-       vec_not_zero( &p_frenet->csys[ NN ] )   &&
+       vec_not_zero( &p_circle_data->T_axis )  &&
+       vec_not_zero( &p_circle_data->N_axis )  &&
        rp_pnts != NULL;
 
   if( ok )
   {
-    double jump = ( double ) 1 / ( NUM_OSC_PNTS - 1 );
+    double jump = 2.0 * M_PI / ( NUM_OSC_PNTS - 1 );
 
     get_center_pnt( param, p_circle_data );
 
@@ -121,9 +123,8 @@ int draw_circle( double         param,
     {
       CAGD_POINT pnt = { 0 };
 
-      eval_osc_circ(  i * jump * 2 * M_PI,
+      eval_circ(  i * jump,
                       p_circle_data,
-                      p_frenet,
                      &pnt );
 
       rp_pnts[ i ] = pnt;
