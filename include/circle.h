@@ -24,11 +24,4 @@ void eval_circ( double         param,
 
 int draw_circle( double         param,
                  circle_data_t *p_circle_data,
-                 int           *p_seg_id,
-                 CAGD_POINT    *rp_pnts );
-
-
-void rotate_circ( double      angle,
-                  CAGD_POINT *p_in_arr,
-                  CAGD_POINT *p_rot_vec,
-                  CAGD_POINT *p_out_arr );
+                 int           *p_seg_id );

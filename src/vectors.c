@@ -169,3 +169,36 @@ void cross_vecs( const CAGD_POINT *p_v1,
   rp_out->y = p_v1->z * p_v2->x - p_v1->x * p_v2->z;
   rp_out->z = p_v1->x * p_v2->y - p_v1->y * p_v2->x;
 }
+
+
+/******************************************************************************
+* rotate_vec
+******************************************************************************/
+void rotate_vec( double      angle,
+                 CAGD_POINT *p_in,
+                 CAGD_POINT *p_rot,
+                 CAGD_POINT *p_out )
+{
+  CAGD_POINT rot_scaled;
+  CAGD_POINT rot_x_in;
+
+  double rot_m_in;
+  double cos_ang = cos( angle );
+
+  // first item
+  copy_vec( p_in, p_out );
+  scale_vec( cos_ang, p_out );
+
+  // second term
+  cross_vecs( p_rot, p_in, &rot_x_in );
+  scale_vec( sin( angle ), &rot_x_in );
+
+  // third item
+  copy_vec( p_rot, &rot_scaled );
+  rot_m_in = multiply_vecs( p_rot, p_in );
+  scale_vec( ( 1 - cos_ang ) * rot_m_in, &rot_scaled );
+
+  // adding items
+  add_vecs( p_out, &rot_x_in, p_out );
+  add_vecs( p_out, &rot_scaled, p_out );
+}

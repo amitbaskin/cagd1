@@ -11,21 +11,21 @@
 #define DEFAULT_OFFSET  -0.4
 #define NUM_SPHERE_CIRCS     12
 
-enum derivative_level
+typedef enum
 {
   POSITION     = 0,
   VELOCITY     = 1,
   ACCELERATION = 2,
   JERK         = 3
-};
+} derivative_level_t;
 
 
-enum trees
+typedef enum
 {
   X_TREE = 0,
   Y_TREE = 1,
   Z_TREE = 2
-};
+} trees_t;
 
 
 typedef struct

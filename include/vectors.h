@@ -38,3 +38,8 @@ void diff_vecs( const CAGD_POINT *p_v1,
 void add_vecs( const CAGD_POINT *p_v1,
                const CAGD_POINT *p_v2,
                CAGD_POINT       *rp_out );
+
+void rotate_vec( double      angle,
+                 CAGD_POINT *p_in,
+                 CAGD_POINT *p_rot,
+                 CAGD_POINT *p_out );

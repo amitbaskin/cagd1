@@ -27,24 +27,13 @@ int draw_osc_circle( double param, frenet_t *p_frenet )
 {
   int is_error = FALSE;
 
-  CAGD_POINT *pnts =
-    ( CAGD_POINT * ) malloc( sizeof( CAGD_POINT ) * ( NUM_OSC_PNTS + 1 ) );
+  circle_data_t circle_data;
+  init_circle_data( p_frenet, &circle_data );
+  set_osc_circ_color();
 
-  is_error = pnts == NULL;
-
-  if( is_error == FALSE )
-  {
-    circle_data_t circle_data;
-    init_circle_data( p_frenet, &circle_data );
-    set_osc_circ_color();
-
-    is_error = draw_circle(  param,
-                            &circle_data,
-                            &cur_crv.osc_circ_seg,
-                             pnts );
-
-    free( pnts );
-  }
+  is_error = draw_circle( param,
+                          &circle_data,
+                          &cur_crv.osc_circ_seg );
 
   return is_error;
 }
