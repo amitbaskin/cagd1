@@ -9,7 +9,7 @@
 #define K_NOT_USED      -1
 #define NUM_SAMPS        200
 #define DEFAULT_OFFSET  -0.4
-#define NUM_SPHERE_CIRCS 7
+#define NUM_SPHERE_CIRCS 9
 
 typedef enum
 {

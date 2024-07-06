@@ -118,9 +118,11 @@ int draw_sphere( double param, frenet_t *p_frenet )
   if( is_error == FALSE )
   {
     circle_data.radius = 0.5;
+    circle_data.is_center_defined = TRUE;
+
     copy_vec( &p_frenet->csys[ TT ], &circle_data.T_axis );
     copy_vec( &center_vec, &circle_data.N_axis );
-
+    eval_cur_crv( param, POSITION, &circle_data.crv_pos );
     set_sphere_color();
 
     double angle = 2 * M_PI / NUM_SPHERE_CIRCS;
@@ -129,9 +131,9 @@ int draw_sphere( double param, frenet_t *p_frenet )
     {
       circle_data_t cur_circ_data = circle_data;
 
-      CAGD_POINT *p_out = &cur_circ_data.N_axis;
+      CAGD_POINT *p_out = &cur_circ_data.T_axis;
       CAGD_POINT  in    = *p_out;
-      CAGD_POINT  rot   = cur_circ_data.T_axis;
+      CAGD_POINT  rot   = cur_circ_data.N_axis;
 
       rotate_vec( i * angle, &in, &rot, p_out );
 

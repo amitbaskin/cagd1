@@ -28,6 +28,8 @@ int draw_osc_circle( double param, frenet_t *p_frenet )
   int is_error = FALSE;
 
   circle_data_t circle_data;
+  circle_data.is_center_defined = FALSE;
+
   init_circle_data( p_frenet, &circle_data );
   set_osc_circ_color();
 

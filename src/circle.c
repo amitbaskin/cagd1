@@ -38,8 +38,8 @@ void eval_circ( double         param,
   copy_vec( &p_circle_data->N_axis, &N_axis );
   copy_vec( &p_circle_data->center, rp_out );
 
-  normalize_vec( &T_axis );
-  normalize_vec( &N_axis );
+  //normalize_vec( &T_axis );
+  //normalize_vec( &N_axis );
 
   scale_vec( p_circle_data->radius * sin( param ), &T_axis );
   scale_vec( p_circle_data->radius * cos( param ), &N_axis );
@@ -70,7 +70,8 @@ int draw_circle( double         param,
   {
     double jump = 2.0 * M_PI / ( NUM_OSC_PNTS - 1 );
 
-    get_center_pnt( param, p_circle_data );
+    if( p_circle_data->is_center_defined == FALSE )
+      get_center_pnt( param, p_circle_data );
 
     for( int i = 0; i < NUM_OSC_PNTS; ++i )
       eval_circ( i * jump, p_circle_data, &p_pnts[ i ] );

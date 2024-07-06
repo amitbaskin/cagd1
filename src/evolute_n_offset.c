@@ -52,6 +52,7 @@ int draw_other_crv( int     num_pnts,
       for( int i = 0; i < num_pnts; ++i )
       {
         circle_data_t circle_data = { 0 };
+        circle_data.is_center_defined = FALSE;
 
         double param = cur_crv.domain[ 0 ] + jump * i;
 

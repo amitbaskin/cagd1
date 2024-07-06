@@ -177,7 +177,7 @@ void rotate_vec( double      angle,
 {
   CAGD_POINT trans;
 
-  normalize_vec( p_rot );
+  //normalize_vec( p_rot );
 
   double sin_a = sin( angle );
   double cos_a = cos( angle );
@@ -195,7 +195,10 @@ void rotate_vec( double      angle,
   double uxuz = ux * uz;
   double uyuz = uy * uz;
 
-  diff_vecs( p_in, p_rot, &trans );
+  copy_vec( p_in, &trans );
+
+  // translation
+  //diff_vecs( p_in, p_rot, &trans );
 
   p_out->x = ( cos_a + uxux * n_cos_a )      * trans.x +
              ( uxuy * n_cos_a - uz * sin_a ) * trans.y +
@@ -209,7 +212,8 @@ void rotate_vec( double      angle,
              ( uyuz * n_cos_a + ux * sin_a ) * trans.y +
              ( cos_a + uzuz * n_cos_a )      * trans.z;
 
-  add_vecs( p_out, p_rot, p_out );
+  // retranslation
+  //add_vecs( p_out, p_rot, p_out );
 
-  normalize_vec( p_out );
+  //normalize_vec( p_out );
 }

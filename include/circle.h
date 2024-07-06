@@ -9,6 +9,7 @@ struct CAGD_POINT;
 typedef struct
 {
   double     radius;
+  int        is_center_defined;
   CAGD_POINT crv_pos;
   CAGD_POINT center;
   CAGD_POINT T_axis;
