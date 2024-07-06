@@ -33,6 +33,15 @@ void scale_div_vec( double denom, CAGD_POINT *rp_out )
 
 
 /******************************************************************************
+* normalize_vec
+******************************************************************************/
+void normalize_vec( CAGD_POINT *p_vec )
+{
+  scale_div_vec( vec_len( p_vec ), p_vec );
+}
+
+
+/******************************************************************************
 * double_cmp
 ******************************************************************************/
 int double_cmp( double scale_1, double scale_2 )
@@ -105,19 +114,6 @@ void scale_vec( double scale, CAGD_POINT *p_vec )
 
 
 /******************************************************************************
-* normalize_vec
-******************************************************************************/
-void normalize_vec( CAGD_POINT *p_vec )
-{
-  double length = vec_len( p_vec );
-
-  p_vec->x /= length;
-  p_vec->y /= length;
-  p_vec->z /= length;
-}
-
-
-/******************************************************************************
 * diff_vecs
 ******************************************************************************/
 void diff_vecs( const CAGD_POINT *p_v1,
@@ -181,6 +177,8 @@ void rotate_vec( double      angle,
 {
   CAGD_POINT trans;
 
+  normalize_vec( p_rot );
+
   double sin_a = sin( angle );
   double cos_a = cos( angle );
   double n_cos_a = 1 - cos( angle );
@@ -212,4 +210,6 @@ void rotate_vec( double      angle,
              ( cos_a + uzuz * n_cos_a )      * trans.z;
 
   add_vecs( p_out, p_rot, p_out );
+
+  normalize_vec( p_out );
 }

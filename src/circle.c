@@ -38,6 +38,9 @@ void eval_circ( double         param,
   copy_vec( &p_circle_data->N_axis, &N_axis );
   copy_vec( &p_circle_data->center, rp_out );
 
+  normalize_vec( &T_axis );
+  normalize_vec( &N_axis );
+
   scale_vec( p_circle_data->radius * sin( param ), &T_axis );
   scale_vec( p_circle_data->radius * cos( param ), &N_axis );
 
