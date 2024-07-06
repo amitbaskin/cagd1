@@ -18,7 +18,6 @@ static int get_crvtr_derivative( double    param,
 
   if( is_error == FALSE )
   {
-    double tmp;
     double l_d1;
     double l_d1xd2;
     double numer_1;
@@ -57,7 +56,7 @@ static int get_crvtr_derivative( double    param,
 
     // calc second numerator
     numer_2 = multiply_vecs( &d2, &d3 );
-    scale_vec( 3 * l_d1xd2, &numer_1 );
+    numer_2 = 3 * numer_2 * l_d1xd2;
 
     // calc first denominator
     denom_1 = l_d1 * pow( l_d1xd2, 2 );

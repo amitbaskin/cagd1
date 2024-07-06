@@ -39,16 +39,22 @@ int draw_other_crv( int     num_pnts,
 
       for( int i = 0; i < num_pnts + 1; ++i )
       {
-        circle_data_t crvtr_data;
-        frenet_t     frenet;
+        circle_data_t circle_data = { 0 };
+        frenet_t      frenet;
 
         double param = cur_crv.domain[ 0 ] + jump * i;
 
         calc_frenet( param, &frenet );
 
-        get_circle_data( param, p_radius, NULL, &frenet, &crvtr_data );
+        if( p_radius == NULL )
+          circle_data.radius = get_scale_inv_or_zero( frenet.crvtr );
+        else
+          circle_data.radius = *p_radius;
 
-        pnts[ i ] = crvtr_data.center;
+        copy_vec( &frenet.csys[ NN ], &circle_data.vec_to_center );
+        get_center_pnt( param, &circle_data );
+
+        pnts[ i ] = circle_data.center;
       }
 
       if( *p_seg_id == K_NOT_USED )
