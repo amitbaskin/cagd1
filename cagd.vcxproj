@@ -100,7 +100,6 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="lab1\expr2tree.c" />
-    <ClCompile Include="lab1\load_cur_crv.c" />
     <ClCompile Include="src\cagd.c">
       <Optimization Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Disabled</Optimization>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Use</PrecompiledHeader>
@@ -125,6 +124,7 @@
     <ClCompile Include="src\cur_crv.c" />
     <ClCompile Include="src\evolute_n_offset.c" />
     <ClCompile Include="src\frenet.c" />
+    <ClCompile Include="src\load_cur_crv.c" />
     <ClCompile Include="src\menus.c" />
     <ClCompile Include="src\segment.c">
       <Optimization Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Disabled</Optimization>

@@ -24,9 +24,6 @@
     <ClCompile Include="src\segment.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="lab1\load_cur_crv.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="lab1\expr2tree.c">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -58,6 +55,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\menus.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\load_cur_crv.c">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
