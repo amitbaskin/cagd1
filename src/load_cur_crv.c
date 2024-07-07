@@ -2,6 +2,7 @@
 #include "load_cur_crv.h"
 #include "cur_crv.h"
 #include "color.h"
+#include "vectors.h"
 
 
 extern int num_samples;
@@ -63,16 +64,19 @@ void validate_tree( int i, int j )
 ******************************************************************************/
 void init_cur_crv()
 {
-  free_all_segs( TRUE );
-
   int is_error = FALSE;
 
   e2t_expr_node *tree = NULL;
 
-  cur_crv.defined = TRUE;
-  cur_crv.offset  = DEFAULT_OFFSET;
+  free_all_segs( TRUE );
 
-  for( int i = 0; !is_error && i < SPACE_DIM; ++i )
+  if( double_cmp( cur_crv.domain[ 0 ], cur_crv.domain[ 1 ] ) > 0 )
+  {
+    is_error = TRUE;
+    print_err( "Error: Invalid tmin and / or tmax values.\n" );
+  }
+
+  for( int i = 0; is_error == FALSE && i < SPACE_DIM; ++i )
   {
     printf( "\n\nVariable #%d is: %s\n\n", i, cur_crv.expressions[ i ] );
 
@@ -111,10 +115,14 @@ void init_cur_crv()
     }
   }
 
-  if( is_error )
-    clean_cur_crv();
+  if( is_error == TRUE )
+    cur_crv.defined = FALSE;
   else
+  {
+    cur_crv.defined = TRUE;
+    cur_crv.offset = DEFAULT_OFFSET;
     draw_cur_crv( num_samples );
+  }
 }
 
 
@@ -164,7 +172,7 @@ void load_cur_crv( int dummy1, int dummy2, void *p_data )
 {
   FILE *file = NULL;
 
-  int is_error   = 0;
+  int is_error   = FALSE;
   int line_count = 0;
   int line_len   = 0;
 
@@ -186,9 +194,9 @@ void load_cur_crv( int dummy1, int dummy2, void *p_data )
       cur_crv.expressions[ i ][ j ] = '\0';
   }
 
-  while( !is_error                   &&
-          line_count < SPACE_DIM + 1 &&
-          fgets( line, sizeof( line ), file ) )
+  while( is_error == FALSE          &&
+         line_count < SPACE_DIM + 1 &&
+         fgets( line, sizeof( line ), file ) )
   {
     printf( "\nProcessing line: %s\n", line );
 
@@ -208,9 +216,11 @@ void load_cur_crv( int dummy1, int dummy2, void *p_data )
       }
       else if( line_count == SPACE_DIM + 1 )
       {
-        if( sscanf( line, "%lf %lf", &cur_crv.domain[ 0 ],
-                                     &cur_crv.domain[ 1 ] ) != 2 ||
-            cur_crv.domain[ 0 ] > cur_crv.domain[ 1 ] )
+        if( sscanf( line,
+                    "%lf %lf",
+                    &cur_crv.domain[ 0 ],
+                    &cur_crv.domain[ 1 ] ) != 2 ||
+            double_cmp( cur_crv.domain[ 0 ], cur_crv.domain[ 1 ] ) > 0 )
         {
           print_err( "Error: Invalid tmin and / or tmax values.\n" );
           fclose( file );

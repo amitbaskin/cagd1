@@ -213,13 +213,13 @@ void menu_callbacks( int id, int unUsed, PVOID userData )
     break;
 
   case CAGD_FRENET_ANIM_START:
-    is_error = frenet_start_animation();
+    is_error = start_anim();
     break;
 
   case CAGD_FRENET_ANIM_STOP:
     if( frenet_anim_running == 1 )
     {
-      stop_frenet_animation();
+      stop_anim();
     }
     break;
 
@@ -321,7 +321,7 @@ void left_mouse_click_cb( int x, int y, PVOID userData )
 
       if( frenet_anim_running == 1 )
       {
-        stop_frenet_animation();
+        stop_anim();
       }
 
       if( is_menu_checked( g_lmb_menu, CAGD_LMB_FRENET_MENU ) )
@@ -403,6 +403,8 @@ void handle_offset_curve_check_menu()
 ******************************************************************************/
 void handle_minimum_domain_menu()
 {
+  stop_anim();
+
   if( DialogBox( cagdGetModule(),
       MAKEINTRESOURCE( IDD_LOWER_DOMAIN ),
       cagdGetWindow(),
@@ -426,6 +428,8 @@ void handle_minimum_domain_menu()
 ******************************************************************************/
 void handle_maximum_domain_menu()
 {
+  stop_anim();
+
   if( DialogBox( cagdGetModule(),
       MAKEINTRESOURCE( IDD_HIGHER_DOMAIN ),
       cagdGetWindow(),

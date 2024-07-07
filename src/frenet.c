@@ -137,7 +137,7 @@ void frenet_anim_cb( int x, int y, PVOID userData )
 {
   if( are_all_anim_menus_unchecked() )
   {
-    stop_frenet_animation();
+    stop_anim();
     return;
   }
 
@@ -180,30 +180,34 @@ void frenet_anim_cb( int x, int y, PVOID userData )
 }
 
 /******************************************************************************
-* frenet_start_animation
+* start_anim
 ******************************************************************************/
-int frenet_start_animation()
+int start_anim()
 {
-  int is_error = 0;
+  int is_error = FALSE;
+
+  redraw_cb();
+
+  is_error = cur_crv.defined == 0;
 
   if( cur_crv.defined == 0 )
   {
-    print_err( "Please Load a Curve first" );
+    print_err( "Current Curve is Not Defined" );
     is_error = 1;
   }
-  if( is_error == 0 )
+  else
   {
     frenet_anim_running = 1;
     cagdRegisterCallback( CAGD_TIMER, frenet_anim_cb, NULL );
+
+    EnableMenuItem( g_animation_menu,
+                    CAGD_FRENET_ANIM_STOP,
+                    frenet_anim_running ? MF_ENABLED : MF_GRAYED );
+
+    EnableMenuItem( g_animation_menu,
+                    CAGD_FRENET_ANIM_START,
+                    frenet_anim_running ? MF_GRAYED : MF_ENABLED );
   }
-
-  EnableMenuItem( g_animation_menu,
-                  CAGD_FRENET_ANIM_STOP,
-                  frenet_anim_running ? MF_ENABLED : MF_GRAYED );
-
-  EnableMenuItem( g_animation_menu,
-                  CAGD_FRENET_ANIM_START,
-                  frenet_anim_running ? MF_GRAYED : MF_ENABLED );
 
   return is_error;
 }
@@ -217,9 +221,9 @@ void reset_frenet_anim_iteration()
 }
 
 /******************************************************************************
-* stop_frenet_animation
+* stop_anim
 ******************************************************************************/
-void stop_frenet_animation()
+void stop_anim()
 {
   cagdRegisterCallback( CAGD_TIMER, NULL, NULL );
 
