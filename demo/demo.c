@@ -88,6 +88,6 @@ int main(int argc, char *argv[])
 
   cagdShowHelp();
   cagdMainLoop();
-  
+
   return 0;
 }

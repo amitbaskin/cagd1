@@ -16,9 +16,13 @@ int scale_not_zero( double scale )
 /******************************************************************************
 * get_scale_inv_or_zero
 ******************************************************************************/
-double get_scale_inv_or_zero( double scale )
+int get_scale_inv_or_zero( double scale, double *rp_res )
 {
-  return scale_not_zero( scale ) ? 1 / scale : 0.0;
+  int is_error = !scale_not_zero( scale );
+
+  *rp_res = is_error == TRUE ? 0.0 : 1 / scale;
+
+  return is_error;
 }
 
 
@@ -27,8 +31,22 @@ double get_scale_inv_or_zero( double scale )
 ******************************************************************************/
 int scale_div_vec( double denom, CAGD_POINT *rp_out )
 {
-  denom = get_scale_inv_or_zero( denom );
-  scale_vec( denom, rp_out );
+  double res = K_NOT_USED;
+
+  int is_error = get_scale_inv_or_zero( denom, &res );
+
+  scale_vec( res, rp_out );
+
+  return is_error;
+}
+
+
+/******************************************************************************
+* normalize_vec
+******************************************************************************/
+int normalize_vec( CAGD_POINT *p_vec )
+{
+  return scale_div_vec( vec_len( p_vec ), p_vec );
 }
 
 
@@ -59,11 +77,11 @@ int is_scale_initialized( double scale )
 ******************************************************************************/
 int vec_not_zero( const CAGD_POINT *p_vec )
 {
-  int status = 1;
+  int status = FALSE;
 
-  status = status && scale_not_zero( p_vec->x );
-  status = status && scale_not_zero( p_vec->y );
-  status = status && scale_not_zero( p_vec->z );
+  status = status || scale_not_zero( p_vec->x );
+  status = status || scale_not_zero( p_vec->y );
+  status = status || scale_not_zero( p_vec->z );
 
   return status;
 }
@@ -101,19 +119,6 @@ void scale_vec( double scale, CAGD_POINT *p_vec )
   p_vec->x *= scale;
   p_vec->y *= scale;
   p_vec->z *= scale;
-}
-
-
-/******************************************************************************
-* normalize_vec
-******************************************************************************/
-void normalize_vec( CAGD_POINT *p_vec )
-{
-  double length = vec_len( p_vec );
-
-  p_vec->x /= length;
-  p_vec->y /= length;
-  p_vec->z /= length;
 }
 
 
@@ -168,4 +173,48 @@ void cross_vecs( const CAGD_POINT *p_v1,
   rp_out->x = p_v1->y * p_v2->z - p_v1->z * p_v2->y;
   rp_out->y = p_v1->z * p_v2->x - p_v1->x * p_v2->z;
   rp_out->z = p_v1->x * p_v2->y - p_v1->y * p_v2->x;
+}
+
+
+/******************************************************************************
+* rotate_vec
+******************************************************************************/
+void rotate_vec( double      angle,
+                 CAGD_POINT *p_in,
+                 CAGD_POINT *p_rot,
+                 CAGD_POINT *p_out )
+{
+  double cos_a = cos( angle );
+  double sin_a = sin( angle );
+
+  double ux = p_rot->x;
+  double uy = p_rot->y;
+  double uz = p_rot->z;
+
+  double mat[ 3 ][ 3 ] =
+  {
+    { cos_a + ux * ux * ( 1 - cos( angle )             ),
+      ux * uy * ( 1 - cos( angle ) ) - uz * sin( angle ),
+      ux * uz * ( 1 - cos( angle ) ) + uy * sin( angle ) },
+
+    { uy * ux * ( 1 - cos( angle ) ) + uz * sin( angle ),
+      cos( angle ) + uy * uy * ( 1 - cos( angle )      ),
+      uy * uz * ( 1 - cos( angle ) ) - ux * sin( angle ) },
+
+    { uz * ux * ( 1 - cos( angle ) ) - uy * sin( angle ),
+      uz * uy * ( 1 - cos( angle ) ) + ux * sin( angle ),
+      cos( angle ) + uz * uz * ( 1 - cos( angle )      ) }
+  };
+
+  p_out->x = mat[ 0 ][ 0 ] * p_in->x +
+             mat[ 0 ][ 1 ] * p_in->y +
+             mat[ 0 ][ 2 ] * p_in->z;
+
+  p_out->y = mat[ 1 ][ 0 ] * p_in->x +
+             mat[ 1 ][ 1 ] * p_in->y +
+             mat[ 1 ][ 2 ] * p_in->z;
+
+  p_out->z = mat[ 2 ][ 0 ] * p_in->x +
+             mat[ 2 ][ 1 ] * p_in->y +
+             mat[ 2 ][ 2 ] * p_in->z;
 }

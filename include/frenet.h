@@ -4,12 +4,12 @@
 #include "cur_crv.h"
 
 
-enum frenet_axis
+typedef enum
 {
   TT = 0,
   NN = 1,
   BB = 2
-};
+} frenet_axis_t;
 
 typedef struct frenet_t
 {

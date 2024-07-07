@@ -5,35 +5,46 @@
 
 
 #define SPACE_DIM        3
-#define DERIVATIVE_LEVEL 5
+#define DERIVATIVE_LEVEL 4
 #define K_NOT_USED      -1
 #define NUM_SAMPS        200
 #define DEFAULT_OFFSET  -0.4
+#define NUM_SPHERE_CIRCS 9
 
+typedef enum
+{
+  NO_ERR      = 0,
+  GENERAL_ERR = 1
+} err_t;
 
-enum derivative_level
+typedef enum
 {
   POSITION     = 0,
   VELOCITY     = 1,
   ACCELERATION = 2,
-  JERK         = 3,
-  D4           = 4
-};
+  JERK         = 3
+} derivative_level_t;
 
 
-enum trees
+typedef enum
 {
   X_TREE = 0,
   Y_TREE = 1,
   Z_TREE = 2
-};
+} trees_t;
 
 
 typedef struct
 {
   int            defined;
+  int            draw_debug;
+  int            draw_cur_crv;
   int            draw_evolute;
   int            draw_offset;
+  int            draw_csys;
+  int            draw_osc_circ;
+  int            draw_helix;
+  int            draw_sphere;
   double         offset;
   e2t_expr_node *trees[ SPACE_DIM ][ DERIVATIVE_LEVEL ];
   double         domain[ 2 ];
@@ -43,6 +54,7 @@ typedef struct
   int            helix_seg;
   int            evolute_seg;
   int            offset_seg;
+  int            sphere_segs[ NUM_SPHERE_CIRCS ];
 } crv_t;
 
 /*
@@ -58,7 +70,13 @@ typedef struct
 crv_t cur_crv;
 
 
-void free_all_segs( BOOL clean_cur_crv_seg );
+int validate_pre_draw( int num_pnts );
+
+double get_jump_sample_val( double start, double end, int num_pnts );
+
+void init_all_segs();
+
+void free_all_segs();
 
 void print_err( char *p_str );
 

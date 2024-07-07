@@ -5,6 +5,8 @@
 #include "frenet.h"
 #include "evolute_n_offset.h"
 #include "color.h"
+#include "crvtr.h"
+#include "trsn.h"
 
 char myBuffer[BUFSIZ];
 UINT myText;
@@ -16,6 +18,8 @@ extern int num_samples;
 extern int frenet_anim_running;
 extern int frenet_anim_speed;
 extern int frenet_anim_smoothness;
+
+extern void myMessage( PSTR title, PSTR message, UINT type );
 
 /******************************************************************************
 * init_menus
@@ -246,7 +250,7 @@ void handle_anim_speed_menu()
     if( sscanf( myBuffer, "%d", &speed ) == 1 )
     {
       double inv_speed = 1 / ( double )speed;
-      frenet_anim_speed = ( inv_speed ) * 100;
+      frenet_anim_speed = ( int )( inv_speed * 100 );
 
       //TODO if have time. adjust anim speed values
 

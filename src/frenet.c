@@ -1,8 +1,11 @@
+#include <stdio.h>
 #include "frenet.h"
 #include "vectors.h"
 #include "color.h"
 #include "crvtr.h"
 #include "trsn.h"
+#include "circle.h"
+#include "sphere.h"
 #include "menus.h"
 
 
@@ -43,20 +46,19 @@ void calc_frenet( double param, frenet_t *frenet )
 
   // calc T
   eval_cur_crv( param, VELOCITY, &d1 );
-  copy_vec( &d1, &frenet->csys[ 0 ] );
+  copy_vec( &d1, &frenet->csys[ TT ] );
   l_d1 = vec_len( &d1 );
-  scale_div_vec( l_d1, &frenet->csys[ 0 ] );
+  scale_div_vec( l_d1, &frenet->csys[ TT ] );
 
   // calc B
   eval_cur_crv( param, ACCELERATION, &d2 );
   cross_vecs( &d1, &d2, &d1xd2 );
-  copy_vec( &d1xd2, &frenet->csys[ 2 ] );
+  copy_vec( &d1xd2, &frenet->csys[ BB ] );
   l_d1xd2 = vec_len( &d1xd2 );
-  scale_div_vec( l_d1xd2, &frenet->csys[ 2 ] );
+  scale_div_vec( l_d1xd2, &frenet->csys[ BB ] );
 
   // calc curvature
-  tmp = pow( l_d1, 3 );
-  tmp = get_scale_inv_or_zero( tmp );
+  get_scale_inv_or_zero( pow( l_d1, 3 ), &tmp );
   frenet->crvtr = tmp * l_d1xd2;
 
   printf( "curvature: %f\n", frenet->crvtr );
@@ -73,22 +75,18 @@ void calc_frenet( double param, frenet_t *frenet )
 
   // calc N
   diff_vecs( &d1d1_d2, &d1d2_d1, &d2_diff_d1 );
-  tmp = l_d1 * l_d1xd2;
   scale_div_vec( l_d1 * l_d1xd2, &d2_diff_d1 );
   l_d2_diff_d1 = vec_len( &d2_diff_d1 );
   scale_div_vec( l_d2_diff_d1, &d2_diff_d1 );
-  copy_vec( &d2_diff_d1, &frenet->csys[ 1 ] );
+  copy_vec( &d2_diff_d1, &frenet->csys[ NN ] );
 
   // calc torsion
   eval_cur_crv( param, JERK, &d3 );
   d3_mul_d1xd2 = multiply_vecs( &d3, &d1xd2 );
-  tmp = pow( l_d1xd2, 2 );
-  tmp = get_scale_inv_or_zero( tmp );
+  get_scale_inv_or_zero( pow( l_d1xd2, 2 ), &tmp );
   frenet->trsn = d3_mul_d1xd2 * tmp;
 
-  // calc sphere vec
-
-  printf( "torsion: %f\n\n", frenet->crvtr );
+  printf( "torsion: %f\n\n", frenet->trsn );
 }
 
 
@@ -97,31 +95,31 @@ void calc_frenet( double param, frenet_t *frenet )
 ******************************************************************************/
 void draw_frenet( double param, frenet_t *frenet )
 {
-  CAGD_POINT T[ 2 ] = { frenet->pos };
-  CAGD_POINT N[ 2 ] = { frenet->pos };
-  CAGD_POINT B[ 2 ] = { frenet->pos };
+  CAGD_POINT T_axis[ 2 ] = { frenet->pos };
+  CAGD_POINT N_axis[ 2 ] = { frenet->pos };
+  CAGD_POINT B_axis[ 2 ] = { frenet->pos };
 
-  add_vecs( &frenet->pos, &frenet->csys[ 0 ], &T[ 1 ] );
-  add_vecs( &frenet->pos, &frenet->csys[ 1 ], &N[ 1 ] );
-  add_vecs( &frenet->pos, &frenet->csys[ 2 ], &B[ 1 ] );
+  add_vecs( &frenet->pos, &frenet->csys[ TT ], &T_axis[ 1 ] );
+  add_vecs( &frenet->pos, &frenet->csys[ NN ], &N_axis[ 1 ] );
+  add_vecs( &frenet->pos, &frenet->csys[ BB ], &B_axis[ 1 ] );
 
-  if( cur_crv.frenet_segs[ 0 ] == K_NOT_USED )
+  if( cur_crv.frenet_segs[ TT ] == K_NOT_USED )
   {
     set_tan_color();
-    cur_crv.frenet_segs[ 0 ] = cagdAddPolyline( T, 2 );
+    cur_crv.frenet_segs[ TT ] = cagdAddPolyline( T_axis, 2 );
     set_norm_color();
-    cur_crv.frenet_segs[ 1 ] = cagdAddPolyline( N, 2 );
+    cur_crv.frenet_segs[ NN ] = cagdAddPolyline( N_axis, 2 );
     set_bi_color();
-    cur_crv.frenet_segs[ 2 ] = cagdAddPolyline( B, 2 );
+    cur_crv.frenet_segs[ BB ] = cagdAddPolyline( B_axis, 2 );
   }
   else
   {
     set_tan_color();
-    cagdReusePolyline( cur_crv.frenet_segs[ 0 ], T, 2 );
+    cagdReusePolyline( cur_crv.frenet_segs[ TT ], T_axis, 2 );
     set_norm_color();
-    cagdReusePolyline( cur_crv.frenet_segs[ 1 ], N, 2 );
+    cagdReusePolyline( cur_crv.frenet_segs[ NN ], N_axis, 2 );
     set_bi_color();
-    cagdReusePolyline( cur_crv.frenet_segs[ 2 ], B, 2 );
+    cagdReusePolyline( cur_crv.frenet_segs[ BB ], B_axis, 2 );
   }
 
   set_default_color();
@@ -143,15 +141,15 @@ void frenet_anim_cb( int x, int y, PVOID userData )
 
   frenet_t frenet;
 
-  double jump = ( cur_crv.domain[1] - cur_crv.domain[0] ) /
-                frenet_anim_smoothness;
+  double jump = ( cur_crv.domain[ 1 ] - cur_crv.domain[ 0 ] ) /
+    frenet_anim_smoothness;
 
-  double param = cur_crv.domain[0] + jump * frenet_anim_iteration;
+  double param = cur_crv.domain[ 0 ] + jump * frenet_anim_iteration;
 
-  if( param > cur_crv.domain[1] )
+  if( param > cur_crv.domain[ 1 ] )
   {
     frenet_anim_iteration = 0;
-    param = cur_crv.domain[0] + jump * frenet_anim_iteration;
+    param = cur_crv.domain[ 0 ] + jump * frenet_anim_iteration;
   }
 
   free_all_segs( FALSE );
@@ -171,13 +169,16 @@ void frenet_anim_cb( int x, int y, PVOID userData )
   if( is_menu_checked( g_anim_settings_menu, CAGD_ANIM_TORSION_MENU ) )
   {
     draw_helix( param, &frenet );
+
+    if( cur_crv.draw_sphere == TRUE )
+      draw_sphere( param, &frenet );
+
+    set_default_color();
+
+    cagdRedraw();
+
+    ++frenet_anim_iteration;
   }
-
-  set_default_color();
-
-  cagdRedraw();
-
-  frenet_anim_iteration++;
 }
 
 /******************************************************************************

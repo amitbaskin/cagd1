@@ -9,7 +9,7 @@
 
 int scale_not_zero( double scale );
 
-double get_scale_inv_or_zero( double scale );
+int get_scale_inv_or_zero( double scale, double *rp_res );
 
 int scale_div_vec( double denom, CAGD_POINT *rp_out );
 
@@ -23,7 +23,7 @@ double vec_len( const CAGD_POINT *p_vec );
 
 void scale_vec( double scale, CAGD_POINT *p_vec );
 
-void normalize_vec( CAGD_POINT *p_vec );
+int normalize_vec( CAGD_POINT *p_vec );
 
 double multiply_vecs( const CAGD_POINT *p_v1, const CAGD_POINT *p_v2 );
 
@@ -38,3 +38,8 @@ void diff_vecs( const CAGD_POINT *p_v1,
 void add_vecs( const CAGD_POINT *p_v1,
                const CAGD_POINT *p_v2,
                CAGD_POINT       *rp_out );
+
+void rotate_vec( double      angle,
+                 CAGD_POINT *p_in,
+                 CAGD_POINT *p_rot,
+                 CAGD_POINT *p_out );
