@@ -8,6 +8,7 @@
 #include "crvtr.h"
 #include "trsn.h"
 #include "sphere.h"
+#include "load_cur_crv.h"
 
 char myBuffer[BUFSIZ];
 UINT myText;
@@ -15,6 +16,7 @@ HMENU g_lmb_menu = NULL;
 HMENU g_options_menu = NULL;
 HMENU g_animation_menu = NULL;
 HMENU g_offset_menu = NULL;
+HMENU g_cur_curve_menu = NULL;
 
 extern HMENU g_anim_settings_menu;
 extern int num_samples;
@@ -34,12 +36,14 @@ void init_menus()
   HMENU lmb_menu = CreatePopupMenu(); // lmb sub menu
   HMENU anim_settings_menu = CreatePopupMenu(); // animation settings menu
   HMENU offset_menu = CreatePopupMenu(); // animation settings menu
+  HMENU cur_curve_menu = CreatePopupMenu(); // animation settings menu
 
   g_lmb_menu = lmb_menu;
   g_anim_settings_menu = anim_settings_menu;
   g_options_menu = op_menu;
   g_animation_menu = fre_menu;
   g_offset_menu = offset_menu;
+  g_cur_curve_menu = cur_curve_menu;
 
   // options
   AppendMenu( op_menu, MF_STRING, CAGD_SEGS, "Change Refinement" );
@@ -47,6 +51,9 @@ void init_menus()
   AppendMenu( op_menu, MF_STRING | MF_POPUP, ( UINT_PTR )offset_menu, "Offset Curve" );
   AppendMenu( op_menu, MF_STRING | MF_POPUP, ( UINT_PTR )lmb_menu, "Left Mouse button" );
   AppendMenu( op_menu, MF_STRING | MF_POPUP, ( UINT_PTR )anim_settings_menu, "Animation Settings" );
+  AppendMenu( op_menu, MF_STRING | MF_POPUP, ( UINT_PTR )cur_curve_menu, "Current Curve Settings" );
+  AppendMenu( op_menu, MF_SEPARATOR, 0, NULL );
+  AppendMenu( op_menu, MF_STRING, CAGD_REDRAW_ALL, "Redraw All" );
 
   // frenet
   AppendMenu( fre_menu, MF_STRING, CAGD_FRENET_ANIM_START, "Start Animation" );
@@ -71,6 +78,10 @@ void init_menus()
   AppendMenu( offset_menu, MF_SEPARATOR, 0, NULL );
   AppendMenu( offset_menu, MF_STRING, CAGD_OFFSET_CURVE_VALUE_MENU, "Set Offset Value" );
 
+  // Current Curve settings sub menu
+  AppendMenu( cur_curve_menu, MF_STRING, CAGD_LOWER_DOMAIN_MENU, "Change minimum t value" );
+  AppendMenu( cur_curve_menu, MF_STRING, CAGD_HIGHER_DOMAIN_MENU, "Change maximum t value" );
+
 
   // adding to cagd
   cagdAppendMenu( fre_menu, "Animation" );
@@ -84,7 +95,7 @@ void init_menus()
 }
 
 /******************************************************************************
-* myDialogProc
+* myDialogProc REFINEMENT DIALOG
 ******************************************************************************/
 LRESULT CALLBACK myDialogProc( HWND hDialog, UINT message, WPARAM wParam, LPARAM lParam )
 {
@@ -105,7 +116,7 @@ LRESULT CALLBACK myDialogProc( HWND hDialog, UINT message, WPARAM wParam, LPARAM
 }
 
 /******************************************************************************
-* myDialogProc2
+* myDialogProc2 ANIMATION SPEED DIALOG
 ******************************************************************************/
 LRESULT CALLBACK myDialogProc2( HWND hDialog, UINT message, WPARAM wParam, LPARAM lParam )
 {
@@ -136,6 +147,48 @@ LRESULT CALLBACK offset_value_proc( HWND hDialog, UINT message, WPARAM wParam, L
   {
   case IDOK:
     GetDlgItemText( hDialog, IDC_OFFSET_VALUE_EDIT, myBuffer, sizeof( myBuffer ) );
+    EndDialog( hDialog, TRUE );
+    return TRUE;
+  case IDCANCEL:
+    EndDialog( hDialog, FALSE );
+    return TRUE;
+  default:
+    return FALSE;
+  }
+}
+
+/******************************************************************************
+* lower_domain_proc
+******************************************************************************/
+LRESULT CALLBACK lower_domain_proc( HWND hDialog, UINT message, WPARAM wParam, LPARAM lParam )
+{
+  if( message != WM_COMMAND )
+    return FALSE;
+  switch( LOWORD( wParam ) )
+  {
+  case IDOK:
+    GetDlgItemText( hDialog, IDC_LOWER_DOMAIN_EDIT, myBuffer, sizeof( myBuffer ) );
+    EndDialog( hDialog, TRUE );
+    return TRUE;
+  case IDCANCEL:
+    EndDialog( hDialog, FALSE );
+    return TRUE;
+  default:
+    return FALSE;
+  }
+}
+
+/******************************************************************************
+* higher_domain_proc
+******************************************************************************/
+LRESULT CALLBACK higher_domain_proc( HWND hDialog, UINT message, WPARAM wParam, LPARAM lParam )
+{
+  if( message != WM_COMMAND )
+    return FALSE;
+  switch( LOWORD( wParam ) )
+  {
+  case IDOK:
+    GetDlgItemText( hDialog, IDC_HIGHER_DOMAIN_EDIT, myBuffer, sizeof( myBuffer ) );
     EndDialog( hDialog, TRUE );
     return TRUE;
   case IDCANCEL:
@@ -210,6 +263,18 @@ void menu_callbacks( int id, int unUsed, PVOID userData )
 
   case CAGD_SHOW_OFFSET_CURVE_MENU:
     handle_offset_curve_check_menu();
+    break;
+
+  case CAGD_LOWER_DOMAIN_MENU:
+    handle_minimum_domain_menu();
+    break;
+
+  case CAGD_HIGHER_DOMAIN_MENU:
+    handle_maximum_domain_menu();
+    break;
+
+  case CAGD_REDRAW_ALL:
+    redraw_cb();
     break;
   }
 
@@ -334,6 +399,60 @@ void handle_offset_curve_check_menu()
 }
 
 /******************************************************************************
+* handle_minimum_domain_menu
+******************************************************************************/
+void handle_minimum_domain_menu()
+{
+  if( DialogBox( cagdGetModule(),
+      MAKEINTRESOURCE( IDD_LOWER_DOMAIN ),
+      cagdGetWindow(),
+      ( DLGPROC )lower_domain_proc ) )
+  {
+    double t = 0;
+
+    if( sscanf( myBuffer, "%lf", &t ) == 1 )
+    {
+      cur_crv.domain[0] = t;
+    }
+  }
+  else
+  {
+    myMessage( "Invalid number", "Please pick a valid number", MB_ICONERROR );
+  }
+}
+
+/******************************************************************************
+* handle_maximum_domain_menu
+******************************************************************************/
+void handle_maximum_domain_menu()
+{
+  if( DialogBox( cagdGetModule(),
+      MAKEINTRESOURCE( IDD_HIGHER_DOMAIN ),
+      cagdGetWindow(),
+      ( DLGPROC )higher_domain_proc ) )
+  {
+    double t = 0;
+
+    if( sscanf( myBuffer, "%lf", &t ) == 1 )
+    {
+      cur_crv.domain[1] = t;
+    }
+  }
+  else
+  {
+    myMessage( "Invalid number", "Please pick a valid number", MB_ICONERROR );
+  }
+}
+
+/******************************************************************************
+* redraw_cb
+******************************************************************************/
+void redraw_cb()
+{
+  init_cur_crv();
+}
+
+/******************************************************************************
 * handle_anim_speed_menu
 ******************************************************************************/
 void handle_anim_speed_menu()
@@ -428,22 +547,6 @@ void handle_num_samples_menu()
       if( cur_crv.defined == TRUE )
       {
         draw_cur_crv( num_samples );
-
-        if( is_show_offset_curve_menu_checked() )
-        {
-          set_offset_color();
-          draw_other_crv( num_samples * 2, &cur_crv.offset, &cur_crv.offset_seg );
-
-          set_default_color();
-        }
-
-        if( is_show_evolute_menu_checked() )
-        {
-          set_evolute_color();
-          draw_other_crv( num_samples * 3, NULL, &cur_crv.evolute_seg );
-
-          set_default_color();
-        }
       }
     }
     else

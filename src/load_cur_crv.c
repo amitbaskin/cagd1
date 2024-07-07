@@ -61,8 +61,10 @@ void validate_tree( int i, int j )
 /******************************************************************************
 * init_cur_crv
 ******************************************************************************/
-static void init_cur_crv()
+void init_cur_crv()
 {
+  free_all_segs( TRUE );
+
   int is_error = FALSE;
 
   e2t_expr_node *tree = NULL;
@@ -121,7 +123,6 @@ static void init_cur_crv()
 void edit_cur_crv( int idx, char *p_str )
 {
   strcpy( cur_crv.expressions[ idx ], p_str );
-  init_cur_crv();
 }
 
 

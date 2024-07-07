@@ -176,13 +176,13 @@ int draw_cur_crv( int num_pnts )
   if( is_show_evolute_menu_checked() )
   {
     set_evolute_color();
-    draw_other_crv( num_pnts, NULL, &cur_crv.evolute_seg );
+    draw_other_crv( num_pnts * 3, NULL, &cur_crv.evolute_seg );
   }
 
   if( is_show_offset_curve_menu_checked() )
   {
     set_offset_color();
-    draw_other_crv( num_pnts, &cur_crv.offset, &cur_crv.offset_seg );
+    draw_other_crv( num_pnts * 2, &cur_crv.offset, &cur_crv.offset_seg );
   }
 
   cagdRedraw();
