@@ -70,6 +70,7 @@ void init_cur_crv()
   e2t_expr_node *tree = NULL;
 
   cur_crv.defined = TRUE;
+  cur_crv.offset  = DEFAULT_OFFSET;
 
   for( int i = 0; !is_error && i < SPACE_DIM; ++i )
   {
@@ -122,6 +123,9 @@ void init_cur_crv()
 ******************************************************************************/
 void edit_cur_crv( int idx, char *p_str )
 {
+  for( int i = 0; i < MAX_LINE_LENGTH; ++i )
+    cur_crv.expressions[ idx ][ i ] = '\0';
+
   strcpy( cur_crv.expressions[ idx ], p_str );
 }
 
@@ -177,7 +181,10 @@ void load_cur_crv( int dummy1, int dummy2, void *p_data )
   }
 
   for( int i = 0; i < SPACE_DIM; ++i )
-    cur_crv.expressions[ i ][ 0 ] = '\0';
+  {
+    for( int j = 0; j < MAX_LINE_LENGTH; ++j )
+      cur_crv.expressions[ i ][ j ] = '\0';
+  }
 
   while( !is_error                   &&
           line_count < SPACE_DIM + 1 &&
