@@ -12,6 +12,7 @@
 extern int frenet_anim_smoothness;
 extern int frenet_anim_running;
 extern HMENU g_anim_settings_menu;
+extern HMENU g_animation_menu;
 
 int frenet_anim_iteration = 0;
 
@@ -131,10 +132,7 @@ void draw_frenet( double param, frenet_t *frenet )
 ******************************************************************************/
 void frenet_anim_cb( int x, int y, PVOID userData )
 {
-  if( !is_menu_checked( g_anim_settings_menu, CAGD_ANIM_FRENET_MENU ) &&
-      !is_menu_checked( g_anim_settings_menu, CAGD_ANIM_OSCULATING_MENU ) &&
-      !is_menu_checked( g_anim_settings_menu, CAGD_ANIM_TORSION_MENU ) &&  
-      !is_menu_checked( g_anim_settings_menu, CAGD_ANIM_SPHERE_MENU ) )
+  if( are_all_anim_menus_unchecked() )
   {
     stop_frenet_animation();
     return;
@@ -202,6 +200,14 @@ int frenet_start_animation()
     cagdRegisterCallback( CAGD_TIMER, frenet_anim_cb, NULL );
   }
 
+  EnableMenuItem( g_animation_menu,
+                  CAGD_FRENET_ANIM_STOP,
+                  frenet_anim_running ? MF_ENABLED : MF_GRAYED );
+
+  EnableMenuItem( g_animation_menu,
+                  CAGD_FRENET_ANIM_START,
+                  frenet_anim_running ? MF_GRAYED : MF_ENABLED );
+
   return is_error;
 }
 
@@ -225,4 +231,12 @@ void stop_frenet_animation()
   cagdRedraw();
   reset_frenet_anim_iteration();
   frenet_anim_running = 0;
+
+  EnableMenuItem( g_animation_menu,
+                  CAGD_FRENET_ANIM_STOP,
+                  frenet_anim_running ? MF_ENABLED : MF_GRAYED );
+
+  EnableMenuItem( g_animation_menu,
+                  CAGD_FRENET_ANIM_START,
+                  frenet_anim_running ? MF_GRAYED : MF_ENABLED );
 }

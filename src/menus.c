@@ -13,6 +13,7 @@ char myBuffer[BUFSIZ];
 UINT myText;
 HMENU g_lmb_menu = NULL;
 HMENU g_options_menu = NULL;
+HMENU g_animation_menu = NULL;
 
 extern HMENU g_anim_settings_menu;
 extern int num_samples;
@@ -35,6 +36,7 @@ void init_menus()
   g_lmb_menu = lmb_menu;
   g_anim_settings_menu = anim_settings_menu;
   g_options_menu = op_menu;
+  g_animation_menu = fre_menu;
 
   // options
   AppendMenu( op_menu, MF_STRING, CAGD_SEGS, "Change Refinement" );
@@ -44,7 +46,7 @@ void init_menus()
 
   // frenet
   AppendMenu( fre_menu, MF_STRING, CAGD_FRENET_ANIM_START, "Start Animation" );
-  AppendMenu( fre_menu, MF_STRING, CAGD_FRENET_ANIM_STOP, "Stop Animation" );
+  AppendMenu( fre_menu, MF_STRING | MF_GRAYED, CAGD_FRENET_ANIM_STOP, "Stop Animation" );
 
   // lmb sub menu
   AppendMenu( lmb_menu, MF_STRING | MF_CHECKED, CAGD_LMB_FRENET_MENU, "Show Frenet Frame" );
@@ -171,6 +173,16 @@ void menu_callbacks( int id, int unUsed, PVOID userData )
     handle_evolute_check_menu();
     break;
   }
+
+  if( are_all_anim_menus_unchecked() )
+    EnableMenuItem( g_animation_menu,
+                    CAGD_FRENET_ANIM_START,
+                    MF_GRAYED );
+  else if( frenet_anim_running == 0 )
+    EnableMenuItem( g_animation_menu,
+                    CAGD_FRENET_ANIM_START,
+                    MF_ENABLED );
+
 }
 
 /******************************************************************************
@@ -344,4 +356,18 @@ int is_menu_checked( HMENU main_menu, UINT sub_menu_id )
 int is_show_evolute_menu_checked()
 {
   return is_menu_checked( g_options_menu, CAGD_SHOW_EVOLUTE_MENU );
+}
+
+/******************************************************************************
+* are_all_anim_menus_unchecked
+******************************************************************************/
+int are_all_anim_menus_unchecked()
+{
+  if( !is_menu_checked( g_anim_settings_menu, CAGD_ANIM_FRENET_MENU ) &&
+      !is_menu_checked( g_anim_settings_menu, CAGD_ANIM_OSCULATING_MENU ) &&
+      !is_menu_checked( g_anim_settings_menu, CAGD_ANIM_TORSION_MENU ) &&
+      !is_menu_checked( g_anim_settings_menu, CAGD_ANIM_SPHERE_MENU ) )
+    return TRUE;
+  else
+    return FALSE;
 }
