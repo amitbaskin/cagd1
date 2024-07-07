@@ -10,9 +10,9 @@
 /******************************************************************************
 * get_num_circ_pnts
 ******************************************************************************/
-int get_num_circ_pnts( int radius )
+int get_num_circ_pnts( double radius )
 {
-  return min( max( 100, radius ), 1000 );
+  return ( int )min( max( 100, radius ), 1000 );
 }
 
 

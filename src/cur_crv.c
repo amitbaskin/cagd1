@@ -149,7 +149,7 @@ int draw_cur_crv( int num_pnts )
 {
   int is_error = validate_pre_draw( num_pnts );
 
-  if( is_error == FALSE && cur_crv.draw_cur_crv == TRUE )
+  if( is_error == FALSE )
   {
     CAGD_POINT *pnts = ( CAGD_POINT * ) malloc( sizeof( CAGD_POINT ) *
                                                 num_pnts );
@@ -164,9 +164,6 @@ int draw_cur_crv( int num_pnts )
       {
         double param = cur_crv.domain[ 0 ] + jump * i;
         eval_cur_crv( param, POSITION, &pnts[ i ] );
-
-        if( cur_crv.draw_debug == TRUE )
-          cagdAddPoint(&pnts[i]); /////////////////////////////////// for debug
       }
 
       set_default_color();
@@ -182,11 +179,8 @@ int draw_cur_crv( int num_pnts )
     draw_other_crv( num_pnts, NULL, &cur_crv.evolute_seg );
   }
 
-  if( cur_crv.draw_offset == TRUE )
-  {
-    set_offset_color();
-    draw_other_crv( num_pnts, &cur_crv.offset, &cur_crv.offset_seg );
-  }
+  set_offset_color();
+  //draw_other_crv( num_pnts, &cur_crv.offset, &cur_crv.offset_seg );
 
   cagdRedraw();
 
