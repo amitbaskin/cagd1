@@ -16,6 +16,10 @@ void handle_offset_curve_value_menu();
 void handle_minimum_domain_menu();
 void handle_maximum_domain_menu();
 
+void handle_x_parameter_menu();
+void handle_y_parameter_menu();
+void handle_z_parameter_menu();
+
 void redraw_cb();
 
 void toggle_check_menu( HMENU main_menu, UINT sub_menu_id );

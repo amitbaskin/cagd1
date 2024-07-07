@@ -63,14 +63,13 @@ void validate_tree( int i, int j )
 ******************************************************************************/
 void init_cur_crv()
 {
-  free_all_segs( TRUE );
+  free_all_segs( TRUE, TRUE );
 
   int is_error = FALSE;
 
   e2t_expr_node *tree = NULL;
 
   cur_crv.defined = TRUE;
-  cur_crv.offset  = DEFAULT_OFFSET;
 
   for( int i = 0; !is_error && i < SPACE_DIM; ++i )
   {

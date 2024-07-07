@@ -79,6 +79,10 @@ void init_menus()
   AppendMenu( offset_menu, MF_STRING, CAGD_OFFSET_CURVE_VALUE_MENU, "Set Offset Value" );
 
   // Current Curve settings sub menu
+  AppendMenu( cur_curve_menu, MF_STRING, CAGD_X_PARAMETER_MENU, "Change X(T) expression" );
+  AppendMenu( cur_curve_menu, MF_STRING, CAGD_Y_PARAMETER_MENU, "Change Y(T) expression" );
+  AppendMenu( cur_curve_menu, MF_STRING, CAGD_Z_PARAMETER_MENU, "Change Z(T) expression" );
+  AppendMenu( cur_curve_menu, MF_SEPARATOR, 0, NULL );
   AppendMenu( cur_curve_menu, MF_STRING, CAGD_LOWER_DOMAIN_MENU, "Change minimum t value" );
   AppendMenu( cur_curve_menu, MF_STRING, CAGD_HIGHER_DOMAIN_MENU, "Change maximum t value" );
 
@@ -200,6 +204,69 @@ LRESULT CALLBACK higher_domain_proc( HWND hDialog, UINT message, WPARAM wParam, 
 }
 
 /******************************************************************************
+* x_parameter_proc
+******************************************************************************/
+LRESULT CALLBACK x_parameter_proc( HWND hDialog, UINT message, WPARAM wParam, LPARAM lParam )
+{
+  if( message != WM_COMMAND )
+    return FALSE;
+  switch( LOWORD( wParam ) )
+  {
+  case IDOK:
+    GetDlgItemText( hDialog, IDC_X_PARAMETER_EDIT, myBuffer, sizeof( myBuffer ) );
+    EndDialog( hDialog, TRUE );
+    return TRUE;
+  case IDCANCEL:
+    EndDialog( hDialog, FALSE );
+    return TRUE;
+  default:
+    return FALSE;
+  }
+}
+
+/******************************************************************************
+* y_parameter_proc
+******************************************************************************/
+LRESULT CALLBACK y_parameter_proc( HWND hDialog, UINT message, WPARAM wParam, LPARAM lParam )
+{
+  if( message != WM_COMMAND )
+    return FALSE;
+  switch( LOWORD( wParam ) )
+  {
+  case IDOK:
+    GetDlgItemText( hDialog, IDC_Y_PARAMETER_EDIT, myBuffer, sizeof( myBuffer ) );
+    EndDialog( hDialog, TRUE );
+    return TRUE;
+  case IDCANCEL:
+    EndDialog( hDialog, FALSE );
+    return TRUE;
+  default:
+    return FALSE;
+  }
+}
+
+/******************************************************************************
+* z_parameter_proc
+******************************************************************************/
+LRESULT CALLBACK z_parameter_proc( HWND hDialog, UINT message, WPARAM wParam, LPARAM lParam )
+{
+  if( message != WM_COMMAND )
+    return FALSE;
+  switch( LOWORD( wParam ) )
+  {
+  case IDOK:
+    GetDlgItemText( hDialog, IDC_Z_PARAMETER_EDIT, myBuffer, sizeof( myBuffer ) );
+    EndDialog( hDialog, TRUE );
+    return TRUE;
+  case IDCANCEL:
+    EndDialog( hDialog, FALSE );
+    return TRUE;
+  default:
+    return FALSE;
+  }
+}
+
+/******************************************************************************
 * menu_callbacks
 ******************************************************************************/
 void menu_callbacks( int id, int unUsed, PVOID userData )
@@ -273,6 +340,18 @@ void menu_callbacks( int id, int unUsed, PVOID userData )
     handle_maximum_domain_menu();
     break;
 
+  case CAGD_X_PARAMETER_MENU:
+    handle_x_parameter_menu();
+    break;
+
+  case CAGD_Y_PARAMETER_MENU:
+    handle_y_parameter_menu();
+    break;
+
+  case CAGD_Z_PARAMETER_MENU:
+    handle_z_parameter_menu();
+    break;
+
   case CAGD_REDRAW_ALL:
     redraw_cb();
     break;
@@ -314,7 +393,7 @@ void left_mouse_click_cb( int x, int y, PVOID userData )
       cagdGetVertex( id, --v, &p );
       double param = get_param_from_segment_number( v );
 
-      free_all_segs( FALSE );
+      free_all_segs( FALSE, FALSE );
 
       frenet_t frenet;
       calc_frenet( param, &frenet );
@@ -445,6 +524,75 @@ void handle_maximum_domain_menu()
 }
 
 /******************************************************************************
+* handle_x_parameter_menu
+******************************************************************************/
+void handle_x_parameter_menu()
+{
+  if( DialogBox( cagdGetModule(),
+      MAKEINTRESOURCE( IDD_X_PARAMETER ),
+      cagdGetWindow(),
+      ( DLGPROC )x_parameter_proc ) )
+  {
+    char expression[BUFSIZ];
+
+    if( sscanf( myBuffer, "%s", &expression ) == 1 )
+    {
+      edit_cur_crv( 0, expression );
+    }
+  }
+  else
+  {
+    myMessage( "Invalid expression", "Please pick a valid expression", MB_ICONERROR );
+  }
+}
+
+/******************************************************************************
+* handle_y_parameter_menu
+******************************************************************************/
+void handle_y_parameter_menu()
+{
+  if( DialogBox( cagdGetModule(),
+      MAKEINTRESOURCE( IDD_Y_PARAMETER ),
+      cagdGetWindow(),
+      ( DLGPROC )y_parameter_proc ) )
+  {
+    char expression[BUFSIZ];
+
+    if( sscanf( myBuffer, "%s", &expression ) == 1 )
+    {
+      edit_cur_crv( 1, expression );
+    }
+  }
+  else
+  {
+    myMessage( "Invalid expression", "Please pick a valid expression", MB_ICONERROR );
+  }
+}
+
+/******************************************************************************
+* handle_z_parameter_menu
+******************************************************************************/
+void handle_z_parameter_menu()
+{
+  if( DialogBox( cagdGetModule(),
+      MAKEINTRESOURCE( IDD_Z_PARAMETER ),
+      cagdGetWindow(),
+      ( DLGPROC )z_parameter_proc ) )
+  {
+    char expression[BUFSIZ];
+
+    if( sscanf( myBuffer, "%s", &expression ) == 1 )
+    {
+      edit_cur_crv( 2, expression );
+    }
+  }
+  else
+  {
+    myMessage( "Invalid expression", "Please pick a valid expression", MB_ICONERROR );
+  }
+}
+
+/******************************************************************************
 * redraw_cb
 ******************************************************************************/
 void redraw_cb()
@@ -541,7 +689,7 @@ void handle_num_samples_menu()
 
     if( sscanf( myBuffer, "%d", &new_samples ) == 1 && new_samples > 2 )
     {
-      free_all_segs( TRUE );
+      free_all_segs( TRUE, TRUE );
       num_samples = new_samples;
 
       if( cur_crv.defined == TRUE )

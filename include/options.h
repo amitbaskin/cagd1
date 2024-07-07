@@ -3,7 +3,7 @@
 #define NUM_SAMPS 2000
 
 // user controlled through GUI
-double frenet_anim_speed = 100; // higher number - slower animation.
+double frenet_anim_speed = 50; // higher number - slower animation.
 int num_samples = NUM_SAMPS;
 
 // for code
