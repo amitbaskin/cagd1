@@ -7,7 +7,7 @@
 #include <ctype.h>
 #include "expr2tree.h"
 
-// Function to parse input file
+void save_cur_crv( int x, int y, void *p_data );
 void load_cur_crv( int x, int y, void *p_data );
 
 #endif // PARSE_FILE_H

@@ -6,8 +6,6 @@
 
 extern int num_samples;
 
-#define MAX_LINE_LENGTH 1024
-
 
 /******************************************************************************
 * trim_whitespaces
@@ -63,10 +61,7 @@ void validate_tree( int i, int j )
 /******************************************************************************
 * init_cur_crv
 ******************************************************************************/
-static void
-init_cur_crv( char   variables_string[ SPACE_DIM ][ MAX_LINE_LENGTH ],
-              double tmin,
-              double tmax )
+static void init_cur_crv()
 {
   int is_error = FALSE;
 
@@ -74,14 +69,11 @@ init_cur_crv( char   variables_string[ SPACE_DIM ][ MAX_LINE_LENGTH ],
 
   cur_crv.defined = TRUE;
 
-  cur_crv.domain[ 0 ] = tmin;
-  cur_crv.domain[ 1 ] = tmax;
-
   for( int i = 0; !is_error && i < SPACE_DIM; ++i )
   {
-    printf( "\n\nVariable #%d is: %s\n\n", i, variables_string[ i ] );
+    printf( "\n\nVariable #%d is: %s\n\n", i, cur_crv.expressions[ i ] );
 
-    tree = e2t_expr2tree( variables_string[ i ] );
+    tree = e2t_expr2tree( cur_crv.expressions[ i ] );
 
     if( tree == NULL )
     {
@@ -124,6 +116,43 @@ init_cur_crv( char   variables_string[ SPACE_DIM ][ MAX_LINE_LENGTH ],
 
 
 /******************************************************************************
+* edit_cur_crv
+******************************************************************************/
+void edit_cur_crv( int idx, char *p_str )
+{
+  strcpy( cur_crv.expressions[ idx ], p_str );
+  init_cur_crv();
+}
+
+
+/******************************************************************************
+* save_cur_crv
+******************************************************************************/
+void save_cur_crv( int dummy1, int dummy2, void *p_data )
+{
+  const char *file_path = ( const char * )p_data;
+
+  FILE *file = fopen( file_path, "w" );
+
+  if( file == NULL )
+  {
+    fprintf( stderr, "Error: Could not open file %s for writing\n",
+             file_path );
+    return;
+  }
+
+  for( int i = 0; i < SPACE_DIM; ++i )
+    fprintf( file, "%s\n", cur_crv.expressions[ i ] );
+
+  fprintf( file, "%lf %lf\n", cur_crv.domain[ 0 ], cur_crv.domain[ 1 ] );
+
+  fclose( file );
+
+  printf( "Curve data successfully saved to %s\n", file_path );
+}
+
+
+/******************************************************************************
 * load_cur_crv
 ******************************************************************************/
 void load_cur_crv( int dummy1, int dummy2, void *p_data )
@@ -134,10 +163,7 @@ void load_cur_crv( int dummy1, int dummy2, void *p_data )
   int line_count = 0;
   int line_len   = 0;
 
-  double tmin = 0, tmax = 0;
-
   char line[ MAX_LINE_LENGTH ];
-  char variables_string[ SPACE_DIM ][ MAX_LINE_LENGTH ];
 
   clean_cur_crv();
 
@@ -150,7 +176,7 @@ void load_cur_crv( int dummy1, int dummy2, void *p_data )
   }
 
   for( int i = 0; i < SPACE_DIM; ++i )
-    variables_string[ i ][ 0 ] = '\0';
+    cur_crv.expressions[ i ][ 0 ] = '\0';
 
   while( !is_error                   &&
           line_count < SPACE_DIM + 1 &&
@@ -169,12 +195,14 @@ void load_cur_crv( int dummy1, int dummy2, void *p_data )
       if( line_count <= SPACE_DIM )
       {
         line_len = strlen( line );
-        strncpy( variables_string[ line_count - 1 ], line, line_len );
-        variables_string[ line_count - 1 ][ line_len ] = '\0';
+        strncpy( cur_crv.expressions[ line_count - 1 ], line, line_len );
+        cur_crv.expressions[ line_count - 1 ][ line_len ] = '\0';
       }
       else if( line_count == SPACE_DIM + 1 )
       {
-        if( sscanf( line, "%lf %lf", &tmin, &tmax ) != 2 || tmin > tmax )
+        if( sscanf( line, "%lf %lf", &cur_crv.domain[ 0 ],
+                                     &cur_crv.domain[ 1 ] ) != 2 ||
+            cur_crv.domain[ 0 ] > cur_crv.domain[ 1 ] )
         {
           print_err( "Error: Invalid tmin and / or tmax values.\n" );
           fclose( file );
@@ -194,5 +222,5 @@ void load_cur_crv( int dummy1, int dummy2, void *p_data )
   }
 
   if( !is_error )
-    init_cur_crv( variables_string, tmin, tmax );
+    init_cur_crv();
 }

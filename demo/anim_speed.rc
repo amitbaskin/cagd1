@@ -32,7 +32,7 @@ BEGIN
     DEFPUSHBUTTON   "OK",IDOK,25,79,50,14
     PUSHBUTTON      "Cancel",IDCANCEL,107,79,50,14
     EDITTEXT        IDC_ANIM_SPEED_EDIT,7,51,169,14,ES_AUTOHSCROLL
-    CTEXT           "Pick a speed for the frenet animation \n(default is 5 speed)\nWarning: This might impact animation smoothness",IDC_ANIM_SPEED,7,8,169,35
+    CTEXT           "Pick a speed for the frenet animation\n",IDC_ANIM_SPEED,7,8,169,35
 END
 
 
@@ -82,18 +82,18 @@ LANGUAGE LANG_HEBREW, SUBLANG_DEFAULT
 // TEXTINCLUDE
 //
 
-1 TEXTINCLUDE 
+1 TEXTINCLUDE
 BEGIN
     "resource1.h\0"
 END
 
-2 TEXTINCLUDE 
+2 TEXTINCLUDE
 BEGIN
     "#include ""winres.h""\r\n"
     "\0"
 END
 
-3 TEXTINCLUDE 
+3 TEXTINCLUDE
 BEGIN
     "\r\n"
     "\0"

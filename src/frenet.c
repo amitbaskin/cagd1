@@ -9,6 +9,7 @@
 #include "menus.h"
 
 
+extern int num_samples;
 extern int frenet_anim_smoothness;
 extern int frenet_anim_running;
 extern HMENU g_anim_settings_menu;
@@ -39,7 +40,7 @@ void calc_frenet( double param, frenet_t *frenet )
   double d3_mul_d1xd2;
   double l_d2_diff_d1;
 
-  printf( "param: %f\n", param );
+  printf( "param: %f\n\n", param );
 
   // calc pos
   eval_cur_crv( param, POSITION, &d0 );
@@ -62,7 +63,9 @@ void calc_frenet( double param, frenet_t *frenet )
   get_scale_inv_or_zero( pow( l_d1, 3 ), &tmp );
   frenet->crvtr = tmp * l_d1xd2;
 
-  printf( "curvature: %f\n", frenet->crvtr );
+  printf( "curvature: %f\n\n", frenet->crvtr );
+  get_scale_inv_or_zero( frenet->crvtr, &tmp );
+  printf( "osc circ radius: %f\n\n", tmp );
 
   // calc d1d1_d2
   d1d1 = multiply_vecs( &d1, &d1 );
@@ -141,7 +144,7 @@ void frenet_anim_cb( int x, int y, PVOID userData )
   frenet_t frenet;
 
   double jump = ( cur_crv.domain[ 1 ] - cur_crv.domain[ 0 ] ) /
-    frenet_anim_smoothness;
+                num_samples;
 
   double param = cur_crv.domain[ 0 ] + jump * frenet_anim_iteration;
 
@@ -166,6 +169,8 @@ void frenet_anim_cb( int x, int y, PVOID userData )
 
   if( is_menu_checked( g_anim_settings_menu, CAGD_ANIM_SPHERE_MENU ) )
     draw_sphere( param, &frenet );
+
+  printf( "\n\n" ); // to separate prints between each iteration
 
   set_default_color();
 

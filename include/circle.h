@@ -16,7 +16,8 @@ typedef struct
 
 int get_num_circ_pnts( double radius );
 
-void get_center_pnt( double param, circle_data_t *rp_circle_data );
+void get_center_pnt( double         param,
+                     circle_data_t *rp_circle_data );
 
 void eval_circ( double         param,
                 circle_data_t *p_circle_data,

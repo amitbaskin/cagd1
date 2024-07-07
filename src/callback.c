@@ -57,7 +57,7 @@ BOOL cagdRegisterCallback(UINT message, CAGD_CALLBACK function, PVOID data)
     list[message].data = data;
     if(message == CAGD_TIMER)
       if(function)
-	SetTimer(auxGetHWND(), 0, frenet_anim_speed, NULL);
+	SetTimer(auxGetHWND(), 0, ( UINT )frenet_anim_speed, NULL);
       else
 	KillTimer(auxGetHWND(), 0);
     return TRUE;
@@ -101,8 +101,12 @@ static LRESULT CALLBACK command(HWND hWnd, UINT message, WPARAM wParam, LPARAM l
       openFileName.lpstrTitle = "Save File";
       //Bugfix Octavian + Avishai
       //if(GetOpenFileName(&openFileName))
-      if(GetSaveFileName(&openFileName))
-	callback(CAGD_SAVEFILE, (int)openFileName.lpstrFile, 0);
+      if( GetSaveFileName( &openFileName ) )
+      {
+        cagdRegisterCallback( CAGD_SAVEFILE, save_cur_crv, ( PVOID )openFileName.lpstrFile );
+        callback( CAGD_SAVEFILE, ( int )openFileName.lpstrFile, 0 );
+      }
+
       return 0;
     case CAGD_EXIT:
       PostQuitMessage(0);
