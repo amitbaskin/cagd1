@@ -35,6 +35,17 @@ BEGIN
     CTEXT           "Pick the Number of Sample Points",IDC_STATIC,7,8,169,8
 END
 
+IDD_OFFSET_VALUE DIALOGEX 0, 0, 183, 104
+STYLE DS_SETFONT | DS_MODALFRAME | DS_3DLOOK | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Offset Value"
+FONT 8, "MS Sans Serif", 0, 0, 0x0
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,25,82,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,107,82,50,14
+    EDITTEXT        IDC_OFFSET_VALUE_EDIT,7,50,169,14,ES_AUTOHSCROLL
+    CTEXT           "Change Offset curve value\n(Default is -0.4)",IDC_STATIC,7,8,169,19
+END
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -50,6 +61,14 @@ BEGIN
         RIGHTMARGIN, 176
         TOPMARGIN, 8
         BOTTOMMARGIN, 67
+    END
+
+    IDD_OFFSET_VALUE, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 176
+        TOPMARGIN, 8
+        BOTTOMMARGIN, 96
     END
 END
 #endif    // APSTUDIO_INVOKED
@@ -87,6 +106,11 @@ END
 //
 
 IDD_COLOR AFX_DIALOG_LAYOUT
+BEGIN
+    0
+END
+
+IDD_OFFSET_VALUE AFX_DIALOG_LAYOUT
 BEGIN
     0
 END

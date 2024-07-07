@@ -12,6 +12,7 @@ void handle_num_samples_menu();
 void handle_anim_speed_menu();
 void handle_evolute_check_menu();
 void handle_offset_curve_check_menu();
+void handle_offset_curve_value_menu();
 
 void toggle_check_menu( HMENU main_menu, UINT sub_menu_id );
 int is_menu_checked( HMENU main_menu, UINT sub_menu_id );

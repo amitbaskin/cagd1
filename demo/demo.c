@@ -84,6 +84,7 @@ int main(int argc, char *argv[])
   init_menus();
 
   num_samples = NUM_SAMPS; // Default value
+  cur_crv.offset = DEFAULT_OFFSET;
   init_all_segs();
 
   cagdShowHelp();

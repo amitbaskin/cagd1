@@ -4,8 +4,10 @@
 //
 #define IDD_COLOR                       101
 #define IDC_ANIM_SPEED                  102
+#define IDD_OFFSET_VALUE                103
 #define IDC_EDIT                        1005
 #define IDC_ANIM_SPEED_EDIT             1006
+#define IDC_OFFSET_VALUE_EDIT           1007
 
 // Next default values for new objects
 // 

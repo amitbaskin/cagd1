@@ -126,6 +126,27 @@ LRESULT CALLBACK myDialogProc2( HWND hDialog, UINT message, WPARAM wParam, LPARA
 }
 
 /******************************************************************************
+* offset_value_proc
+******************************************************************************/
+LRESULT CALLBACK offset_value_proc( HWND hDialog, UINT message, WPARAM wParam, LPARAM lParam )
+{
+  if( message != WM_COMMAND )
+    return FALSE;
+  switch( LOWORD( wParam ) )
+  {
+  case IDOK:
+    GetDlgItemText( hDialog, IDC_OFFSET_VALUE_EDIT, myBuffer, sizeof( myBuffer ) );
+    EndDialog( hDialog, TRUE );
+    return TRUE;
+  case IDCANCEL:
+    EndDialog( hDialog, FALSE );
+    return TRUE;
+  default:
+    return FALSE;
+  }
+}
+
+/******************************************************************************
 * menu_callbacks
 ******************************************************************************/
 void menu_callbacks( int id, int unUsed, PVOID userData )
@@ -151,6 +172,10 @@ void menu_callbacks( int id, int unUsed, PVOID userData )
 
   case CAGD_FRENET_ANIM_SPEED:
     handle_anim_speed_menu();
+    break;
+
+  case CAGD_OFFSET_CURVE_VALUE_MENU:
+    handle_offset_curve_value_menu();
     break;
 
   case CAGD_LMB_FRENET_MENU:
@@ -204,6 +229,11 @@ void menu_callbacks( int id, int unUsed, PVOID userData )
 ******************************************************************************/
 void left_mouse_click_cb( int x, int y, PVOID userData )
 {
+  if( !cur_crv.defined )
+  {
+    return;
+  }
+
   CAGD_POINT p = { 0.0,0.0,0.0 };
   cagdHideSegment( myText = cagdAddText( &p, "" ) );
 
@@ -262,10 +292,13 @@ void handle_evolute_check_menu()
 
   if( is_show_evolute_menu_checked() )
   {
-    set_evolute_color();
-    draw_other_crv( num_samples * 3, NULL, &cur_crv.evolute_seg );
+    if( cur_crv.defined )
+    {
+      set_evolute_color();
+      draw_other_crv( num_samples * 3, NULL, &cur_crv.evolute_seg );
 
-    set_default_color();
+      set_default_color();
+    }
   }
   else
   {
@@ -284,10 +317,13 @@ void handle_offset_curve_check_menu()
 
   if( is_show_offset_curve_menu_checked() )
   {
-    set_offset_color();
-    draw_other_crv( num_samples * 2, &cur_crv.offset, &cur_crv.offset_seg );
+    if( cur_crv.defined )
+    {
+      set_offset_color();
+      draw_other_crv( num_samples * 2, &cur_crv.offset, &cur_crv.offset_seg );
 
-    set_default_color();
+      set_default_color();
+    }
   }
   else
   {
@@ -338,6 +374,36 @@ void handle_anim_speed_menu()
     else
     {
       myMessage( "Invalid Speed", "Please pick a valid speed", MB_ICONERROR );
+    }
+  }
+}
+
+/******************************************************************************
+* handle_offset_curve_value_menu
+******************************************************************************/
+void handle_offset_curve_value_menu()
+{
+  if( DialogBox( cagdGetModule(),
+      MAKEINTRESOURCE( IDD_OFFSET_VALUE ),
+      cagdGetWindow(),
+      ( DLGPROC )offset_value_proc ) )
+  {
+    double offset_value;
+    if( sscanf( myBuffer, "%lf", &offset_value ) == 1 )
+    {
+      cur_crv.offset = offset_value;
+
+      if( is_show_offset_curve_menu_checked() )
+      {
+        set_offset_color();
+        draw_other_crv( num_samples * 2, &cur_crv.offset, &cur_crv.offset_seg );
+
+        set_default_color();
+      }
+    }
+    else
+    {
+      myMessage( "Invalid Offset", "Please pick a valid offset", MB_ICONERROR );
     }
   }
 }

@@ -72,8 +72,7 @@ init_cur_crv( char   variables_string[ SPACE_DIM ][ MAX_LINE_LENGTH ],
 
   e2t_expr_node *tree = NULL;
 
-  cur_crv.defined       = TRUE;
-  cur_crv.offset        = DEFAULT_OFFSET;
+  cur_crv.defined = TRUE;
 
   cur_crv.domain[ 0 ] = tmin;
   cur_crv.domain[ 1 ] = tmax;
