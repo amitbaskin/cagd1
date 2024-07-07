@@ -36,7 +36,7 @@ void eval_cur_crv( double param, int d_level, CAGD_POINT *rp_out )
 /******************************************************************************
 * free_all_segs
 ******************************************************************************/
-void free_all_segs( BOOL clean_cur_crv_seg )
+void free_all_segs( BOOL clean_cur_crv_seg, BOOL clean_evolute_n_offset )
 {
   if( clean_cur_crv_seg )
   {
@@ -50,11 +50,14 @@ void free_all_segs( BOOL clean_cur_crv_seg )
   cagdFreeSegment( cur_crv.helix_seg );
   cur_crv.helix_seg = K_NOT_USED;
 
-  cagdFreeSegment( cur_crv.evolute_seg );
-  cur_crv.evolute_seg = K_NOT_USED;
+  if( clean_evolute_n_offset )
+  {
+    cagdFreeSegment( cur_crv.evolute_seg );
+    cur_crv.evolute_seg = K_NOT_USED;
 
-  cagdFreeSegment( cur_crv.offset_seg );
-  cur_crv.offset_seg = K_NOT_USED;
+    cagdFreeSegment( cur_crv.offset_seg );
+    cur_crv.offset_seg = K_NOT_USED;
+  }
 
   for( int i = 0; i < 3; ++i )
   {
@@ -76,7 +79,7 @@ void free_all_segs( BOOL clean_cur_crv_seg )
 void clean_cur_crv()
 {
   system( "cls" );
-  free_all_segs( TRUE );
+  free_all_segs( TRUE, TRUE );
   cagdRedraw();
   cur_crv.defined = 0;
 

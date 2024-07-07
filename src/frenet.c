@@ -154,7 +154,7 @@ void frenet_anim_cb( int x, int y, PVOID userData )
     param = cur_crv.domain[ 0 ] + jump * frenet_anim_iteration;
   }
 
-  free_all_segs( FALSE );
+  free_all_segs( FALSE, FALSE );
 
   calc_frenet( param, &frenet );
 
@@ -227,7 +227,7 @@ void stop_anim()
 {
   cagdRegisterCallback( CAGD_TIMER, NULL, NULL );
 
-  free_all_segs( FALSE );
+  free_all_segs( FALSE, FALSE );
 
   cagdRedraw();
   reset_frenet_anim_iteration();
