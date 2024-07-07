@@ -169,16 +169,16 @@ void frenet_anim_cb( int x, int y, PVOID userData )
   if( is_menu_checked( g_anim_settings_menu, CAGD_ANIM_TORSION_MENU ) )
   {
     draw_helix( param, &frenet );
-
-    if( cur_crv.draw_sphere == TRUE )
-      draw_sphere( param, &frenet );
-
-    set_default_color();
-
-    cagdRedraw();
-
-    ++frenet_anim_iteration;
   }
+
+  if( cur_crv.draw_sphere == TRUE )
+    draw_sphere( param, &frenet );
+
+  set_default_color();
+
+  cagdRedraw();
+
+  ++frenet_anim_iteration;
 }
 
 /******************************************************************************
