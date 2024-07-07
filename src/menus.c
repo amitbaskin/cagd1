@@ -14,6 +14,7 @@ UINT myText;
 HMENU g_lmb_menu = NULL;
 HMENU g_options_menu = NULL;
 HMENU g_animation_menu = NULL;
+HMENU g_offset_menu = NULL;
 
 extern HMENU g_anim_settings_menu;
 extern int num_samples;
@@ -32,15 +33,18 @@ void init_menus()
   HMENU fre_menu = CreatePopupMenu(); // frenet
   HMENU lmb_menu = CreatePopupMenu(); // lmb sub menu
   HMENU anim_settings_menu = CreatePopupMenu(); // animation settings menu
+  HMENU offset_menu = CreatePopupMenu(); // animation settings menu
 
   g_lmb_menu = lmb_menu;
   g_anim_settings_menu = anim_settings_menu;
   g_options_menu = op_menu;
   g_animation_menu = fre_menu;
+  g_offset_menu = offset_menu;
 
   // options
   AppendMenu( op_menu, MF_STRING, CAGD_SEGS, "Change Refinement" );
   AppendMenu( op_menu, MF_STRING, CAGD_SHOW_EVOLUTE_MENU, "Show Evolute Curve" );
+  AppendMenu( op_menu, MF_STRING | MF_POPUP, ( UINT_PTR )offset_menu, "Offset Curve" );
   AppendMenu( op_menu, MF_STRING | MF_POPUP, ( UINT_PTR )lmb_menu, "Left Mouse button" );
   AppendMenu( op_menu, MF_STRING | MF_POPUP, ( UINT_PTR )anim_settings_menu, "Animation Settings" );
 
@@ -61,6 +65,12 @@ void init_menus()
   AppendMenu( anim_settings_menu, MF_STRING, CAGD_ANIM_SPHERE_MENU, "Animate Osculating Sphere" );
   AppendMenu( anim_settings_menu, MF_SEPARATOR, 0, NULL );
   AppendMenu( anim_settings_menu, MF_STRING, CAGD_FRENET_ANIM_SPEED, "Set Animation Speed" );
+
+  // Offset curve sub menu
+  AppendMenu( offset_menu, MF_STRING, CAGD_SHOW_OFFSET_CURVE_MENU, "Show Offset Curve" );
+  AppendMenu( offset_menu, MF_SEPARATOR, 0, NULL );
+  AppendMenu( offset_menu, MF_STRING, CAGD_OFFSET_CURVE_VALUE_MENU, "Set Offset Value" );
+
 
   // adding to cagd
   cagdAppendMenu( fre_menu, "Animation" );
@@ -172,6 +182,10 @@ void menu_callbacks( int id, int unUsed, PVOID userData )
   case CAGD_SHOW_EVOLUTE_MENU:
     handle_evolute_check_menu();
     break;
+
+  case CAGD_SHOW_OFFSET_CURVE_MENU:
+    handle_offset_curve_check_menu();
+    break;
   }
 
   if( are_all_anim_menus_unchecked() )
@@ -262,6 +276,28 @@ void handle_evolute_check_menu()
 }
 
 /******************************************************************************
+* handle_offset_curve_check_menu
+******************************************************************************/
+void handle_offset_curve_check_menu()
+{
+  toggle_check_menu( g_offset_menu, CAGD_SHOW_OFFSET_CURVE_MENU );
+
+  if( is_show_offset_curve_menu_checked() )
+  {
+    set_offset_color();
+    draw_other_crv( num_samples * 2, &cur_crv.offset, &cur_crv.offset_seg );
+
+    set_default_color();
+  }
+  else
+  {
+    cagdFreeSegment( cur_crv.offset_seg );
+    cur_crv.offset_seg = K_NOT_USED;
+    cagdRedraw();
+  }
+}
+
+/******************************************************************************
 * handle_anim_speed_menu
 ******************************************************************************/
 void handle_anim_speed_menu()
@@ -320,9 +356,29 @@ void handle_num_samples_menu()
 
     if( sscanf( myBuffer, "%d", &new_samples ) == 1 && new_samples > 2 )
     {
-      cagdFreeAllSegments();
+      free_all_segs( TRUE );
       num_samples = new_samples;
-      draw_cur_crv( num_samples );
+
+      if( cur_crv.defined == TRUE )
+      {
+        draw_cur_crv( num_samples );
+
+        if( is_show_offset_curve_menu_checked() )
+        {
+          set_offset_color();
+          draw_other_crv( num_samples * 2, &cur_crv.offset, &cur_crv.offset_seg );
+
+          set_default_color();
+        }
+
+        if( is_show_evolute_menu_checked() )
+        {
+          set_evolute_color();
+          draw_other_crv( num_samples * 3, NULL, &cur_crv.evolute_seg );
+
+          set_default_color();
+        }
+      }
     }
     else
     {
@@ -356,6 +412,14 @@ int is_menu_checked( HMENU main_menu, UINT sub_menu_id )
 int is_show_evolute_menu_checked()
 {
   return is_menu_checked( g_options_menu, CAGD_SHOW_EVOLUTE_MENU );
+}
+
+/******************************************************************************
+* is_show_offset_curve_menu_checked
+******************************************************************************/
+int is_show_offset_curve_menu_checked()
+{
+  return is_menu_checked( g_offset_menu, CAGD_SHOW_OFFSET_CURVE_MENU );
 }
 
 /******************************************************************************

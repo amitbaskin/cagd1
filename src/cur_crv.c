@@ -182,7 +182,7 @@ int draw_cur_crv( int num_pnts )
     draw_other_crv( num_pnts, NULL, &cur_crv.evolute_seg );
   }
 
-  if( cur_crv.draw_offset == TRUE )
+  if( is_show_offset_curve_menu_checked() )
   {
     set_offset_color();
     draw_other_crv( num_pnts, &cur_crv.offset, &cur_crv.offset_seg );

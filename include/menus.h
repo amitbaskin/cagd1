@@ -11,9 +11,12 @@ void left_mouse_click_cb( int x, int y, PVOID userData );
 void handle_num_samples_menu();
 void handle_anim_speed_menu();
 void handle_evolute_check_menu();
+void handle_offset_curve_check_menu();
 
 void toggle_check_menu( HMENU main_menu, UINT sub_menu_id );
 int is_menu_checked( HMENU main_menu, UINT sub_menu_id );
 
 int is_show_evolute_menu_checked();
+int is_show_offset_curve_menu_checked();
+
 int are_all_anim_menus_unchecked();
