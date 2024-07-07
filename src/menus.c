@@ -7,6 +7,7 @@
 #include "color.h"
 #include "crvtr.h"
 #include "trsn.h"
+#include "sphere.h"
 
 char myBuffer[BUFSIZ];
 UINT myText;
@@ -49,11 +50,13 @@ void init_menus()
   AppendMenu( lmb_menu, MF_STRING | MF_CHECKED, CAGD_LMB_FRENET_MENU, "Show Frenet Frame" );
   AppendMenu( lmb_menu, MF_STRING, CAGD_LMB_OSCULATING_MENU, "Show Osculating Circle" );
   AppendMenu( lmb_menu, MF_STRING, CAGD_LMB_TORSION_MENU, "Show Torsion Helix" );
+  AppendMenu( lmb_menu, MF_STRING, CAGD_LMB_SPHERE_MENU, "Show Osculating Sphere" );
 
   // animation settings menu
   AppendMenu( anim_settings_menu, MF_STRING | MF_CHECKED, CAGD_ANIM_FRENET_MENU, "Animate Frenet Frame" );
   AppendMenu( anim_settings_menu, MF_STRING, CAGD_ANIM_OSCULATING_MENU, "Animate Osculating Circle" );
   AppendMenu( anim_settings_menu, MF_STRING, CAGD_ANIM_TORSION_MENU , "Animate Torsion Helix" );
+  AppendMenu( anim_settings_menu, MF_STRING, CAGD_ANIM_SPHERE_MENU, "Animate Osculating Sphere" );
   AppendMenu( anim_settings_menu, MF_SEPARATOR, 0, NULL );
   AppendMenu( anim_settings_menu, MF_STRING, CAGD_FRENET_ANIM_SPEED, "Set Animation Speed" );
 
@@ -147,6 +150,9 @@ void menu_callbacks( int id, int unUsed, PVOID userData )
   case CAGD_LMB_TORSION_MENU:
     toggle_check_menu( g_lmb_menu, CAGD_LMB_TORSION_MENU );
     break;
+  case CAGD_LMB_SPHERE_MENU:
+    toggle_check_menu( g_lmb_menu, CAGD_LMB_SPHERE_MENU );
+    break;
 
   case CAGD_ANIM_FRENET_MENU:
     toggle_check_menu( g_anim_settings_menu, CAGD_ANIM_FRENET_MENU );
@@ -156,6 +162,9 @@ void menu_callbacks( int id, int unUsed, PVOID userData )
     break;
   case CAGD_ANIM_TORSION_MENU:
     toggle_check_menu( g_anim_settings_menu, CAGD_ANIM_TORSION_MENU );
+    break;
+  case CAGD_ANIM_SPHERE_MENU:
+    toggle_check_menu( g_anim_settings_menu, CAGD_ANIM_SPHERE_MENU );
     break;
 
   case CAGD_SHOW_EVOLUTE_MENU:
@@ -208,6 +217,11 @@ void left_mouse_click_cb( int x, int y, PVOID userData )
       {
         draw_helix( param, &frenet );
       }
+
+      if( is_menu_checked( g_lmb_menu, CAGD_LMB_SPHERE_MENU ) )
+      {
+        draw_sphere( param, &frenet );
+      }
     }
   }
   cagdRedraw();
@@ -223,7 +237,7 @@ void handle_evolute_check_menu()
   if( is_show_evolute_menu_checked() )
   {
     set_evolute_color();
-    draw_other_crv( num_samples * 2, NULL, &cur_crv.evolute_seg );
+    draw_other_crv( num_samples * 3, NULL, &cur_crv.evolute_seg );
 
     set_default_color();
   }

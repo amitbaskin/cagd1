@@ -133,7 +133,8 @@ void frenet_anim_cb( int x, int y, PVOID userData )
 {
   if( !is_menu_checked( g_anim_settings_menu, CAGD_ANIM_FRENET_MENU ) &&
       !is_menu_checked( g_anim_settings_menu, CAGD_ANIM_OSCULATING_MENU ) &&
-      !is_menu_checked( g_anim_settings_menu, CAGD_ANIM_TORSION_MENU ) )
+      !is_menu_checked( g_anim_settings_menu, CAGD_ANIM_TORSION_MENU ) &&  
+      !is_menu_checked( g_anim_settings_menu, CAGD_ANIM_SPHERE_MENU ) )
   {
     stop_frenet_animation();
     return;
@@ -171,8 +172,10 @@ void frenet_anim_cb( int x, int y, PVOID userData )
     draw_helix( param, &frenet );
   }
 
-  if( cur_crv.draw_sphere == TRUE )
+  if( is_menu_checked( g_anim_settings_menu, CAGD_ANIM_SPHERE_MENU ) )
+  {
     draw_sphere( param, &frenet );
+  }
 
   set_default_color();
 
@@ -217,11 +220,7 @@ void stop_frenet_animation()
 {
   cagdRegisterCallback( CAGD_TIMER, NULL, NULL );
 
-  for( int i = 0; i < 3; ++i )
-  {
-    cagdFreeSegment( cur_crv.frenet_segs[i] );
-    cur_crv.frenet_segs[i] = K_NOT_USED;
-  }
+  free_all_segs( FALSE );
 
   cagdRedraw();
   reset_frenet_anim_iteration();
