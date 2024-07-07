@@ -156,24 +156,16 @@ void frenet_anim_cb( int x, int y, PVOID userData )
   calc_frenet( param, &frenet );
 
   if( is_menu_checked( g_anim_settings_menu, CAGD_ANIM_FRENET_MENU ) )
-  {
     draw_frenet( param, &frenet );
-  }
 
   if( is_menu_checked( g_anim_settings_menu, CAGD_ANIM_OSCULATING_MENU ) )
-  {
     draw_osc_circle( param, &frenet );
-  }
 
   if( is_menu_checked( g_anim_settings_menu, CAGD_ANIM_TORSION_MENU ) )
-  {
     draw_helix( param, &frenet );
-  }
 
   if( is_menu_checked( g_anim_settings_menu, CAGD_ANIM_SPHERE_MENU ) )
-  {
     draw_sphere( param, &frenet );
-  }
 
   set_default_color();
 

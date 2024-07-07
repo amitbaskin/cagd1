@@ -14,7 +14,7 @@ typedef struct
   CAGD_POINT N_axis;
 } circle_data_t;
 
-int get_num_circ_pnts( int radius );
+int get_num_circ_pnts( double radius );
 
 void get_center_pnt( double param, circle_data_t *rp_circle_data );
 

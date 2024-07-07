@@ -61,23 +61,6 @@ void validate_tree( int i, int j )
 
 
 /******************************************************************************
-* turn_on_draw
-******************************************************************************/
-static void
-turn_on_draw()
-{
-  //cur_crv.draw_evolute  = TRUE;
-  //cur_crv.draw_offset   = TRUE;
-  //cur_crv.draw_cur_crv  = FALSE;
-  //cur_crv.draw_debug    = TRUE;
-  //cur_crv.draw_csys     = TRUE;
-  //cur_crv.draw_osc_circ = TRUE;
-  //  cur_crv.draw_helix  = TRUE;
-  cur_crv.draw_sphere   = TRUE;
-}
-
-
-/******************************************************************************
 * init_cur_crv
 ******************************************************************************/
 static void
@@ -90,20 +73,10 @@ init_cur_crv( char   variables_string[ SPACE_DIM ][ MAX_LINE_LENGTH ],
   e2t_expr_node *tree = NULL;
 
   cur_crv.defined       = TRUE;
-  cur_crv.draw_debug    = FALSE;
-  cur_crv.draw_cur_crv  = TRUE;
-  cur_crv.draw_evolute  = FALSE;
-  cur_crv.draw_offset   = FALSE;
-  cur_crv.draw_csys     = FALSE;
-  cur_crv.draw_osc_circ = FALSE;
-  cur_crv.draw_helix    = FALSE;
-  cur_crv.draw_sphere   = FALSE;
   cur_crv.offset        = DEFAULT_OFFSET;
 
   cur_crv.domain[ 0 ] = tmin;
   cur_crv.domain[ 1 ] = tmax;
-
-  //turn_on_draw(); /////////////////////////////////////////////////// for debug
 
   for( int i = 0; !is_error && i < SPACE_DIM; ++i )
   {

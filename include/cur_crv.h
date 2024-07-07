@@ -37,14 +37,6 @@ typedef enum
 typedef struct
 {
   int            defined;
-  int            draw_debug;
-  int            draw_cur_crv;
-  int            draw_evolute;
-  int            draw_offset;
-  int            draw_csys;
-  int            draw_osc_circ;
-  int            draw_helix;
-  int            draw_sphere;
   double         offset;
   e2t_expr_node *trees[ SPACE_DIM ][ DERIVATIVE_LEVEL ];
   double         domain[ 2 ];
