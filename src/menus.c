@@ -540,9 +540,7 @@ void handle_x_parameter_menu()
     char expression[BUFSIZ];
 
     if( sscanf( myBuffer, "%s", &expression ) == 1 )
-    {
       edit_cur_crv( 0, expression );
-    }
   }
   else
   {
@@ -563,9 +561,7 @@ void handle_y_parameter_menu()
     char expression[BUFSIZ];
 
     if( sscanf( myBuffer, "%s", &expression ) == 1 )
-    {
       edit_cur_crv( 1, expression );
-    }
   }
   else
   {
@@ -586,9 +582,7 @@ void handle_z_parameter_menu()
     char expression[BUFSIZ];
 
     if( sscanf( myBuffer, "%s", &expression ) == 1 )
-    {
       edit_cur_crv( 2, expression );
-    }
   }
   else
   {

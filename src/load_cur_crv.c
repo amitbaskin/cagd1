@@ -68,7 +68,7 @@ void init_cur_crv()
 
   e2t_expr_node *tree = NULL;
 
-  free_all_segs( TRUE );
+  free_all_segs( TRUE, TRUE );
 
   if( double_cmp( cur_crv.domain[ 0 ], cur_crv.domain[ 1 ] ) > 0 )
   {
