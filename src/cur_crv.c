@@ -78,6 +78,7 @@ void free_all_segs( BOOL clean_cur_crv_seg, BOOL clean_evolute_n_offset )
 ******************************************************************************/
 void clean_cur_crv()
 {
+  stop_anim();
   system( "cls" );
   free_all_segs( TRUE, TRUE );
   cagdRedraw();
