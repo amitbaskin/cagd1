@@ -101,8 +101,12 @@ static LRESULT CALLBACK command(HWND hWnd, UINT message, WPARAM wParam, LPARAM l
       openFileName.lpstrTitle = "Save File";
       //Bugfix Octavian + Avishai
       //if(GetOpenFileName(&openFileName))
-      if(GetSaveFileName(&openFileName))
-	callback(CAGD_SAVEFILE, (int)openFileName.lpstrFile, 0);
+      if( GetSaveFileName( &openFileName ) )
+      {
+        cagdRegisterCallback( CAGD_SAVEFILE, save_cur_crv, ( PVOID )openFileName.lpstrFile );
+        callback( CAGD_SAVEFILE, ( int )openFileName.lpstrFile, 0 );
+      }
+
       return 0;
     case CAGD_EXIT:
       PostQuitMessage(0);

@@ -3,6 +3,7 @@
 #include "expr2tree.h"
 #include "cagd.h"
 
+#define MAX_LINE_LENGTH 1024
 
 #define SPACE_DIM        3
 #define DERIVATIVE_LEVEL 4
@@ -38,6 +39,7 @@ typedef struct
 {
   int            defined;
   double         offset;
+  char           expressions[ SPACE_DIM ][ MAX_LINE_LENGTH ];
   e2t_expr_node *trees[ SPACE_DIM ][ DERIVATIVE_LEVEL ];
   double         domain[ 2 ];
   int            frenet_segs[ 3 ];
