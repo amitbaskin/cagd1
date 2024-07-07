@@ -532,6 +532,8 @@ void handle_maximum_domain_menu()
 ******************************************************************************/
 void handle_x_parameter_menu()
 {
+  stop_anim();
+
   if( DialogBox( cagdGetModule(),
       MAKEINTRESOURCE( IDD_X_PARAMETER ),
       cagdGetWindow(),
@@ -553,6 +555,8 @@ void handle_x_parameter_menu()
 ******************************************************************************/
 void handle_y_parameter_menu()
 {
+  stop_anim();
+
   if( DialogBox( cagdGetModule(),
       MAKEINTRESOURCE( IDD_Y_PARAMETER ),
       cagdGetWindow(),
@@ -574,6 +578,8 @@ void handle_y_parameter_menu()
 ******************************************************************************/
 void handle_z_parameter_menu()
 {
+  stop_anim();
+
   if( DialogBox( cagdGetModule(),
       MAKEINTRESOURCE( IDD_Z_PARAMETER ),
       cagdGetWindow(),

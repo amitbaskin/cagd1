@@ -40,21 +40,22 @@ void validate_tree( int i, int j )
 
   if( tree != NULL )
   {
-    printf( "\nThe %d, %d tree is:\n", i, j );
-
-    e2t_printtree( tree, ( char * ) NULL );
-
     e2t_setparamvalue( cur_crv.domain[ 0 ], E2T_PARAM_T );
-
-    printf( "\n\nTree value for t = %lf is %lf\n",
-            cur_crv.domain[ 0 ],
-            e2t_evaltree( tree ) );
 
     e2t_setparamvalue( cur_crv.domain[ 1 ], E2T_PARAM_T );
 
-    printf( "\nTree value for t = %lf is %lf\n",
-            cur_crv.domain[ 1 ],
-            e2t_evaltree( tree ) );
+    if( IS_DEBUG )
+    {
+      printf( "\nThe %d, %d tree is:\n", i, j );
+
+      printf( "\n\nTree value for t = %lf is %lf\n",
+              cur_crv.domain[ 0 ],
+              e2t_evaltree( tree ) );
+
+      printf( "\nTree value for t = %lf is %lf\n",
+              cur_crv.domain[ 1 ],
+              e2t_evaltree( tree ) );
+    }
   }
 }
 
@@ -78,7 +79,8 @@ void init_cur_crv()
 
   for( int i = 0; is_error == FALSE && i < SPACE_DIM; ++i )
   {
-    printf( "\n\nVariable #%d is: %s\n\n", i, cur_crv.expressions[ i ] );
+    if( IS_DEBUG )
+      printf( "\n\nVariable #%d is: %s\n\n", i, cur_crv.expressions[ i ] );
 
     tree = e2t_expr2tree( cur_crv.expressions[ i ] );
 
@@ -161,7 +163,8 @@ void save_cur_crv( int dummy1, int dummy2, void *p_data )
 
   fclose( file );
 
-  printf( "Curve data successfully saved to %s\n", file_path );
+  if( IS_DEBUG )
+    printf( "Curve data successfully saved to %s\n", file_path );
 }
 
 
@@ -198,7 +201,8 @@ void load_cur_crv( int dummy1, int dummy2, void *p_data )
          line_count < SPACE_DIM + 1 &&
          fgets( line, sizeof( line ), file ) )
   {
-    printf( "\nProcessing line: %s\n", line );
+    if( IS_DEBUG )
+      printf( "\nProcessing line: %s\n", line );
 
     trim_whitespaces( line );
 
@@ -206,7 +210,8 @@ void load_cur_crv( int dummy1, int dummy2, void *p_data )
     {
       ++line_count;
 
-      printf( "Good line: %s\n", line );
+      if( IS_DEBUG )
+        printf( "Good line: %s\n", line );
 
       if( line_count <= SPACE_DIM )
       {

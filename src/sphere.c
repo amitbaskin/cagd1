@@ -98,15 +98,17 @@ static int init_circ_data( double         param,
     diff_vecs( &N_vec, &B_vec, &rp_circle_data->N_axis );
     rp_circle_data->radius = vec_len( &rp_circle_data->N_axis );
     rp_circle_data->radius /= 100.0;
-    //rp_circle_data->radius = 0.5; ///////////////////////////////////////// tmp
 
     normalize_vec( &rp_circle_data->N_axis );
 
     // crv pos and circ center
     get_center_pnt( param, rp_circle_data );
 
-    printf( "d_crvtr: %f\n\n", d_crvtr );
-    printf( "sphere radius: %f\n\n", rp_circle_data->radius );
+    if( IS_DEBUG )
+    {
+      printf( "d_crvtr: %f\n\n", d_crvtr );
+      printf( "sphere radius: %f\n\n", rp_circle_data->radius );
+    }
   }
 
   return is_error;

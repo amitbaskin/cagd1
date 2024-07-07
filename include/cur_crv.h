@@ -3,6 +3,7 @@
 #include "expr2tree.h"
 #include "cagd.h"
 
+#define IS_DEBUG 0
 #define MAX_LINE_LENGTH 1024
 
 #define SPACE_DIM        3
