@@ -19,7 +19,7 @@ HMENU g_offset_menu = NULL;
 extern HMENU g_anim_settings_menu;
 extern int num_samples;
 extern int frenet_anim_running;
-extern int frenet_anim_speed;
+extern double frenet_anim_speed;
 extern int frenet_anim_smoothness;
 
 extern void myMessage( PSTR title, PSTR message, UINT type );
@@ -307,12 +307,12 @@ void handle_anim_speed_menu()
       cagdGetWindow(),
       ( DLGPROC )myDialogProc2 ) )
   {
-    int speed = 0;
+    double speed = 0;
 
-    if( sscanf( myBuffer, "%d", &speed ) == 1 )
+    if( sscanf( myBuffer, "%lf", &speed ) == 1 )
     {
-      double inv_speed = 1 / ( double )speed;
-      frenet_anim_speed = ( int )( inv_speed * 100 );
+      double inv_speed = 1.0 / ( double )speed;
+      frenet_anim_speed = inv_speed * 100.0;
 
       //TODO if have time. adjust anim speed values
 

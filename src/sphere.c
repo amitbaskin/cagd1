@@ -1,5 +1,6 @@
 #define _USE_MATH_DEFINES
 #include <math.h>
+#include <stdio.h>
 
 #include "vectors.h"
 #include "frenet.h"
@@ -96,12 +97,16 @@ static int init_circ_data( double         param,
     scale_div_vec( p_frenet->crvtr, &N_vec );
     diff_vecs( &N_vec, &B_vec, &rp_circle_data->N_axis );
     rp_circle_data->radius = vec_len( &rp_circle_data->N_axis );
-    scale_div_vec( rp_circle_data->radius, &rp_circle_data->N_axis );
+    rp_circle_data->radius /= 100.0;
+    //rp_circle_data->radius = 0.5; ///////////////////////////////////////// tmp
 
-    rp_circle_data->radius = 0.5; ///////////////////////////////////////// tmp
+    normalize_vec( &rp_circle_data->N_axis );
 
     // crv pos and circ center
     get_center_pnt( param, rp_circle_data );
+
+    printf( "d_crvtr: %f\n\n", d_crvtr );
+    printf( "sphere radius: %f\n\n", rp_circle_data->radius );
   }
 
   return is_error;
