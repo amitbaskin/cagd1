@@ -32,35 +32,6 @@ void trim_whitespaces( char *str )
 
 
 /******************************************************************************
-* validate_tree
-******************************************************************************/
-void validate_tree( int i, int j )
-{
-  e2t_expr_node *tree = cur_crv.trees[ i ][ j ];
-
-  if( tree != NULL )
-  {
-    e2t_setparamvalue( cur_crv.domain[ 0 ], E2T_PARAM_T );
-
-    e2t_setparamvalue( cur_crv.domain[ 1 ], E2T_PARAM_T );
-
-    if( IS_DEBUG )
-    {
-      printf( "\nThe %d, %d tree is:\n", i, j );
-
-      printf( "\n\nTree value for t = %lf is %lf\n",
-              cur_crv.domain[ 0 ],
-              e2t_evaltree( tree ) );
-
-      printf( "\nTree value for t = %lf is %lf\n",
-              cur_crv.domain[ 1 ],
-              e2t_evaltree( tree ) );
-    }
-  }
-}
-
-
-/******************************************************************************
 * init_cur_crv
 ******************************************************************************/
 void init_cur_crv()
@@ -70,6 +41,7 @@ void init_cur_crv()
   e2t_expr_node *tree = NULL;
 
   free_all_segs( TRUE, TRUE );
+  free_all_trees();
 
   if( double_cmp( cur_crv.domain[ 0 ], cur_crv.domain[ 1 ] ) > 0 )
   {
@@ -94,10 +66,9 @@ void init_cur_crv()
     else
     {
       cur_crv.trees[ i ][ 0 ] = tree;
-      validate_tree( i, 0 );
     }
 
-    for( int j = 1; !is_error && j < DERIVATIVE_LEVEL; ++j )
+    for( int j = 1; is_error == FALSE && j < DERIVATIVE_LEVEL; ++j )
     {
       tree = e2t_derivtree( cur_crv.trees[ i ][ j - 1 ], E2T_PARAM_T );
 
@@ -112,7 +83,6 @@ void init_cur_crv()
       else
       {
         cur_crv.trees[ i ][ j ] = tree;
-        validate_tree( i, j );
       }
     }
   }
@@ -191,12 +161,6 @@ void load_cur_crv( int dummy1, int dummy2, void *p_data )
     is_error = 1;
   }
 
-  for( int i = 0; i < SPACE_DIM; ++i )
-  {
-    for( int j = 0; j < MAX_LINE_LENGTH; ++j )
-      cur_crv.expressions[ i ][ j ] = '\0';
-  }
-
   while( is_error == FALSE          &&
          line_count < SPACE_DIM + 1 &&
          fgets( line, sizeof( line ), file ) )
@@ -238,12 +202,14 @@ void load_cur_crv( int dummy1, int dummy2, void *p_data )
   if( file != NULL )
     fclose( file );
 
-  if( !is_error && line_count < SPACE_DIM + 1 )
+  if( is_error == FALSE && line_count < SPACE_DIM + 1 )
   {
-    fprintf( stderr, "Error: Missing required lines in the input file.\n" );
-    is_error = 1;
+    print_err( "Error: Missing required lines in the input file.\n" );
+    is_error = TRUE;
   }
 
-  if( !is_error )
+  if( is_error == FALSE )
     init_cur_crv();
+  else
+    clean_cur_crv();
 }

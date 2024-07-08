@@ -192,7 +192,7 @@ int start_anim()
 
   is_error = cur_crv.defined == 0;
 
-  if( cur_crv.defined == 0 )
+  if( is_error == TRUE )
   {
     print_err( "Current Curve is Not Defined" );
     is_error = 1;

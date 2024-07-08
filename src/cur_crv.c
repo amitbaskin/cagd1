@@ -32,6 +32,20 @@ void eval_cur_crv( double param, int d_level, CAGD_POINT *rp_out )
   rp_out->z = e2t_evaltree( cur_crv.trees[ Z_TREE ][ d_level ] );
 }
 
+/******************************************************************************
+* free_all_trees
+******************************************************************************/
+void free_all_trees()
+{
+  for( int i = 0; i < SPACE_DIM; ++i )
+  {
+    for( int j = 0; j < DERIVATIVE_LEVEL; ++j )
+    {
+      e2t_freetree( cur_crv.trees[ i ][ j ] );
+      cur_crv.trees[ i ][ j ] = NULL;
+    }
+  }
+}
 
 /******************************************************************************
 * free_all_segs
@@ -82,7 +96,16 @@ void clean_cur_crv()
   system( "cls" );
   free_all_segs( TRUE, TRUE );
   cagdRedraw();
+
   cur_crv.defined = 0;
+  cur_crv.domain[ 0 ] = HUGE_DOUBLE;
+  cur_crv.domain[ 1 ] = -HUGE_DOUBLE;
+
+  for( int i = 0; i < SPACE_DIM; ++i )
+  {
+    for( int j = 0; j < MAX_LINE_LENGTH; ++j )
+      cur_crv.expressions[ i ][ j ] = '\0';
+  }
 
   for( int i = 0; i < SPACE_DIM; ++i )
   {

@@ -71,6 +71,8 @@ double get_jump_sample_val( double start, double end, int num_pnts );
 
 void init_all_segs();
 
+void free_all_trees();
+
 void free_all_segs( BOOL clean_cur_crv_seg, BOOL clean_evolute_n_offset );
 
 void print_err( char *p_str );
