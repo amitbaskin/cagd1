@@ -18,7 +18,7 @@ int scale_not_zero( double scale )
 ******************************************************************************/
 int get_scale_inv_or_zero( double scale, double *rp_res )
 {
-  int is_error = !scale_not_zero( scale );
+  int is_error = scale_not_zero( scale ) ? FALSE : TRUE;
 
   *rp_res = is_error == TRUE ? 0.0 : 1 / scale;
 

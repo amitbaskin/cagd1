@@ -10,24 +10,32 @@
 /******************************************************************************
 * init_circle_data
 ******************************************************************************/
-static void init_circle_data( double         param,
-                              double        *p_radius,
-                              circle_data_t *p_circle_data )
+static int init_circle_data( double         param,
+                             double        *p_radius,
+                             circle_data_t *p_circle_data )
 {
   frenet_t frenet = { 0 };
 
-  calc_frenet( param, &frenet );
+  int is_error = calc_frenet( param, &frenet );
 
-  if( p_radius == NULL )
-    get_scale_inv_or_zero( frenet.crvtr, &p_circle_data->radius );
-  else
-    p_circle_data->radius = *p_radius;
+  if( is_error == FALSE )
+  {
+    if( p_radius == NULL )
+      is_error = get_scale_inv_or_zero( frenet.crvtr, &p_circle_data->radius );
+    else
+      p_circle_data->radius = *p_radius;
+  }
 
-  copy_vec( &frenet.csys[ TT ], &p_circle_data->T_axis );
-  copy_vec( &frenet.csys[ NN ], &p_circle_data->N_axis );
-  get_center_pnt( param, p_circle_data );
+  if( is_error == FALSE )
+  {
+    copy_vec( &frenet.csys[ TT ], &p_circle_data->T_axis );
+    copy_vec( &frenet.csys[ NN ], &p_circle_data->N_axis );
+    get_center_pnt( param, p_circle_data );
 
-  p_circle_data->is_center_defined = TRUE;
+    p_circle_data->is_center_defined = TRUE;
+  }
+
+  return is_error;
 }
 
 

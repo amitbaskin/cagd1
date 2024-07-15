@@ -11,12 +11,20 @@
 /******************************************************************************
 * init_circle_circle
 ******************************************************************************/
-static void init_circle_data( frenet_t      *p_frenet,
+static int init_circle_data( frenet_t      *p_frenet,
                               circle_data_t *p_circle_data )
 {
-  get_scale_inv_or_zero( p_frenet->crvtr, &p_circle_data->radius );
-  copy_vec( &p_frenet->csys[ TT ], &p_circle_data->T_axis );
-  copy_vec( &p_frenet->csys[ NN ], &p_circle_data->N_axis );
+  int is_error = get_scale_inv_or_zero( p_frenet->crvtr,
+                                        &p_circle_data->radius ) ?
+                 FALSE : TRUE;
+
+  if( is_error == FALSE )
+  {
+    copy_vec( &p_frenet->csys[ TT ], &p_circle_data->T_axis );
+    copy_vec( &p_frenet->csys[ NN ], &p_circle_data->N_axis );
+  }
+
+  return is_error;
 }
 
 
@@ -25,7 +33,7 @@ static void init_circle_data( frenet_t      *p_frenet,
 ******************************************************************************/
 int draw_osc_circle( double param, frenet_t *p_frenet )
 {
-  int is_error = !scale_not_zero( p_frenet->crvtr );
+  int is_error = scale_not_zero( p_frenet->crvtr ) ? FALSE : TRUE;
 
   if( is_error == FALSE )
   {

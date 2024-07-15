@@ -373,6 +373,8 @@ void menu_callbacks( int id, int unUsed, PVOID userData )
 ******************************************************************************/
 void left_mouse_click_cb( int x, int y, PVOID userData )
 {
+  int is_error = FALSE;
+
   if( !cur_crv.defined )
   {
     return;
@@ -396,7 +398,7 @@ void left_mouse_click_cb( int x, int y, PVOID userData )
       free_all_segs( FALSE, FALSE );
 
       frenet_t frenet;
-      calc_frenet( param, &frenet );
+      is_error = calc_frenet( param, &frenet );
 
       if( frenet_anim_running == 1 )
       {

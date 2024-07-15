@@ -21,8 +21,10 @@ int frenet_anim_iteration = 0;
 /******************************************************************************
 * calc_frenet
 ******************************************************************************/
-void calc_frenet( double param, frenet_t *frenet )
+int calc_frenet( double param, frenet_t *rp_frenet )
 {
+  int is_error = FALSE;
+
   CAGD_POINT d0;
   CAGD_POINT d1;
   CAGD_POINT d2;
@@ -32,66 +34,92 @@ void calc_frenet( double param, frenet_t *frenet )
   CAGD_POINT d1d2_d1;
   CAGD_POINT d2_diff_d1;
 
-  double tmp;
-  double d1d1;
-  double d1d2;
-  double l_d1;
-  double l_d1xd2;
-  double d3_mul_d1xd2;
-  double l_d2_diff_d1;
+  double tmp = 0.0;
+  double d1d1 = 0.0;
+  double d1d2 = 0.0;
+  double l_d1 = 0.0;
+  double l_d1xd2 = 0.0;
+  double d3_mul_d1xd2 = 0.0;
+  double l_d2_diff_d1 = 0.0;
 
   // calc pos
   eval_cur_crv( param, POSITION, &d0 );
-  copy_vec( &d0, &frenet->pos );
+  copy_vec( &d0, &rp_frenet->pos );
 
   // calc T
   eval_cur_crv( param, VELOCITY, &d1 );
-  copy_vec( &d1, &frenet->csys[ TT ] );
   l_d1 = vec_len( &d1 );
-  scale_div_vec( l_d1, &frenet->csys[ TT ] );
+  copy_vec( &d1, &rp_frenet->csys[ TT ] );
+  normalize_vec( &rp_frenet->csys[ TT ] );
 
   // calc B
   eval_cur_crv( param, ACCELERATION, &d2 );
   cross_vecs( &d1, &d2, &d1xd2 );
-  copy_vec( &d1xd2, &frenet->csys[ BB ] );
+  copy_vec( &d1xd2, &rp_frenet->csys[ BB ] );
   l_d1xd2 = vec_len( &d1xd2 );
-  scale_div_vec( l_d1xd2, &frenet->csys[ BB ] );
 
-  // calc curvature
-  get_scale_inv_or_zero( pow( l_d1, 3 ), &tmp );
-  frenet->crvtr = tmp * l_d1xd2;
+  is_error = scale_div_vec( l_d1xd2, &rp_frenet->csys[ BB ] );
 
-  get_scale_inv_or_zero( frenet->crvtr, &tmp );
+  if( is_error == FALSE )
+    normalize_vec( &rp_frenet->csys[ BB ] );
 
-  // calc d1d1_d2
-  d1d1 = multiply_vecs( &d1, &d1 );
-  copy_vec( &d2, &d1d1_d2 );
-  scale_vec( d1d1, &d1d1_d2 );
+  if( is_error == FALSE )
+  {
+    // calc curvature
+    is_error = get_scale_inv_or_zero( pow( l_d1, 3 ), &tmp );
 
-  // calc d1d2_d1
-  d1d2 = multiply_vecs( &d1, &d2 );
-  copy_vec( &d1, &d1d2_d1 );
-  scale_vec( d1d2, &d1d2_d1 );
+    if( is_error == FALSE )
+      rp_frenet->crvtr = tmp * l_d1xd2;
+  }
 
-  // calc N
-  diff_vecs( &d1d1_d2, &d1d2_d1, &d2_diff_d1 );
-  scale_div_vec( l_d1 * l_d1xd2, &d2_diff_d1 );
-  l_d2_diff_d1 = vec_len( &d2_diff_d1 );
-  scale_div_vec( l_d2_diff_d1, &d2_diff_d1 );
-  copy_vec( &d2_diff_d1, &frenet->csys[ NN ] );
+  if( is_error == FALSE )
+  {
+    // calc N
 
-  // calc torsion
-  eval_cur_crv( param, JERK, &d3 );
-  d3_mul_d1xd2 = multiply_vecs( &d3, &d1xd2 );
-  get_scale_inv_or_zero( pow( l_d1xd2, 2 ), &tmp );
-  frenet->trsn = d3_mul_d1xd2 * tmp;
+    // calc d1d1_d2
+    d1d1 = multiply_vecs( &d1, &d1 );
+    copy_vec( &d2, &d1d1_d2 );
+    scale_vec( d1d1, &d1d1_d2 );
+
+    // calc d1d2_d1
+    d1d2 = multiply_vecs( &d1, &d2 );
+    copy_vec( &d1, &d1d2_d1 );
+    scale_vec( d1d2, &d1d2_d1 );
+
+    diff_vecs( &d1d1_d2, &d1d2_d1, &d2_diff_d1 );
+    is_error = scale_div_vec( l_d1 * l_d1xd2, &d2_diff_d1 );
+
+    if( is_error == FALSE )
+    {
+      l_d2_diff_d1 = vec_len( &d2_diff_d1 );
+      is_error = scale_div_vec( l_d2_diff_d1, &d2_diff_d1 );
+    }
+
+    if( is_error == FALSE )
+    {
+      copy_vec( &d2_diff_d1, &rp_frenet->csys[ NN ] );
+      normalize_vec( &rp_frenet->csys[ NN ] );
+    }
+  }
+
+  if( is_error == FALSE )
+  {
+     // calc torsion
+    eval_cur_crv( param, JERK, &d3 );
+    d3_mul_d1xd2 = multiply_vecs( &d3, &d1xd2 );
+
+    is_error = get_scale_inv_or_zero( pow( l_d1xd2, 2 ), &tmp );
+
+    if( is_error == FALSE )
+      rp_frenet->trsn = d3_mul_d1xd2 * tmp;
+  }
 
   if( IS_DEBUG )
   {
     printf( "param: %f\n\n", param );
-    printf( "curvature: %f\n\n", frenet->crvtr );
+    printf( "curvature: %f\n\n", rp_frenet->crvtr );
     printf( "osc circ radius: %f\n\n", tmp );
-    printf( "torsion: %f\n\n", frenet->trsn );
+    printf( "torsion: %f\n\n", rp_frenet->trsn );
   }
 }
 
@@ -99,15 +127,15 @@ void calc_frenet( double param, frenet_t *frenet )
 /******************************************************************************
 * draw_frenet
 ******************************************************************************/
-void draw_frenet( double param, frenet_t *frenet )
+void draw_frenet( double param, frenet_t *p_frenet )
 {
-  CAGD_POINT T_axis[ 2 ] = { frenet->pos };
-  CAGD_POINT N_axis[ 2 ] = { frenet->pos };
-  CAGD_POINT B_axis[ 2 ] = { frenet->pos };
+  CAGD_POINT T_axis[ 2 ] = { p_frenet->pos };
+  CAGD_POINT N_axis[ 2 ] = { p_frenet->pos };
+  CAGD_POINT B_axis[ 2 ] = { p_frenet->pos };
 
-  add_vecs( &frenet->pos, &frenet->csys[ TT ], &T_axis[ 1 ] );
-  add_vecs( &frenet->pos, &frenet->csys[ NN ], &N_axis[ 1 ] );
-  add_vecs( &frenet->pos, &frenet->csys[ BB ], &B_axis[ 1 ] );
+  add_vecs( &p_frenet->pos, &p_frenet->csys[ TT ], &T_axis[ 1 ] );
+  add_vecs( &p_frenet->pos, &p_frenet->csys[ NN ], &N_axis[ 1 ] );
+  add_vecs( &p_frenet->pos, &p_frenet->csys[ BB ], &B_axis[ 1 ] );
 
   if( cur_crv.frenet_segs[ TT ] == K_NOT_USED )
   {
@@ -137,6 +165,8 @@ void draw_frenet( double param, frenet_t *frenet )
 ******************************************************************************/
 void frenet_anim_cb( int x, int y, PVOID userData )
 {
+  int is_error = FALSE;
+
   if( are_all_anim_menus_unchecked() )
   {
     stop_anim();
@@ -158,7 +188,7 @@ void frenet_anim_cb( int x, int y, PVOID userData )
 
   free_all_segs( FALSE, FALSE );
 
-  calc_frenet( param, &frenet );
+  is_error = calc_frenet( param, &frenet );
 
   if( is_menu_checked( g_anim_settings_menu, CAGD_ANIM_FRENET_MENU ) )
     draw_frenet( param, &frenet );

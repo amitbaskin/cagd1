@@ -23,7 +23,7 @@ typedef struct frenet_t
 frenet_t frenet;
 
 
-void calc_frenet( double param, frenet_t *p_frenet );
+int calc_frenet( double param, frenet_t *p_frenet );
 
 void draw_frenet( double param, frenet_t *p_frenet );
 

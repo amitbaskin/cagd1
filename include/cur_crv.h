@@ -9,7 +9,7 @@
 #define SPACE_DIM        3
 #define DERIVATIVE_LEVEL 4
 #define K_NOT_USED      -1
-#define NUM_SAMPS        200
+#define NUM_SAMPS        1000
 #define DEFAULT_OFFSET  -0.4
 #define NUM_SPHERE_CIRCS 9
 

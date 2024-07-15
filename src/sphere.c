@@ -27,12 +27,12 @@ static int get_crvtr_derivative( double    param,
     double crvtr_diff_2;
     double crvtr_diff_3;
 
-    double eps = 0.00001;
+    double eps = 0.001;
     double param_1 = param - eps;
     double param_2 = param + eps;
 
-    calc_frenet( param_1, &frenet_1 );
-    calc_frenet( param_2, &frenet_2 );
+    is_error = calc_frenet( param_1, &frenet_1 );
+    is_error = calc_frenet( param_2, &frenet_2 ) || is_error;
 
     crvtr_diff_1 = ( p_frenet->crvtr - frenet_1.crvtr ) / eps;
     crvtr_diff_2 = ( frenet_2.crvtr - p_frenet->crvtr ) / eps;
