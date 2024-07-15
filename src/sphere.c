@@ -20,46 +20,67 @@ static int get_crvtr_derivative( double    param,
 
   if( is_error == FALSE )
   {
-    double l_d1;
-    double l_d1xd2;
-    double numer_1;
-    double numer_2;
-    double denom_1;
-    double denom_2;
+    frenet_t frenet_1;
+    frenet_t frenet_2;
 
-    CAGD_POINT d1;
-    CAGD_POINT d2;
-    CAGD_POINT d3;
-    CAGD_POINT d1xd2;
-    CAGD_POINT d1xd3;
+    double crvtr_diff_1;
+    double crvtr_diff_2;
+    double crvtr_diff_3;
 
-    eval_cur_crv( param, VELOCITY,     &d1 );
-    eval_cur_crv( param, ACCELERATION, &d2 );
-    eval_cur_crv( param, JERK,         &d3 );
+    double eps = 0.00001;
+    double param_1 = param - eps;
+    double param_2 = param + eps;
 
-    l_d1 = vec_len( &d1 );
+    calc_frenet( param_1, &frenet_1 );
+    calc_frenet( param_2, &frenet_2 );
 
-    cross_vecs( &d1, &d2, &d1xd2 );
-    l_d1xd2 = vec_len( &d1xd2 );
+    crvtr_diff_1 = ( p_frenet->crvtr - frenet_1.crvtr ) / eps;
+    crvtr_diff_2 = ( frenet_2.crvtr - p_frenet->crvtr ) / eps;
+    crvtr_diff_3 = ( frenet_2.crvtr - frenet_1.crvtr ) / ( 2 * eps );
 
-    cross_vecs( &d1, &d2, &d1xd3 );
+    /**rp_out = fabs( ( crvtr_diff_2 - crvtr_diff_1 ) / 2 );*/
 
-    // calc first numerator
-    numer_1 = multiply_vecs( &d1xd2, &d1xd3 );
+    *rp_out = crvtr_diff_3;
 
-    // calc second numerator
-    numer_2 = multiply_vecs( &d1, &d2 );
-    numer_2 = 3.0 * l_d1xd2 * numer_2;
+    //double l_d1;
+    //double l_d1xd2;
+    //double numer_1;
+    //double numer_2;
+    //double denom_1;
+    //double denom_2;
 
-    // calc first denominator
-    denom_1 = l_d1xd2 * pow( l_d1, 3 );
-    get_scale_inv_or_zero( denom_1, &denom_1 );
+    //CAGD_POINT d1;
+    //CAGD_POINT d2;
+    //CAGD_POINT d3;
+    //CAGD_POINT d1xd2;
+    //CAGD_POINT d1xd3;
 
-    // calc second denominator
-    denom_2 = pow( l_d1, 5 );
-    get_scale_inv_or_zero( denom_2, &denom_2 );
+    //eval_cur_crv( param, VELOCITY,     &d1 );
+    //eval_cur_crv( param, ACCELERATION, &d2 );
+    //eval_cur_crv( param, JERK,         &d3 );
+    //l_d1 = vec_len( &d1 );
 
-    *rp_out = denom_1 * numer_1 - denom_2 * numer_2;
+    //cross_vecs( &d1, &d2, &d1xd2 );
+    //l_d1xd2 = vec_len( &d1xd2 );
+
+    //cross_vecs( &d1, &d2, &d1xd3 );
+
+    //// calc first numerator
+    //numer_1 = multiply_vecs( &d1xd2, &d1xd3 );
+
+    //// calc second numerator
+    //numer_2 = multiply_vecs( &d1, &d2 );
+    //numer_2 = 3.0 * l_d1xd2 * numer_2;
+
+    //// calc first denominator
+    //denom_1 = l_d1xd2 * pow( l_d1, 3 );
+    //get_scale_inv_or_zero( denom_1, &denom_1 );
+
+    //// calc second denominator
+    //denom_2 = pow( l_d1, 5 );
+    //get_scale_inv_or_zero( denom_2, &denom_2 );
+
+    //*rp_out = denom_1 * numer_1 - denom_2 * numer_2;
   }
 
   return is_error;
@@ -97,7 +118,6 @@ static int init_circ_data( double         param,
     scale_div_vec( p_frenet->crvtr, &N_vec );
     diff_vecs( &N_vec, &B_vec, &rp_circle_data->N_axis );
     rp_circle_data->radius = vec_len( &rp_circle_data->N_axis );
-    rp_circle_data->radius /= 100.0;
 
     normalize_vec( &rp_circle_data->N_axis );
 

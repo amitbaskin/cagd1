@@ -105,7 +105,7 @@ double vec_len( const CAGD_POINT *p_vec )
 {
   double sum = p_vec->x * p_vec->x +
                p_vec->y * p_vec->y +
-               p_vec->z * p_vec->z;;
+               p_vec->z * p_vec->z;
 
   return sqrt( sum );
 }
