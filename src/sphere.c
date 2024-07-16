@@ -16,7 +16,7 @@ static int get_crvtr_derivative( double    param,
                                  frenet_t *p_frenet,
                                  double   *rp_out )
 {
-  int is_error = !scale_not_zero( p_frenet->crvtr );
+  int is_error = scale_not_zero( p_frenet->crvtr ) ? FALSE : TRUE;
 
   if( is_error == FALSE )
   {
@@ -27,7 +27,7 @@ static int get_crvtr_derivative( double    param,
     double crvtr_diff_2 = 0.0;
     double crvtr_diff_3 = 0.0;
 
-    double eps = 0.0001;
+    double eps = 0.01;
     double param_1 = param - eps;
     double param_2 = param + eps;
 
@@ -42,45 +42,49 @@ static int get_crvtr_derivative( double    param,
 
     *rp_out = crvtr_diff_3;
 
-    //double l_d1;
-    //double l_d1xd2;
-    //double numer_1;
-    //double numer_2;
-    //double denom_1;
-    //double denom_2;
+    double l_d1    = 0.0;
+    double l_d1xd2 = 0.0;
+    double numer_1 = 0.0;
+    double numer_2 = 0.0;
+    double denom_1 = 0.0;
+    double denom_2 = 0.0;
 
-    //CAGD_POINT d1;
-    //CAGD_POINT d2;
-    //CAGD_POINT d3;
-    //CAGD_POINT d1xd2;
-    //CAGD_POINT d1xd3;
+    CAGD_POINT d1    = { 0 };
+    CAGD_POINT d2    = { 0 };
+    CAGD_POINT d3    = { 0 };
+    CAGD_POINT d1xd2 = { 0 };
+    CAGD_POINT d1xd3 = { 0 };
 
-    //eval_cur_crv( param, VELOCITY,     &d1 );
-    //eval_cur_crv( param, ACCELERATION, &d2 );
-    //eval_cur_crv( param, JERK,         &d3 );
-    //l_d1 = vec_len( &d1 );
+    eval_cur_crv( param, VELOCITY,     &d1 );
+    eval_cur_crv( param, ACCELERATION, &d2 );
+    eval_cur_crv( param, JERK,         &d3 );
+    l_d1 = vec_len( &d1 );
 
-    //cross_vecs( &d1, &d2, &d1xd2 );
-    //l_d1xd2 = vec_len( &d1xd2 );
+    cross_vecs( &d1, &d2, &d1xd2 );
+    l_d1xd2 = vec_len( &d1xd2 );
 
-    //cross_vecs( &d1, &d2, &d1xd3 );
+    cross_vecs( &d1, &d3, &d1xd3 );
 
-    //// calc first numerator
-    //numer_1 = multiply_vecs( &d1xd2, &d1xd3 );
+    // calc first numerator
+    numer_1 = multiply_vecs( &d1xd2, &d1xd3 );
 
-    //// calc second numerator
-    //numer_2 = multiply_vecs( &d1, &d2 );
-    //numer_2 = 3.0 * l_d1xd2 * numer_2;
+    // calc second numerator
+    numer_2 = multiply_vecs( &d1, &d2 );
+    numer_2 *= 3.0 * l_d1xd2;
 
-    //// calc first denominator
-    //denom_1 = l_d1xd2 * pow( l_d1, 3 );
-    //get_scale_inv_or_zero( denom_1, &denom_1 );
+    // calc first denominator
+    denom_1 = l_d1xd2 * pow( l_d1, 3 );
+    is_error = get_scale_inv_or_zero( denom_1, &denom_1 );
 
-    //// calc second denominator
-    //denom_2 = pow( l_d1, 5 );
-    //get_scale_inv_or_zero( denom_2, &denom_2 );
+    if( is_error == FALSE )
+    {
+      // calc second denominator
+      denom_2 = pow( l_d1, 5 );
+      is_error = get_scale_inv_or_zero( denom_2, &denom_2 );
+    }
 
-    //*rp_out = denom_1 * numer_1 - denom_2 * numer_2;
+    if( is_error == FALSE )
+      *rp_out = denom_1 * numer_1 - denom_2 * numer_2;
   }
 
   return is_error;
@@ -94,41 +98,60 @@ static int init_circ_data( double         param,
                            frenet_t      *p_frenet,
                            circle_data_t *rp_circle_data )
 {
-  double d_crvtr;
+  CAGD_POINT N_vec = { 0 };
+  CAGD_POINT B_vec = { 0 };
+
+  double d_crvtr = 0.0;
 
   int is_error = !scale_not_zero( p_frenet->trsn ) ||
                   get_crvtr_derivative( param, p_frenet, &d_crvtr );
 
   if( is_error == FALSE )
   {
-    CAGD_POINT N_vec;
-    CAGD_POINT B_vec;
-
     // T axis
     copy_vec( &p_frenet->csys[ TT ], &rp_circle_data->T_axis );
 
     // calc B axis
     copy_vec( &p_frenet->csys[ BB ], &B_vec );
+
+    /*is_error = scale_div_vec( p_frenet->trsn, &B_vec );*/ // check
+
     scale_vec( d_crvtr, &B_vec );
     is_error = scale_div_vec( pow( p_frenet->crvtr, 2 ) *
                               p_frenet->trsn, &B_vec );
+  }
 
+  if( is_error == FALSE )
+  {
     // calc N axis
     copy_vec( &p_frenet->csys[ NN ], &N_vec );
-    scale_div_vec( p_frenet->crvtr, &N_vec );
+    is_error = scale_div_vec( p_frenet->crvtr, &N_vec );
+  }
+
+  if( is_error == FALSE )
+  {
     diff_vecs( &N_vec, &B_vec, &rp_circle_data->N_axis );
     rp_circle_data->radius = vec_len( &rp_circle_data->N_axis );
+    is_error = normalize_vec( &rp_circle_data->N_axis );
+  }
 
-    normalize_vec( &rp_circle_data->N_axis );
+  /*if( is_error == FALSE )
+  {
+    add_vecs( &N_vec, &B_vec, &rp_circle_data->N_axis );
+    rp_circle_data->radius = vec_len( &rp_circle_data->N_axis );
+    is_error = normalize_vec( &rp_circle_data->N_axis );
+  }*/ // check
 
+  if( is_error == FALSE )
+  {
     // crv pos and circ center
     get_center_pnt( param, rp_circle_data );
+  }
 
-    if( IS_DEBUG )
-    {
-      printf( "d_crvtr: %f\n\n", d_crvtr );
-      printf( "sphere radius: %f\n\n", rp_circle_data->radius );
-    }
+  if( IS_DEBUG && is_error == FALSE )
+  {
+    printf( "d_crvtr: %f\n\n", d_crvtr );
+    printf( "sphere radius: %f\n\n", rp_circle_data->radius );
   }
 
   return is_error;

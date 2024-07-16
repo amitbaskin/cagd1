@@ -22,7 +22,7 @@ int get_num_circ_pnts( double radius )
 void get_center_pnt( double         param,
                      circle_data_t *rp_circle_data )
 {
-  CAGD_POINT N_axis;
+  CAGD_POINT N_axis = { 0 };
 
   copy_vec( &rp_circle_data->N_axis, &N_axis );
   scale_vec( rp_circle_data->radius, &N_axis );

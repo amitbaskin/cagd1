@@ -15,8 +15,7 @@ static int init_circle_data( frenet_t      *p_frenet,
                               circle_data_t *p_circle_data )
 {
   int is_error = get_scale_inv_or_zero( p_frenet->crvtr,
-                                        &p_circle_data->radius ) ?
-                 FALSE : TRUE;
+                                        &p_circle_data->radius );
 
   if( is_error == FALSE )
   {
