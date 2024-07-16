@@ -376,57 +376,55 @@ void left_mouse_click_cb( int x, int y, PVOID userData )
   int is_error = FALSE;
 
   if( !cur_crv.defined )
-  {
-    return;
-  }
+    is_error = TRUE;
 
-  CAGD_POINT p = { 0.0,0.0,0.0 };
-  cagdHideSegment( myText = cagdAddText( &p, "" ) );
-
-  UINT id;
-  int v;
-  for( cagdPick( x, y ); id = cagdPickNext();)
-    if( cagdGetSegmentType( id ) == CAGD_SEGMENT_POLYLINE )
-      break;
-  if( id && id == cur_crv.my_seg /* actually picked cur_crv and not other curve*/ )
+  if( is_error == FALSE )
   {
-    if( v = cagdGetNearestVertex( id, x, y ) )
+    UINT id;
+    int vert;
+    CAGD_POINT p = { 0.0,0.0,0.0 };
+
+    cagdHideSegment( myText = cagdAddText( &p, "" ) );
+
+    for( cagdPick( x, y ); id = cagdPickNext(); )
     {
-      cagdGetVertex( id, --v, &p );
-      double param = get_param_from_segment_number( v );
+      if( cagdGetSegmentType( id ) == CAGD_SEGMENT_POLYLINE )
+        break;
+    }
 
-      free_all_segs( FALSE, FALSE );
-
-      frenet_t frenet;
-      is_error = calc_frenet( param, &frenet );
-
-      if( frenet_anim_running == 1 )
+    if( id && id == cur_crv.my_seg )
+    {
+      if( vert = cagdGetNearestVertex( id, x, y ) )
       {
-        stop_anim();
-      }
+        frenet_t frenet = { 0 };
+        double param = 0.0;
 
-      if( is_menu_checked( g_lmb_menu, CAGD_LMB_FRENET_MENU ) )
-      {
-        draw_frenet( param, &frenet );
-      }
+        cagdGetVertex( id, --vert, &p );
+        param = get_param_from_segment_number( vert );
 
-      if( is_menu_checked( g_lmb_menu, CAGD_LMB_OSCULATING_MENU ) )
-      {
-        draw_osc_circle( param, &frenet );
-      }
+        free_all_segs( FALSE, FALSE );
 
-      if( is_menu_checked( g_lmb_menu, CAGD_LMB_TORSION_MENU ) )
-      {
-        draw_helix( param, &frenet );
-      }
+        is_error = calc_frenet( param, &frenet );
 
-      if( is_menu_checked( g_lmb_menu, CAGD_LMB_SPHERE_MENU ) )
-      {
-        draw_sphere( param, &frenet );
+        if( frenet_anim_running == 1 )
+          stop_anim();
+
+        if( is_menu_checked( g_lmb_menu, CAGD_LMB_FRENET_MENU ) )
+          draw_frenet( param, &frenet );
+
+        if( is_menu_checked( g_lmb_menu, CAGD_LMB_OSCULATING_MENU ) )
+          draw_osc_circle( param, &frenet );
+
+        if( is_menu_checked( g_lmb_menu, CAGD_LMB_TORSION_MENU ) )
+          draw_helix( param, &frenet );
+
+        if( is_menu_checked( g_lmb_menu, CAGD_LMB_SPHERE_MENU ) )
+          draw_sphere( param, &frenet );
       }
     }
+
+    cagdRedraw();
   }
-  cagdRedraw();
 }
 
 /******************************************************************************
@@ -467,7 +465,6 @@ void handle_offset_curve_check_menu()
     {
       set_offset_color();
       draw_other_crv( num_samples * 2, &cur_crv.offset, &cur_crv.offset_seg );
-
       set_default_color();
     }
   }
@@ -487,21 +484,17 @@ void handle_minimum_domain_menu()
   stop_anim();
 
   if( DialogBox( cagdGetModule(),
-      MAKEINTRESOURCE( IDD_LOWER_DOMAIN ),
-      cagdGetWindow(),
-      ( DLGPROC )lower_domain_proc ) )
+                 MAKEINTRESOURCE( IDD_LOWER_DOMAIN ),
+                 cagdGetWindow(),
+                 ( DLGPROC )lower_domain_proc ) )
   {
     double t = 0;
 
     if( sscanf( myBuffer, "%lf", &t ) == 1 )
-    {
-      cur_crv.domain[0] = t;
-    }
+      cur_crv.domain[ 0 ] = t;
   }
   else
-  {
     myMessage( "Invalid number", "Please pick a valid number", MB_ICONERROR );
-  }
 }
 
 /******************************************************************************
@@ -512,21 +505,17 @@ void handle_maximum_domain_menu()
   stop_anim();
 
   if( DialogBox( cagdGetModule(),
-      MAKEINTRESOURCE( IDD_HIGHER_DOMAIN ),
-      cagdGetWindow(),
-      ( DLGPROC )higher_domain_proc ) )
+                 MAKEINTRESOURCE( IDD_HIGHER_DOMAIN ),
+                 cagdGetWindow(),
+                 ( DLGPROC )higher_domain_proc ) )
   {
-    double t = 0;
+    double val = 0;
 
-    if( sscanf( myBuffer, "%lf", &t ) == 1 )
-    {
-      cur_crv.domain[1] = t;
-    }
+    if( sscanf( myBuffer, "%lf", &val ) == 1 )
+      cur_crv.domain[ 1 ] = val;
   }
   else
-  {
     myMessage( "Invalid number", "Please pick a valid number", MB_ICONERROR );
-  }
 }
 
 /******************************************************************************
@@ -537,9 +526,9 @@ void handle_x_parameter_menu()
   stop_anim();
 
   if( DialogBox( cagdGetModule(),
-      MAKEINTRESOURCE( IDD_X_PARAMETER ),
-      cagdGetWindow(),
-      ( DLGPROC )x_parameter_proc ) )
+                 MAKEINTRESOURCE( IDD_X_PARAMETER ),
+                 cagdGetWindow(),
+                 ( DLGPROC )x_parameter_proc ) )
   {
     char expression[BUFSIZ];
 
@@ -548,7 +537,8 @@ void handle_x_parameter_menu()
   }
   else
   {
-    myMessage( "Invalid expression", "Please pick a valid expression", MB_ICONERROR );
+    myMessage( "Invalid expression", "Please pick a valid expression",
+               MB_ICONERROR );
   }
 }
 
@@ -560,9 +550,9 @@ void handle_y_parameter_menu()
   stop_anim();
 
   if( DialogBox( cagdGetModule(),
-      MAKEINTRESOURCE( IDD_Y_PARAMETER ),
-      cagdGetWindow(),
-      ( DLGPROC )y_parameter_proc ) )
+                 MAKEINTRESOURCE( IDD_Y_PARAMETER ),
+                 cagdGetWindow(),
+                 ( DLGPROC )y_parameter_proc ) )
   {
     char expression[BUFSIZ];
 
@@ -571,7 +561,8 @@ void handle_y_parameter_menu()
   }
   else
   {
-    myMessage( "Invalid expression", "Please pick a valid expression", MB_ICONERROR );
+    myMessage( "Invalid expression", "Please pick a valid expression",
+               MB_ICONERROR );
   }
 }
 
@@ -583,9 +574,9 @@ void handle_z_parameter_menu()
   stop_anim();
 
   if( DialogBox( cagdGetModule(),
-      MAKEINTRESOURCE( IDD_Z_PARAMETER ),
-      cagdGetWindow(),
-      ( DLGPROC )z_parameter_proc ) )
+                 MAKEINTRESOURCE( IDD_Z_PARAMETER ),
+                 cagdGetWindow(),
+                 ( DLGPROC )z_parameter_proc ) )
   {
     char expression[BUFSIZ];
 
@@ -594,7 +585,8 @@ void handle_z_parameter_menu()
   }
   else
   {
-    myMessage( "Invalid expression", "Please pick a valid expression", MB_ICONERROR );
+    myMessage( "Invalid expression", "Please pick a valid expression",
+               MB_ICONERROR );
   }
 }
 
@@ -612,9 +604,9 @@ void redraw_cb()
 void handle_anim_speed_menu()
 {
   if( DialogBox( cagdGetModule(),
-      MAKEINTRESOURCE( IDC_ANIM_SPEED ),
-      cagdGetWindow(),
-      ( DLGPROC )myDialogProc2 ) )
+                 MAKEINTRESOURCE( IDC_ANIM_SPEED ),
+                 cagdGetWindow(),
+                 ( DLGPROC )myDialogProc2 ) )
   {
     double speed = 0;
 
@@ -645,9 +637,7 @@ void handle_anim_speed_menu()
       }
     }
     else
-    {
       myMessage( "Invalid Speed", "Please pick a valid speed", MB_ICONERROR );
-    }
   }
 }
 
@@ -657,11 +647,12 @@ void handle_anim_speed_menu()
 void handle_offset_curve_value_menu()
 {
   if( DialogBox( cagdGetModule(),
-      MAKEINTRESOURCE( IDD_OFFSET_VALUE ),
-      cagdGetWindow(),
-      ( DLGPROC )offset_value_proc ) )
+                 MAKEINTRESOURCE( IDD_OFFSET_VALUE ),
+                 cagdGetWindow(),
+                 ( DLGPROC )offset_value_proc ) )
   {
-    double offset_value;
+    double offset_value = 0.0;
+
     if( sscanf( myBuffer, "%lf", &offset_value ) == 1 )
     {
       cur_crv.offset = offset_value;
@@ -670,13 +661,13 @@ void handle_offset_curve_value_menu()
       {
         set_offset_color();
         draw_other_crv( num_samples * 2, &cur_crv.offset, &cur_crv.offset_seg );
-
         set_default_color();
       }
     }
     else
     {
-      myMessage( "Invalid Offset", "Please pick a valid offset", MB_ICONERROR );
+      myMessage( "Invalid Offset", "Please pick a valid offset",
+                 MB_ICONERROR );
     }
   }
 }
@@ -687,9 +678,9 @@ void handle_offset_curve_value_menu()
 void handle_num_samples_menu()
 {
   if( DialogBox( cagdGetModule(),
-      MAKEINTRESOURCE( IDD_COLOR ),
-      cagdGetWindow(),
-      ( DLGPROC )myDialogProc ) )
+                 MAKEINTRESOURCE( IDD_COLOR ),
+                 cagdGetWindow(),
+                 ( DLGPROC )myDialogProc ) )
   {
     int new_samples = 0;
 
@@ -699,14 +690,10 @@ void handle_num_samples_menu()
       num_samples = new_samples;
 
       if( cur_crv.defined == TRUE )
-      {
         draw_cur_crv( num_samples );
-      }
     }
     else
-    {
       myMessage( "Invalid segments number", "invalid segs", MB_ICONERROR );
-    }
   }
 }
 
@@ -750,11 +737,13 @@ int is_show_offset_curve_menu_checked()
 ******************************************************************************/
 int are_all_anim_menus_unchecked()
 {
-  if( !is_menu_checked( g_anim_settings_menu, CAGD_ANIM_FRENET_MENU ) &&
+  if( !is_menu_checked( g_anim_settings_menu, CAGD_ANIM_FRENET_MENU )     &&
       !is_menu_checked( g_anim_settings_menu, CAGD_ANIM_OSCULATING_MENU ) &&
-      !is_menu_checked( g_anim_settings_menu, CAGD_ANIM_TORSION_MENU ) &&
+      !is_menu_checked( g_anim_settings_menu, CAGD_ANIM_TORSION_MENU )    &&
       !is_menu_checked( g_anim_settings_menu, CAGD_ANIM_SPHERE_MENU ) )
+  {
     return TRUE;
+  }
   else
     return FALSE;
 }

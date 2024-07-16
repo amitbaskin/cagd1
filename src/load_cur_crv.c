@@ -64,9 +64,7 @@ void init_cur_crv()
       is_error = 1;
     }
     else
-    {
       cur_crv.trees[ i ][ 0 ] = tree;
-    }
 
     for( int j = 1; is_error == FALSE && j < DERIVATIVE_LEVEL; ++j )
     {
@@ -81,9 +79,7 @@ void init_cur_crv()
         is_error = 1;
       }
       else
-      {
         cur_crv.trees[ i ][ j ] = tree;
-      }
     }
   }
 

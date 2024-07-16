@@ -25,14 +25,14 @@ int calc_frenet( double param, frenet_t *rp_frenet )
 {
   int is_error = FALSE;
 
-  CAGD_POINT d0;
-  CAGD_POINT d1;
-  CAGD_POINT d2;
-  CAGD_POINT d3;
-  CAGD_POINT d1xd2;
-  CAGD_POINT d1d1_d2;
-  CAGD_POINT d1d2_d1;
-  CAGD_POINT d2_diff_d1;
+  CAGD_POINT d0         = { 0 };
+  CAGD_POINT d1         = { 0 };
+  CAGD_POINT d2         = { 0 };
+  CAGD_POINT d3         = { 0 };
+  CAGD_POINT d1xd2      = { 0 };
+  CAGD_POINT d1d1_d2    = { 0 };
+  CAGD_POINT d1d2_d1    = { 0 };
+  CAGD_POINT d2_diff_d1 = { 0 };
 
   double tmp = 0.0;
   double d1d1 = 0.0;
