@@ -31,16 +31,17 @@ static int get_crvtr_derivative( double    param,
     double param_1 = param - eps;
     double param_2 = param + eps;
 
-    is_error = calc_frenet( param_1, &frenet_1 );
-    is_error = calc_frenet( param_2, &frenet_2 ) || is_error;
+    if( IS_DEBUG )
+    {
+      is_error = calc_frenet( param_1, &frenet_1 );
+      is_error = calc_frenet( param_2, &frenet_2 ) || is_error;
 
-    crvtr_diff_1 = ( p_frenet->crvtr - frenet_1.crvtr ) / eps;
-    crvtr_diff_2 = ( frenet_2.crvtr - p_frenet->crvtr ) / eps;
-    crvtr_diff_3 = ( frenet_2.crvtr - frenet_1.crvtr ) / ( 2 * eps );
+      crvtr_diff_1 = ( p_frenet->crvtr - frenet_1.crvtr ) / eps;
+      crvtr_diff_2 = ( frenet_2.crvtr - p_frenet->crvtr ) / eps;
+      crvtr_diff_3 = ( frenet_2.crvtr - frenet_1.crvtr ) / ( 2 * eps );
 
-    /**rp_out = fabs( ( crvtr_diff_2 - crvtr_diff_1 ) / 2 );*/
-
-    *rp_out = crvtr_diff_3;
+      /**rp_out = fabs( ( crvtr_diff_2 - crvtr_diff_1 ) / 2 );*/
+    }
 
     double l_d1    = 0.0;
     double l_d1xd2 = 0.0;
@@ -84,7 +85,10 @@ static int get_crvtr_derivative( double    param,
     }
 
     if( is_error == FALSE )
+    {
       *rp_out = denom_1 * numer_1 - denom_2 * numer_2;
+      *rp_out /= l_d1;
+    }
   }
 
   return is_error;
