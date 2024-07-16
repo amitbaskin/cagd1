@@ -20,14 +20,14 @@ static int get_crvtr_derivative( double    param,
 
   if( is_error == FALSE )
   {
-    frenet_t frenet_1;
-    frenet_t frenet_2;
+    frenet_t frenet_1 = { 0 };
+    frenet_t frenet_2 = { 0 };
 
-    double crvtr_diff_1;
-    double crvtr_diff_2;
-    double crvtr_diff_3;
+    double crvtr_diff_1 = 0.0;
+    double crvtr_diff_2 = 0.0;
+    double crvtr_diff_3 = 0.0;
 
-    double eps = 0.001;
+    double eps = 0.0001;
     double param_1 = param - eps;
     double param_2 = param + eps;
 

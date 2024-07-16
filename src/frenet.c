@@ -34,13 +34,12 @@ int calc_frenet( double param, frenet_t *rp_frenet )
   CAGD_POINT d1d2_d1    = { 0 };
   CAGD_POINT d2_diff_d1 = { 0 };
 
-  double tmp = 0.0;
-  double d1d1 = 0.0;
-  double d1d2 = 0.0;
-  double l_d1 = 0.0;
-  double l_d1xd2 = 0.0;
+  double tmp          = 0.0;
+  double d1d1         = 0.0;
+  double d1d2         = 0.0;
+  double l_d1         = 0.0;
+  double l_d1xd2      = 0.0;
   double d3_mul_d1xd2 = 0.0;
-  double l_d2_diff_d1 = 0.0;
 
   // calc pos
   eval_cur_crv( param, POSITION, &d0 );
@@ -50,18 +49,17 @@ int calc_frenet( double param, frenet_t *rp_frenet )
   eval_cur_crv( param, VELOCITY, &d1 );
   l_d1 = vec_len( &d1 );
   copy_vec( &d1, &rp_frenet->csys[ TT ] );
-  normalize_vec( &rp_frenet->csys[ TT ] );
-
-  // calc B
-  eval_cur_crv( param, ACCELERATION, &d2 );
-  cross_vecs( &d1, &d2, &d1xd2 );
-  copy_vec( &d1xd2, &rp_frenet->csys[ BB ] );
-  l_d1xd2 = vec_len( &d1xd2 );
-
-  is_error = scale_div_vec( l_d1xd2, &rp_frenet->csys[ BB ] );
+  is_error = normalize_vec( &rp_frenet->csys[ TT ] );
 
   if( is_error == FALSE )
-    normalize_vec( &rp_frenet->csys[ BB ] );
+  {
+    // calc B
+    eval_cur_crv( param, ACCELERATION, &d2 );
+    cross_vecs( &d1, &d2, &d1xd2 );
+    copy_vec( &d1xd2, &rp_frenet->csys[ BB ] );
+    l_d1xd2 = vec_len( &d1xd2 );
+    is_error = normalize_vec( &rp_frenet->csys[ BB ] );
+  }
 
   if( is_error == FALSE )
   {
@@ -91,14 +89,8 @@ int calc_frenet( double param, frenet_t *rp_frenet )
 
     if( is_error == FALSE )
     {
-      l_d2_diff_d1 = vec_len( &d2_diff_d1 );
-      is_error = scale_div_vec( l_d2_diff_d1, &d2_diff_d1 );
-    }
-
-    if( is_error == FALSE )
-    {
       copy_vec( &d2_diff_d1, &rp_frenet->csys[ NN ] );
-      normalize_vec( &rp_frenet->csys[ NN ] );
+      is_error = normalize_vec( &rp_frenet->csys[ NN ] );
     }
   }
 
